@@ -2,6 +2,8 @@
 
 namespace MailCampaigns\ApiClient\Exception;
 
-class ApiException extends \RuntimeException
+use RuntimeException;
+
+class ApiException extends RuntimeException
 {
 }

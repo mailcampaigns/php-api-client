@@ -2,7 +2,7 @@
 
 namespace MailCampaigns\ApiClient\Exception;
 
-class ApiLimitExceedException extends ApiException
+class ApiLimitExceededException extends ApiException
 {
     private $limit;
     private $reset;

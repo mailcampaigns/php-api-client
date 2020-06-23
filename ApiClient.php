@@ -2,7 +2,10 @@
 
 namespace MailCampaigns\ApiClient;
 
+use MailCampaigns\ApiClient\Exception\ApiException;
 use Symfony\Component\HttpClient\HttpClient;
+use MailCampaigns\ApiClient\Api\CustomerApi;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ApiClient
 {
@@ -12,9 +15,14 @@ final class ApiClient
     private static $instance;
 
     /**
-     * @var \Symfony\Contracts\HttpClient\HttpClientInterface
+     * @var HttpClientInterface
      */
     private $httpClient;
+
+    /**
+     * @var CustomerApi
+     */
+    public $customers;
 
     private function __construct($baseUri, $key, $secret)
     {
@@ -41,17 +49,18 @@ final class ApiClient
     }
 
     /**
-     * @return \Symfony\Contracts\HttpClient\HttpClientInterface
+     * @return HttpClientInterface
      */
-    public function getHttpClient(): \Symfony\Contracts\HttpClient\HttpClientInterface
+    public function getHttpClient(): HttpClientInterface
     {
         return $this->httpClient;
     }
 
     /**
-     * @param \Symfony\Contracts\HttpClient\HttpClientInterface $httpClient
+     * @param HttpClientInterface $httpClient
+     * @return ApiClient
      */
-    public function setHttpClient(\Symfony\Contracts\HttpClient\HttpClientInterface $httpClient): self
+    public function setHttpClient(HttpClientInterface $httpClient): self
     {
         $this->httpClient = $httpClient;
         return $this;
@@ -60,9 +69,12 @@ final class ApiClient
     /**
      * todo: improve
      *
+     * @param string $baseUri
+     * @param string $key
+     * @param string $secret
      * @return string
      */
-    private function getBearerToken($baseUri, $key, $secret): string
+    private function getBearerToken(string $baseUri, string $key, string $secret): string
     {
         $curl = curl_init();
 
@@ -83,7 +95,7 @@ final class ApiClient
         $accessToken = json_decode($response);
 
         if (!$accessToken) {
-            throw new Exception('Invalid token data!');
+            throw new ApiException('Invalid token data!');
         }
 
         return $accessToken->access_token;

@@ -3,7 +3,8 @@
 namespace MailCampaigns\ApiClient;
 
 use MailCampaigns\ApiClient\Exception\ApiException;
-use MailCampaigns\ApiClient\Exception\ApiLimitExceedException;
+use MailCampaigns\ApiClient\Exception\ApiLimitExceededException;
+use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class ResponseMediator
@@ -17,7 +18,7 @@ class ResponseMediator
     {
         try {
             $body = $response->getContent();
-        } catch (\Symfony\Component\HttpClient\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             throw new ApiException('API request failed!', 0, $e);
         }
 
@@ -38,7 +39,7 @@ class ResponseMediator
      */
     public static function getPagination(ResponseInterface $response)
     {
-        if (!$response->hasHeader('Link')) {
+        if (!in_array('Link', $response->getHeaders(), true)) {
             return;
         }
 
@@ -64,7 +65,7 @@ class ResponseMediator
         $remainingCalls = self::getHeader($response, 'X-RateLimit-Remaining');
 
         if (null !== $remainingCalls && 1 > $remainingCalls) {
-            throw new ApiLimitExceedException($remainingCalls);
+            throw new ApiLimitExceededException($remainingCalls);
         }
 
         return $remainingCalls;
@@ -75,12 +76,11 @@ class ResponseMediator
      *
      * @param ResponseInterface $response
      * @param string $name
-     *
      * @return string|null
      */
     public static function getHeader(ResponseInterface $response, $name)
     {
-        $headers = $response->getHeader($name);
+        $headers = $response->getHeaders()[$name];
 
         return array_shift($headers);
     }

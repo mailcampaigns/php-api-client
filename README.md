@@ -1,1 +1,1 @@
-# php-api-client
+# MailCampaigns PHP Api client
