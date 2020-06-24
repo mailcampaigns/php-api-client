@@ -244,23 +244,69 @@ class Customer implements EntityInterface
 
     public function __construct()
     {
+        $this->createdAt = new DateTime;
         $this->orders = new Collection\OrderCollection;
         $this->productReviews = new Collection\ProductReviewCollection;
         $this->favorites = new Collection\CustomerFavoriteProductCollection();
         $this->quotes = new Collection\QuoteCollection();
     }
 
+    public function toArray(): array
+    {
+        return [
+            'customer_id' => $this->getCustomerId(),
+            'created_at' => $this->dtToString($this->getCreatedAt()),
+            'updated_at' => $this->dtToString($this->getUpdatedAt()),
+            'customer_ref' => $this->getCustomerRef(),
+            'origin' => $this->getOrigin(),
+            'is_subscribed' => $this->isSubscribed(),
+            'is_confirmed' => $this->isConfirmed(),
+            'gender' => $this->getGender(),
+            'birth_date' => $this->getBirthDate(),
+            'email' => $this->getEmail(),
+            'first_name' => $this->getFirstName(),
+            'last_name' => $this->getLastName(),
+            'phone' => $this->getPhone(),
+            'mobile' => $this->getMobile(),
+            'company_name' => $this->getCompanyName(),
+            'company_coc_number' => $this->getCompanyCocNumber(),
+            'company_vat_number' => $this->getCompanyVatNumber(),
+            'address_billing_name' => $this->getAddressBillingName(),
+            'address_billing_street' => $this->getAddressBillingStreet(),
+            'address_billing_number' => $this->getAddressBillingNumber(),
+            'address_billing_extension' => $this->getAddressBillingExtension(),
+            'address_billing_zipcode' => $this->getAddressBillingZipcode(),
+            'address_billing_city' => $this->getAddressBillingCity(),
+            'address_billing_region' => $this->getAddressBillingRegion(),
+            'address_billing_country' => $this->getAddressBillingCountry(),
+            'address_shipping_company' => $this->getAddressShippingCompany(),
+            'address_shipping_name' => $this->getAddressShippingName(),
+            'address_shipping_street' => $this->getAddressShippingStreet(),
+            'address_shipping_number' => $this->getAddressShippingNumber(),
+            'address_shipping_extension' => $this->getAddressShippingExtension(),
+            'address_shipping_zipcode' => $this->getAddressShippingZipcode(),
+            'address_shipping_city' => $this->getAddressShippingCity(),
+            'address_shipping_region' => $this->getAddressShippingRegion(),
+            'address_shipping_country' => $this->getAddressShippingCountry(),
+            'language' => $this->getLanguage(),
+            'orders' => $this->getOrders(),//->toArray(),
+            'product_reviews' => $this->getProductReviews(),//->toArray(),
+            'favorites' => $this->getFavorites(),//->toArray(),
+            'quotes' => $this->getQuotes()//->toArray()
+        ];
+    }
+
     /**
      * @return int
      */
-    public function getCustomerId(): int
+    public function getCustomerId(): ?int
     {
         return $this->customerId;
     }
 
     /**
      * @param int $customerId
-     * @return Customer
+     * @return $this
      */
     public function setCustomerId(int $customerId): self
     {
@@ -278,7 +324,7 @@ class Customer implements EntityInterface
 
     /**
      * @param DateTime $createdAt
-     * @return Customer
+     * @return $this
      */
     public function setCreatedAt(DateTime $createdAt): self
     {
@@ -296,7 +342,7 @@ class Customer implements EntityInterface
 
     /**
      * @param DateTime|null $updatedAt
-     * @return Customer
+     * @return $this
      */
     public function setUpdatedAt(?DateTime $updatedAt): self
     {
@@ -314,7 +360,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $customerRef
-     * @return Customer
+     * @return $this
      */
     public function setCustomerRef(?string $customerRef): self
     {
@@ -332,7 +378,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string|null $origin
-     * @return Customer
+     * @return $this
      */
     public function setOrigin(?string $origin): self
     {
@@ -341,36 +387,36 @@ class Customer implements EntityInterface
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
-    public function isSubscribed(): bool
+    public function isSubscribed(): ?bool
     {
         return $this->isSubscribed;
     }
 
     /**
-     * @param bool $isSubscribed
-     * @return Customer
+     * @param bool|null $isSubscribed
+     * @return $this
      */
-    public function setIsSubscribed(bool $isSubscribed): self
+    public function setIsSubscribed(?bool $isSubscribed): self
     {
         $this->isSubscribed = $isSubscribed;
         return $this;
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
-    public function isConfirmed(): bool
+    public function isConfirmed(): ?bool
     {
         return $this->isConfirmed;
     }
 
     /**
-     * @param bool $isConfirmed
-     * @return Customer
+     * @param bool|null $isConfirmed
+     * @return $this
      */
-    public function setIsConfirmed(bool $isConfirmed): self
+    public function setIsConfirmed(?bool $isConfirmed): self
     {
         $this->isConfirmed = $isConfirmed;
         return $this;
@@ -386,7 +432,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string|null $gender
-     * @return Customer
+     * @return $this
      */
     public function setGender(?string $gender): self
     {
@@ -404,7 +450,7 @@ class Customer implements EntityInterface
 
     /**
      * @param DateTime|null $birthDate
-     * @return Customer
+     * @return $this
      */
     public function setBirthDate(?DateTime $birthDate): self
     {
@@ -422,7 +468,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $email
-     * @return Customer
+     * @return $this
      */
     public function setEmail(string $email): self
     {
@@ -440,7 +486,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $firstName
-     * @return Customer
+     * @return $this
      */
     public function setFirstName(string $firstName): self
     {
@@ -458,7 +504,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $middleName
-     * @return Customer
+     * @return $this
      */
     public function setMiddleName(?string $middleName): self
     {
@@ -476,7 +522,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $lastName
-     * @return Customer
+     * @return $this
      */
     public function setLastName(string $lastName): self
     {
@@ -494,7 +540,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string|null $phone
-     * @return Customer
+     * @return $this
      */
     public function setPhone(?string $phone): self
     {
@@ -512,7 +558,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string|null $mobile
-     * @return Customer
+     * @return $this
      */
     public function setMobile(?string $mobile): self
     {
@@ -530,7 +576,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string|null $companyName
-     * @return Customer
+     * @return $this
      */
     public function setCompanyName(?string $companyName): self
     {
@@ -548,7 +594,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string|null $companyCocNumber
-     * @return Customer
+     * @return $this
      */
     public function setCompanyCocNumber(?string $companyCocNumber): self
     {
@@ -566,7 +612,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string|null $companyVatNumber
-     * @return Customer
+     * @return $this
      */
     public function setCompanyVatNumber(?string $companyVatNumber): self
     {
@@ -584,7 +630,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressBillingName
-     * @return Customer
+     * @return $this
      */
     public function setAddressBillingName(?string $addressBillingName): self
     {
@@ -602,7 +648,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressBillingStreet
-     * @return Customer
+     * @return $this
      */
     public function setAddressBillingStreet(?string $addressBillingStreet): self
     {
@@ -620,7 +666,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressBillingNumber
-     * @return Customer
+     * @return $this
      */
     public function setAddressBillingNumber(?string $addressBillingNumber): self
     {
@@ -638,7 +684,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressBillingExtension
-     * @return Customer
+     * @return $this
      */
     public function setAddressBillingExtension(?string $addressBillingExtension): self
     {
@@ -656,7 +702,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressBillingZipcode
-     * @return Customer
+     * @return $this
      */
     public function setAddressBillingZipcode(?string $addressBillingZipcode): self
     {
@@ -674,7 +720,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressBillingCity
-     * @return Customer
+     * @return $this
      */
     public function setAddressBillingCity(?string $addressBillingCity): self
     {
@@ -692,7 +738,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressBillingRegion
-     * @return Customer
+     * @return $this
      */
     public function setAddressBillingRegion(?string $addressBillingRegion): self
     {
@@ -710,7 +756,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressBillingCountry
-     * @return Customer
+     * @return $this
      */
     public function setAddressBillingCountry(?string $addressBillingCountry): self
     {
@@ -728,7 +774,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressShippingCompany
-     * @return Customer
+     * @return $this
      */
     public function setAddressShippingCompany(?string $addressShippingCompany): self
     {
@@ -746,7 +792,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressShippingName
-     * @return Customer
+     * @return $this
      */
     public function setAddressShippingName(?string $addressShippingName): self
     {
@@ -764,7 +810,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressShippingStreet
-     * @return Customer
+     * @return $this
      */
     public function setAddressShippingStreet(?string $addressShippingStreet): self
     {
@@ -782,7 +828,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressShippingNumber
-     * @return Customer
+     * @return $this
      */
     public function setAddressShippingNumber(?string $addressShippingNumber): self
     {
@@ -800,7 +846,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressShippingExtension
-     * @return Customer
+     * @return $this
      */
     public function setAddressShippingExtension(?string $addressShippingExtension): self
     {
@@ -818,7 +864,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressShippingZipcode
-     * @return Customer
+     * @return $this
      */
     public function setAddressShippingZipcode(?string $addressShippingZipcode): self
     {
@@ -836,7 +882,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressShippingCity
-     * @return Customer
+     * @return $this
      */
     public function setAddressShippingCity(?string $addressShippingCity): self
     {
@@ -854,7 +900,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressShippingRegion
-     * @return Customer
+     * @return $this
      */
     public function setAddressShippingRegion(?string $addressShippingRegion): self
     {
@@ -872,7 +918,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string $addressShippingCountry
-     * @return Customer
+     * @return $this
      */
     public function setAddressShippingCountry(?string $addressShippingCountry): self
     {
@@ -890,7 +936,7 @@ class Customer implements EntityInterface
 
     /**
      * @param string|null $language
-     * @return Customer
+     * @return $this
      */
     public function setLanguage(?string $language): self
     {
@@ -901,32 +947,47 @@ class Customer implements EntityInterface
     /**
      * @return Collection\OrderCollection
      */
-    public function getOrders(): ?Collection\OrderCollection
+    public function getOrders(): ?iterable//Collection\OrderCollection
     {
+        if (is_array($this->orders)) {
+            $this->orders = new Collection\OrderCollection($this->orders);
+        }
+
         return $this->orders;
     }
 
     /**
      * @param Collection\OrderCollection|array $orders
-     * @return Customer
+     * @return $this
      */
     public function setOrders(iterable $orders): self
     {
+        if (is_array($orders)) {
+            $this->orders = new Collection\OrderCollection($orders);
+        }
+
         $this->orders = $orders;
+
+        return $this;
+    }
+
+    public function addOrder($order): self
+    {
+        $this->orders[] = $order;
         return $this;
     }
 
     /**
      * @return Collection\ProductReviewCollection
      */
-    public function getProductReviews(): Collection\ProductReviewCollection
+    public function getProductReviews(): iterable//Collection\ProductReviewCollection
     {
         return $this->productReviews;
     }
 
     /**
      * @param Collection\ProductReviewCollection|array $productReviews
-     * @return Customer
+     * @return $this
      */
     public function setProductReviews(iterable $productReviews): self
     {
@@ -937,14 +998,14 @@ class Customer implements EntityInterface
     /**
      * @return Collection\CustomerFavoriteProductCollection
      */
-    public function getFavorites(): Collection\CustomerFavoriteProductCollection
+    public function getFavorites(): iterable//Collection\CustomerFavoriteProductCollection
     {
         return $this->favorites;
     }
 
     /**
      * @param Collection\CustomerFavoriteProductCollection|array $favorites
-     * @return Customer
+     * @return $this
      */
     public function setFavorites(iterable $favorites): self
     {
@@ -955,18 +1016,27 @@ class Customer implements EntityInterface
     /**
      * @return Collection\QuoteCollection
      */
-    public function getQuotes(): Collection\QuoteCollection
+    public function getQuotes(): iterable//Collection\QuoteCollection
     {
         return $this->quotes;
     }
 
     /**
      * @param Collection\QuoteCollection|array $quotes
-     * @return Customer
+     * @return $this
      */
     public function setQuotes(iterable $quotes): self
     {
         $this->quotes = $quotes;
         return $this;
+    }
+
+    protected function dtToString(?DateTime $dt): ?string
+    {
+        if (!$dt instanceof DateTime) {
+            return null;
+        }
+
+        return $dt->format(DateTime::ISO8601);
     }
 }

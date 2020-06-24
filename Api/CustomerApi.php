@@ -40,6 +40,15 @@ class CustomerApi extends AbstractApi
         return $collection;
     }
 
+    public function create(EntityInterface $entity): self
+    {
+        $this->post('customers', $entity->toArray(), [
+            'content-type: application/json'
+        ]);
+
+        return $this;
+    }
+
     /**
      * @param array $data
      * @return Customer

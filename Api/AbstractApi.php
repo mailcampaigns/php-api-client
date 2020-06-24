@@ -132,11 +132,7 @@ abstract class AbstractApi implements ApiInterface
      */
     protected function post($path, array $parameters = [], array $requestHeaders = [])
     {
-        return $this->postRaw(
-            $path,
-            $this->createJsonBody($parameters),
-            $requestHeaders
-        );
+        return $this->postRaw($path, $this->createJsonBody($parameters), $requestHeaders);
     }
 
     /**

@@ -22,12 +22,11 @@ class ResponseMediator
             throw new ApiException('API request failed!', 0, $e);
         }
 
-//        if (strpos($response->getHeaderLine('Content-Type'), 'application/json') === 0) {
-            $content = json_decode($body, true);
-            if (JSON_ERROR_NONE === json_last_error()) {
-                return $content;
-            }
-//        }
+        $content = json_decode($body, true);
+
+        if (JSON_ERROR_NONE === json_last_error()) {
+            return $content;
+        }
 
         return $body;
     }
