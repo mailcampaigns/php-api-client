@@ -4,48 +4,103 @@ namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\CustomerCollection;
+use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
+use MailCampaigns\ApiClient\Collection\OrderCollection;
+use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
+use MailCampaigns\ApiClient\Collection\QuoteCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
+
 
 class CustomerApi extends AbstractApi
 {
     /**
+     * @param EntityInterface $entity
+     * @return $this
+     */
+    public function create(EntityInterface $entity): self
+    {
+        $res = $this->post('customers', $entity->toArray(), [
+            'content-type: application/json'
+        ]);
+
+        return $this;
+    }
+
+    /**
      * @param int $id
      * @return Customer
      */
-    public function getSingle(int $id): EntityInterface
+    public function getById(int $id): EntityInterface
     {
         return $this->toEntity($this->get("customers/{$id}"));
     }
 
     /**
+     * @param string $customerRef
+     * @return Customer|null
+     */
+    public function getByCustomerRef(string $customerRef): ?EntityInterface
+    {
+        $res = $this->get("customers", ['customer_ref' => $customerRef]);
+
+        if (isset($res['hydra:totalItems'])) {
+            if ((int)$res['hydra:totalItems'] > 0) {
+                return $this->toEntity($res['hydra:member'][0]);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param int|null $page
+     * @param int|null $perPage
      * @return CustomerCollection
      */
-    public function getCollection(): CollectionInterface
+    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
         $collection = new CustomerCollection;
 
         $parameters = [
-            'page' => $this->page,
-            'itemsPerPage' => $this->perPage
+            'page' => $page ?? $this->page,
+            'itemsPerPage' => $perPage ?? $this->perPage
         ];
 
         $data = $this->get('customers', $parameters);
 
         foreach ($data['hydra:member'] as $customerData) {
             $customer = $this->toEntity($customerData);
-            $collection->append($customer);
+            $collection->add($customer);
         }
 
         return $collection;
     }
 
-    public function create(EntityInterface $entity): self
+    /**
+     * Updates a customer.
+     *
+     * @param EntityInterface $entity
+     * @return $this
+     */
+    public function update(EntityInterface $entity): self
     {
-        $this->post('customers', $entity->toArray(), [
+        $this->put("customers/{$entity->getCustomerId()}", $entity->toArray(), [
             'content-type: application/json'
         ]);
 
+        return $this;
+    }
+
+    /**
+     * Deletes a customer by id.
+     *
+     * @param int $id
+     * @return $this
+     */
+    public function deleteById(int $id): self
+    {
+        $this->delete("customers/{$id}");
         return $this;
     }
 
@@ -55,6 +110,12 @@ class CustomerApi extends AbstractApi
      */
     public function toEntity(array $data): EntityInterface
     {
+        $orders = new OrderCollection($data['orders']);
+        $productReviews = new ProductReviewCollection($data['product_reviews']);
+        $favorites = new CustomerFavoriteProductCollection($data['favorites']);
+        $quotes = new QuoteCollection($data['favorites']);
+
+
         return (new Customer)
             ->setCustomerId($data['customer_id'])
             ->setCreatedAt($this->toDtObject($data['created_at']))
@@ -91,9 +152,9 @@ class CustomerApi extends AbstractApi
             ->setAddressShippingRegion($data['address_shipping_region'])
             ->setAddressShippingCountry($data['address_shipping_country'])
             ->setLanguage($data['language'])
-            ->setOrders($data['orders'])
-            ->setProductReviews($data['product_reviews'])
-            ->setFavorites($data['favorites'])
-            ->setQuotes($data['quotes']);
+            ->setOrders($orders)
+            ->setProductReviews($productReviews)
+            ->setFavorites($favorites)
+            ->setQuotes($quotes);
     }
 }

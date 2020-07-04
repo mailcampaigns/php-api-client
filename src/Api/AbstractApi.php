@@ -8,6 +8,9 @@ use MailCampaigns\ApiClient\ResponseMediator;
 
 abstract class AbstractApi implements ApiInterface
 {
+    /** @var int */
+    const DEFAULT_ITEMS_PER_PAGE = 30;
+
     /**
      * @var ApiClient
      */
@@ -21,7 +24,7 @@ abstract class AbstractApi implements ApiInterface
     protected $page;
 
     /**
-     * Number of items per page (GitHub pagination).
+     * Number of items per page.
      *
      * @var int
      */
@@ -33,7 +36,7 @@ abstract class AbstractApi implements ApiInterface
     public function __construct(ApiClient $client)
     {
         $this->page = 1;
-        $this->perPage = 30;
+        $this->perPage = self::DEFAULT_ITEMS_PER_PAGE;
         $this->client = $client;
     }
 

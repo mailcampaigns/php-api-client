@@ -262,7 +262,7 @@ class Customer implements EntityInterface
             'is_subscribed' => $this->isSubscribed(),
             'is_confirmed' => $this->isConfirmed(),
             'gender' => $this->getGender(),
-            'birth_date' => $this->getBirthDate(),
+            'birth_date' => $this->dtToString($this->getBirthDate()),
             'email' => $this->getEmail(),
             'first_name' => $this->getFirstName(),
             'last_name' => $this->getLastName(),
@@ -289,10 +289,10 @@ class Customer implements EntityInterface
             'address_shipping_region' => $this->getAddressShippingRegion(),
             'address_shipping_country' => $this->getAddressShippingCountry(),
             'language' => $this->getLanguage(),
-            'orders' => $this->getOrders(),//->toArray(),
-            'product_reviews' => $this->getProductReviews(),//->toArray(),
-            'favorites' => $this->getFavorites(),//->toArray(),
-            'quotes' => $this->getQuotes()//->toArray()
+            'orders' => $this->getOrders()->toArray(),
+            'product_reviews' => $this->getProductReviews()->toArray(),
+            'favorites' => $this->getFavorites()->toArray(),
+            'quotes' => $this->getQuotes()->toArray()
         ];
     }
 
@@ -991,7 +991,12 @@ class Customer implements EntityInterface
      */
     public function setProductReviews(iterable $productReviews): self
     {
+        if (!$productReviews instanceof Collection\ProductReviewCollection) {
+            $productReviews = new Collection\ProductReviewCollection($productReviews);
+        }
+
         $this->productReviews = $productReviews;
+
         return $this;
     }
 

@@ -3,6 +3,7 @@
 namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
+use MailCampaigns\ApiClient\Collection\CustomerCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 
 interface ApiInterface
@@ -33,12 +34,14 @@ interface ApiInterface
      * @param int $id
      * @return EntityInterface
      */
-    public function getSingle(int $id): EntityInterface;
+    public function getById(int $id): EntityInterface;
 
     /**
+     * @param int|null $page
+     * @param int|null $perPage
      * @return CollectionInterface
      */
-    public function getCollection(): CollectionInterface;
+    public function getCollection(?int $page, ?int $perPage): CollectionInterface;
 
     /**
      * @param array $data

@@ -27,23 +27,28 @@ final class ApiClient
     /**
      * @var CustomerApi
      */
-    public $customers;
+    private $customerApi;
 
-    private function __construct(string $name, string $baseUri, string $key, string $secret)
+    private function __construct(string $shopName, string $baseUri, string $key, string $secret)
     {
-        $this->shopName = $name;
+        $this->shopName = $shopName;
         $bearerToken = $this->getBearerToken($baseUri, $key, $secret);
 
         $this->httpClient = HttpClient::create([
             'headers' => [
                 'User-Agent' => 'MailCampaigns API client', // todo: add version
-                'X-MailCampaigns-ShopName' => $this->shopName
+                'X-MailCampaigns-ShopName' => $this->shopName // todo: needed?
             ],
             'auth_bearer' => $bearerToken,
             'base_uri' => $baseUri
         ]);
 
-        $this->customers = new CustomerApi($this);
+        $this->customerApi = new CustomerApi($this);
+    }
+
+    public function getCustomerApi(): CustomerApi
+    {
+        return $this->customerApi;
     }
 
     public static function create(string $name, string $baseUri, string $key, string $secret): self
