@@ -16,15 +16,15 @@ class CustomerApi extends AbstractApi
 {
     /**
      * @param EntityInterface $entity
-     * @return $this
+     * @return Customer
      */
-    public function create(EntityInterface $entity): self
+    public function create(EntityInterface $entity): Customer
     {
         $res = $this->post('customers', $entity->toArray(), [
             'content-type: application/json'
         ]);
 
-        return $this;
+        return $this->toEntity($res);
     }
 
     /**
@@ -42,12 +42,29 @@ class CustomerApi extends AbstractApi
      */
     public function getByCustomerRef(string $customerRef): ?EntityInterface
     {
-        $res = $this->get("customers", ['customer_ref' => $customerRef]);
+        $data = $this->handleSingleItemResponse(
+            $this->get("customers", ['customer_ref' => $customerRef])
+        );
 
-        if (isset($res['hydra:totalItems'])) {
-            if ((int)$res['hydra:totalItems'] > 0) {
-                return $this->toEntity($res['hydra:member'][0]);
-            }
+        if (null !== $data) {
+            return $this->toEntity($data);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $email
+     * @return Customer|null
+     */
+    public function getByEmail(string $email): ?EntityInterface
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get("customers", ['email' => $email])
+        );
+
+        if (null !== $data) {
+            return $this->toEntity($data);
         }
 
         return null;
@@ -81,15 +98,15 @@ class CustomerApi extends AbstractApi
      * Updates a customer.
      *
      * @param EntityInterface $entity
-     * @return $this
+     * @return Customer
      */
-    public function update(EntityInterface $entity): self
+    public function update(EntityInterface $entity): Customer
     {
-        $this->put("customers/{$entity->getCustomerId()}", $entity->toArray(), [
+        $res = $this->put("customers/{$entity->getCustomerId()}", $entity->toArray(), [
             'content-type: application/json'
         ]);
 
-        return $this;
+        return $this->toEntity($res);
     }
 
     /**

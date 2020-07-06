@@ -10,7 +10,7 @@ class ApiClientTest extends TestCase
 
     public function setUp(): void
     {
-        $this->apiClient = ApiClient::create('test', 'https://mailcampaigns.io', 'testkey', 'testsecret');
+        $this->apiClient = ApiClient::create('https://mailcampaigns.io', 'testkey', 'testsecret');
     }
 
     public function testGetHttpClient()

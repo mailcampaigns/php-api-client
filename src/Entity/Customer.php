@@ -7,6 +7,8 @@ use MailCampaigns\ApiClient\Collection;
 
 class Customer implements EntityInterface
 {
+    use DateTimeHelperTrait;
+
     /**
      * @var int
      */
@@ -96,7 +98,6 @@ class Customer implements EntityInterface
      * @var string
      */
     protected $companyVatNumber;
-
 
     /**
      * Billing address name.
@@ -947,72 +948,52 @@ class Customer implements EntityInterface
     /**
      * @return Collection\OrderCollection
      */
-    public function getOrders(): ?iterable//Collection\OrderCollection
+    public function getOrders(): Collection\OrderCollection
     {
-        if (is_array($this->orders)) {
-            $this->orders = new Collection\OrderCollection($this->orders);
-        }
-
         return $this->orders;
     }
 
     /**
-     * @param Collection\OrderCollection|array $orders
+     * @param Collection\OrderCollection $orders
      * @return $this
      */
-    public function setOrders(iterable $orders): self
+    public function setOrders(Collection\OrderCollection $orders): self
     {
-        if (is_array($orders)) {
-            $this->orders = new Collection\OrderCollection($orders);
-        }
-
         $this->orders = $orders;
-
-        return $this;
-    }
-
-    public function addOrder($order): self
-    {
-        $this->orders[] = $order;
         return $this;
     }
 
     /**
      * @return Collection\ProductReviewCollection
      */
-    public function getProductReviews(): iterable//Collection\ProductReviewCollection
+    public function getProductReviews(): Collection\ProductReviewCollection
     {
         return $this->productReviews;
     }
 
     /**
-     * @param Collection\ProductReviewCollection|array $productReviews
+     * @param Collection\ProductReviewCollection $productReviews
      * @return $this
      */
-    public function setProductReviews(iterable $productReviews): self
+    public function setProductReviews(Collection\ProductReviewCollection $productReviews): self
     {
-        if (!$productReviews instanceof Collection\ProductReviewCollection) {
-            $productReviews = new Collection\ProductReviewCollection($productReviews);
-        }
-
         $this->productReviews = $productReviews;
-
         return $this;
     }
 
     /**
      * @return Collection\CustomerFavoriteProductCollection
      */
-    public function getFavorites(): iterable//Collection\CustomerFavoriteProductCollection
+    public function getFavorites(): Collection\CustomerFavoriteProductCollection
     {
         return $this->favorites;
     }
 
     /**
-     * @param Collection\CustomerFavoriteProductCollection|array $favorites
+     * @param Collection\CustomerFavoriteProductCollection $favorites
      * @return $this
      */
-    public function setFavorites(iterable $favorites): self
+    public function setFavorites(Collection\CustomerFavoriteProductCollection $favorites): self
     {
         $this->favorites = $favorites;
         return $this;
@@ -1021,27 +1002,18 @@ class Customer implements EntityInterface
     /**
      * @return Collection\QuoteCollection
      */
-    public function getQuotes(): iterable//Collection\QuoteCollection
+    public function getQuotes(): Collection\QuoteCollection
     {
         return $this->quotes;
     }
 
     /**
-     * @param Collection\QuoteCollection|array $quotes
+     * @param Collection\QuoteCollection $quotes
      * @return $this
      */
-    public function setQuotes(iterable $quotes): self
+    public function setQuotes(Collection\QuoteCollection $quotes): self
     {
         $this->quotes = $quotes;
         return $this;
-    }
-
-    protected function dtToString(?DateTime $dt): ?string
-    {
-        if (!$dt instanceof DateTime) {
-            return null;
-        }
-
-        return $dt->format(DateTime::ISO8601);
     }
 }

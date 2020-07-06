@@ -3,7 +3,6 @@
 namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
-use MailCampaigns\ApiClient\Collection\CustomerCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 
 interface ApiInterface

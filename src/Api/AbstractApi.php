@@ -75,6 +75,23 @@ abstract class AbstractApi implements ApiInterface
     }
 
     /**
+     * Processes response expected to contain one item (or no items).
+     *
+     * @param $res
+     * @return array|null
+     */
+    protected function handleSingleItemResponse($res): ?array
+    {
+        if (isset($res['hydra:totalItems'])) {
+            if ((int)$res['hydra:totalItems'] > 0) {
+                return $res['hydra:member'][0];
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Send a GET request with query parameters.
      *
      * @param string $path Request path.
@@ -88,9 +105,11 @@ abstract class AbstractApi implements ApiInterface
         if (null !== $this->page && !isset($parameters['page'])) {
             $parameters['page'] = $this->page;
         }
+
         if (null !== $this->perPage && !isset($parameters['per_page'])) {
             $parameters['per_page'] = $this->perPage;
         }
+
         if (array_key_exists('ref', $parameters) && null === $parameters['ref']) {
             unset($parameters['ref']);
         }

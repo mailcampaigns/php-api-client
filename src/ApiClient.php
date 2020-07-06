@@ -15,11 +15,6 @@ final class ApiClient
     private static $instance;
 
     /**
-     * @var string
-     */
-    private $shopName;
-
-    /**
      * @var HttpClientInterface
      */
     private $httpClient;
@@ -29,15 +24,13 @@ final class ApiClient
      */
     private $customerApi;
 
-    private function __construct(string $shopName, string $baseUri, string $key, string $secret)
+    private function __construct(string $baseUri, string $key, string $secret)
     {
-        $this->shopName = $shopName;
         $bearerToken = $this->getBearerToken($baseUri, $key, $secret);
 
         $this->httpClient = HttpClient::create([
             'headers' => [
-                'User-Agent' => 'MailCampaigns API client', // todo: add version
-                'X-MailCampaigns-ShopName' => $this->shopName // todo: needed?
+                'User-Agent' => 'MailCampaigns API client' // todo: add version
             ],
             'auth_bearer' => $bearerToken,
             'base_uri' => $baseUri
@@ -51,10 +44,10 @@ final class ApiClient
         return $this->customerApi;
     }
 
-    public static function create(string $name, string $baseUri, string $key, string $secret): self
+    public static function create(string $baseUri, string $key, string $secret): self
     {
         if (!self::$instance instanceof self) {
-            self::$instance = new self($name, $baseUri, $key, $secret);
+            self::$instance = new self($baseUri, $key, $secret);
         }
 
         return self::$instance;
