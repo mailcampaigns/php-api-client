@@ -10,7 +10,7 @@ Installation
 Install with Composer:
 
 ```json
-composer require mailcampaigns/php-api-client
+composer require mailcampaigns/api-client
 ```
 
 Usage
