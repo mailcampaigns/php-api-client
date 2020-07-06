@@ -2,9 +2,9 @@
 
 namespace MailCampaigns\ApiClient;
 
+use MailCampaigns\ApiClient\Api\CustomerApi;
 use MailCampaigns\ApiClient\Exception\ApiException;
 use Symfony\Component\HttpClient\HttpClient;
-use MailCampaigns\ApiClient\Api\CustomerApi;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ApiClient
