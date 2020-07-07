@@ -252,6 +252,9 @@ class Customer implements EntityInterface
         $this->quotes = new Collection\QuoteCollection();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function toArray(): array
     {
         return [
@@ -290,11 +293,24 @@ class Customer implements EntityInterface
             'address_shipping_region' => $this->getAddressShippingRegion(),
             'address_shipping_country' => $this->getAddressShippingCountry(),
             'language' => $this->getLanguage(),
-            'orders' => $this->getOrders()->toArray(),
-            'product_reviews' => $this->getProductReviews()->toArray(),
-            'favorites' => $this->getFavorites()->toArray(),
-            'quotes' => $this->getQuotes()->toArray()
+            'orders' => $this->getOrders()->toIri(),
+            'product_reviews' => $this->getProductReviews()->toIri(),
+            'favorites' => $this->getFavorites()->toIri(),
+            'quotes' => $this->getQuotes()->toIri()
         ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toIri(): string
+    {
+        if (null === $this->getCustomerId()) {
+            // todo: Throw exception?
+            return '';
+        }
+
+        return '/customers/' . $this->getCustomerId();
     }
 
     /**

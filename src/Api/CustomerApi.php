@@ -2,6 +2,7 @@
 
 namespace MailCampaigns\ApiClient\Api;
 
+use InvalidArgumentException;
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\CustomerCollection;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
@@ -102,6 +103,10 @@ class CustomerApi extends AbstractApi
      */
     public function update(EntityInterface $entity): Customer
     {
+        if (!$entity instanceof Customer) {
+            throw new InvalidArgumentException('Expected customer entity!');
+        }
+
         $res = $this->put("customers/{$entity->getCustomerId()}", $entity->toArray(), [
             'content-type: application/json'
         ]);
@@ -131,7 +136,6 @@ class CustomerApi extends AbstractApi
         $productReviews = new ProductReviewCollection($data['product_reviews']);
         $favorites = new CustomerFavoriteProductCollection($data['favorites']);
         $quotes = new QuoteCollection($data['favorites']);
-
 
         return (new Customer)
             ->setCustomerId($data['customer_id'])

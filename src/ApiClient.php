@@ -3,6 +3,7 @@
 namespace MailCampaigns\ApiClient;
 
 use MailCampaigns\ApiClient\Api\CustomerApi;
+use MailCampaigns\ApiClient\Api\OrderApi;
 use MailCampaigns\ApiClient\Exception\ApiException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -24,6 +25,11 @@ final class ApiClient
      */
     private $customerApi;
 
+    /**
+     * @var OrderApi
+     */
+    private $orderApi;
+
     private function __construct(string $baseUri, string $key, string $secret)
     {
         $bearerToken = $this->getBearerToken($baseUri, $key, $secret);
@@ -37,11 +43,17 @@ final class ApiClient
         ]);
 
         $this->customerApi = new CustomerApi($this);
+        $this->orderApi = new OrderApi($this);
     }
 
     public function getCustomerApi(): CustomerApi
     {
         return $this->customerApi;
+    }
+
+    public function getOrderApi(): OrderApi
+    {
+        return $this->orderApi;
     }
 
     public static function create(string $baseUri, string $key, string $secret): self

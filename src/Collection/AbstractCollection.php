@@ -32,18 +32,28 @@ abstract class AbstractCollection implements CollectionInterface
     /**
      * {@inheritDoc}
      */
-    public function toArray(): array
+    public function toArray($elementsToArray = false): array
     {
+        if ($elementsToArray) {
+            $arr = [];
+
+            foreach ($this->elements as $element) {
+                $arr[] = $element->toArray();
+            }
+
+            return $arr;
+        }
+
         return $this->elements;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function add($element): bool
+    public function add($element): CollectionInterface
     {
         $this->elements[] = $element;
-        return true;
+        return $this;
     }
 
     /**
