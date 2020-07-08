@@ -1,3 +1,5 @@
+![MailCampaigns](https://www.mailcampaigns.nl/images/logo.svg)
+
 MailCampaigns PHP Api client
 ============================
 
