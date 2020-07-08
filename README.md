@@ -1,6 +1,9 @@
 ![MailCampaigns](https://www.mailcampaigns.nl/images/logo.svg)
 
-MailCampaigns PHP Api client
+![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/mailcampaigns/api-client)
+![GitHub](https://img.shields.io/github/license/mailcampaigns/php-api-client)
+
+MailCampaigns PHP API client
 ============================
 
 The MailCampaigns PHP Api client provides an easy way to communicate with the MailCampaigns RESTful API (v3).
