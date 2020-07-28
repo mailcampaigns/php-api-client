@@ -65,6 +65,7 @@ $customer = $customerApi->getByCustomerRef('CUST-8539');
 // Example 6 - Get customer by email address:
 $customer = $customerApi->getByEmail('bob@hotmail.com');
 
+// Example 7 - Delete a customer by id.
 $customerApi->deleteById(1234);
 ```
 

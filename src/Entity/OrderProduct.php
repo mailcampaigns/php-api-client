@@ -591,7 +591,7 @@ class OrderProduct implements EntityInterface
     /**
      * @inheritDoc
      */
-    public function toArray($limited = true): array
+    public function toArray($limited = false): array
     {
         $arr = [
             'order_product_id' => $this->getOrderProductId(),
@@ -624,7 +624,7 @@ class OrderProduct implements EntityInterface
             ]);
         }
 
-        return $arr;
+        return array_filter($arr);
     }
 
     /**

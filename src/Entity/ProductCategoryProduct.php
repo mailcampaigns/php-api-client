@@ -1,10 +1,6 @@
 <?php
 
-namespace App\Entity;
-
-use MailCampaigns\ApiClient\Entity\EntityInterface;
-use MailCampaigns\ApiClient\Entity\Product;
-use MailCampaigns\ApiClient\Entity\ProductCategory;
+namespace MailCampaigns\ApiClient\Entity;
 
 /**
  * This entity connects products and product categories.

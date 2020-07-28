@@ -13,6 +13,7 @@
     "require": {
         "PHP": "^7.1",
         "symfony/http-client": "^5.1",
+        "ml/json-ld": "^1.2.0",
         "ext-json": "*",
         "ext-curl": "*"
     },

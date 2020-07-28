@@ -159,10 +159,10 @@ class ProductCategory implements EntityInterface
      */
     function toArray(): array
     {
+        // todo: check if these are all vars needed.
         return [
             'product_category_id' => $this->getProductCategoryId(),
-            'products' => $this->products->toIri(),
-            ''
+            'products' => $this->products->toIri()
         ];
     }
 
@@ -171,6 +171,10 @@ class ProductCategory implements EntityInterface
      */
     function toIri(): string
     {
-        // TODO: Implement toIri() method.
+        if (null === $this->getProductCategoryId()) {
+            return '';
+        }
+
+        return $this->iri ?? '/product_categories/' . $this->getProductCategoryId();
     }
 }

@@ -366,7 +366,7 @@ class Order implements EntityInterface
     /**
      * @inheritDoc
      */
-    public function toArray(): array
+    public function toArray(?string $operation = null): array
     {
         return [
             'order_id' => $this->getOrderId(),
@@ -416,7 +416,7 @@ class Order implements EntityInterface
             'language' => $this->getLanguage(),
             'customer_ref' => $this->getCustomerRef(),
             'customer' => $this->customerToIri(),
-            'order_products' => $this->orderProductsToArray(),
+            'order_products' => $this->orderProductsToArray($operation),
             'quote' => $this->quoteToIri()
         ];
     }
@@ -424,15 +424,27 @@ class Order implements EntityInterface
     /**
      * Returns array of linked order products.
      *
+     * @param string|null $operation
      * @return array
      */
-    public function orderProductsToArray(): array
+    public function orderProductsToArray(?string $operation): array
     {
+        $arr = [];
+
         if (!$this->getOrderProducts() instanceof OrderProductCollection) {
-            return [];
+            return $arr;
         }
 
-        return $this->getOrderProducts()->toArray(true);
+        // Number of set keys/properties should only be limited when retrieving
+        // data as a relation of the order.
+        $limited = !in_array($operation, ['post', 'put']);
+
+        /** @var OrderProduct $orderProduct */
+        foreach ($this->getOrderProducts() as $orderProduct) {
+            $arr[] = $orderProduct->toArray($limited);
+        }
+
+        return $arr;
     }
 
     /**
@@ -459,8 +471,12 @@ class Order implements EntityInterface
     /**
      * @inheritDoc
      */
-    public function toIri(): string
+    public function toIri(): ?string
     {
+        if (null === $this->getOrderId()) {
+            return null;
+        }
+
         return '/orders/' . $this->getOrderId();
     }
 

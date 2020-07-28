@@ -15,7 +15,8 @@ class ProductCrossSellProductCollection extends AbstractCollection
 
         /** @var ProductCrossSellProduct $crossSellProduct */
         foreach ($this->getIterator() as $crossSellProduct) {
-            $iris[] = $crossSellProduct instanceof ProductCrossSellProduct ? $crossSellProduct->toIri() : $crossSellProduct;
+            $iris[] = $crossSellProduct instanceof ProductCrossSellProduct
+                ? $crossSellProduct->toIri() : $crossSellProduct;
         }
 
         return $iris;

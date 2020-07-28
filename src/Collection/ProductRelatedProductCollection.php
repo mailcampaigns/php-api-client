@@ -15,7 +15,8 @@ class ProductRelatedProductCollection extends AbstractCollection
 
         /** @var ProductRelatedProduct $relatedProduct */
         foreach ($this->getIterator() as $relatedProduct) {
-            $iris[] = $relatedProduct instanceof ProductRelatedProduct ? $relatedProduct->toIri() : $relatedProduct;
+            $iris[] = $relatedProduct instanceof ProductRelatedProduct
+                ? $relatedProduct->toIri() : $relatedProduct;
         }
 
         return $iris;

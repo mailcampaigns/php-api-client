@@ -12,7 +12,7 @@ interface EntityInterface
 
     /**
      * Returns the IRI for this API resource.
-     * @return string
+     * @return string|null
      */
-    function toIri(): string;
+    function toIri(): ?string;
 }

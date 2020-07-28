@@ -2,6 +2,7 @@
 
 namespace MailCampaigns\ApiClient\Api;
 
+use InvalidArgumentException;
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
@@ -11,12 +12,19 @@ use MailCampaigns\ApiClient\Entity\Order;
 class OrderApi extends AbstractApi
 {
     /**
-     * @param EntityInterface $entity
+     * @param EntityInterface|Order $entity
      * @return Order
      */
     public function create(EntityInterface $entity): EntityInterface
     {
-        $res = $this->post('orders', $entity->toArray(), [
+        if (!$entity instanceof Order) {
+            throw new InvalidArgumentException('Expected order entity!');
+        }
+
+        /** @var Order $order */
+        $order = $entity;
+
+        $res = $this->post('orders', $order->toArray('post'), [
             'content-type: application/json'
         ]);
 
@@ -24,7 +32,8 @@ class OrderApi extends AbstractApi
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     * @return Order
      */
     public function getById(int $id): EntityInterface
     {
@@ -32,7 +41,8 @@ class OrderApi extends AbstractApi
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     * @return OrderCollection
      */
     public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
@@ -51,6 +61,40 @@ class OrderApi extends AbstractApi
         }
 
         return $collection;
+    }
+
+    /**
+     * Updates an order.
+     *
+     * @param EntityInterface $entity
+     * @return Order
+     */
+    public function update(EntityInterface $entity): EntityInterface
+    {
+        if (!$entity instanceof Order) {
+            throw new InvalidArgumentException('Expected order entity!');
+        }
+
+        /** @var Order $order */
+        $order = $entity;
+
+        $res = $this->put("orders/{$order->getOrderId()}", $order->toArray('put'), [
+            'content-type: application/json'
+        ]);
+
+        return $this->toEntity($res);
+    }
+
+    /**
+     * Deletes an order by id.
+     *
+     * @param int $id
+     * @return $this
+     */
+    public function deleteById(int $id): self
+    {
+        $this->delete("orders/{$id}");
+        return $this;
     }
 
     /**
