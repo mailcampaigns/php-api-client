@@ -3,6 +3,7 @@
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
+use LogicException;
 use MailCampaigns\ApiClient\Collection\OrderProductCollection;
 
 class Order implements EntityInterface
@@ -668,9 +669,9 @@ class Order implements EntityInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -688,7 +689,7 @@ class Order implements EntityInterface
     /**
      * @return string
      */
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
@@ -724,7 +725,7 @@ class Order implements EntityInterface
     /**
      * @return string
      */
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
@@ -1296,7 +1297,9 @@ class Order implements EntityInterface
             foreach ($orderProducts as $data) {
                 $orderProduct = null;
 
-                if (is_array($data)) {
+                if ($data instanceof OrderProduct) {
+                    $orderProduct = $data;
+                } else if (is_array($data)) {
                     if (isset($data['@id']) && is_string($data['@id'])) {
                         $orderProduct = new OrderProduct;
 
@@ -1320,8 +1323,8 @@ class Order implements EntityInterface
                             );
                         }
                     }
-                } else if ($data instanceof OrderProduct) {
-                    $orderProduct = $data;
+                } else {
+                    throw new LogicException('Order product is neither an array nor an order product entity!');
                 }
 
                 $this->addOrderProduct($orderProduct);
@@ -1329,17 +1332,6 @@ class Order implements EntityInterface
         }
 
         return $this;
-    }
-
-    protected function productIriToEntity(string $iri): ?Product
-    {
-        if (false !== preg_match('/\/products\/(\d+)/', $iri, $matches)) {
-            if (isset($matches[1])) {
-                return (new Product)->setProductId((int)$matches[1]);
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -1371,6 +1363,17 @@ class Order implements EntityInterface
         }
 
         return $this;
+    }
+
+    protected function productIriToEntity(string $iri): ?Product
+    {
+        if (false !== preg_match('/\/products\/(\d+)/', $iri, $matches)) {
+            if (isset($matches[1])) {
+                return (new Product)->setProductId((int)$matches[1]);
+            }
+        }
+
+        return null;
     }
 
     /**

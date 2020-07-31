@@ -5,6 +5,7 @@ namespace MailCampaigns\ApiClient;
 use MailCampaigns\ApiClient\Api\CustomerApi;
 use MailCampaigns\ApiClient\Api\OrderApi;
 use MailCampaigns\ApiClient\Api\ProductApi;
+use MailCampaigns\ApiClient\Api\QuoteApi;
 use MailCampaigns\ApiClient\Exception\ApiAuthenticationException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -25,6 +26,11 @@ final class ApiClient
      * @var CustomerApi
      */
     private $customerApi;
+
+    /**
+     * @var QuoteApi
+     */
+    private $quoteApi;
 
     /**
      * @var OrderApi
@@ -56,6 +62,7 @@ final class ApiClient
         // Create API objects.
         $this->customerApi = new CustomerApi($this);
         $this->orderApi = new OrderApi($this);
+        $this->quoteApi = new QuoteApi($this);
         $this->productApi = new ProductApi($this);
     }
 
@@ -67,6 +74,11 @@ final class ApiClient
     public function getOrderApi(): OrderApi
     {
         return $this->orderApi;
+    }
+
+    public function getQuoteApi(): QuoteApi
+    {
+        return $this->quoteApi;
     }
 
     public function getProductApi(): ProductApi
