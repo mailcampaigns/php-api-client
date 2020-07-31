@@ -1,6 +1,6 @@
 {
     "name": "mailcampaigns/api-client",
-    "version": "0.0.1",
+    "version": "1.0.0-dev",
     "description": "MailCampaigns API client",
     "homepage": "https://docs.mailcampaigns.io",
     "type": "library",
@@ -13,7 +13,6 @@
     "require": {
         "PHP": "^7.1",
         "symfony/http-client": "^5.1",
-        "ml/json-ld": "^1.2.0",
         "ext-json": "*",
         "ext-curl": "*"
     },
