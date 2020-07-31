@@ -136,18 +136,11 @@ class ProductCategory implements EntityInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getProducts(): array
+    public function getProducts(): ProductCollection
     {
-        return $this->products->toIri();
+        return $this->products;
     }
 
-    /**
-     * @param ProductCollection $products
-     * @return ProductCategory
-     */
     public function setProducts(ProductCollection $products): self
     {
         $this->products = $products;
@@ -157,12 +150,11 @@ class ProductCategory implements EntityInterface
     /**
      * @inheritDoc
      */
-    function toArray(): array
+    function toArray(?string $operation = null): array
     {
-        // todo: check if these are all vars needed.
         return [
             'product_category_id' => $this->getProductCategoryId(),
-            'products' => $this->products->toIri()
+            'products' => $this->getProducts()->toArray($operation)
         ];
     }
 

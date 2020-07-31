@@ -3,6 +3,8 @@
 namespace MailCampaigns\ApiClient\Collection;
 
 use ArrayIterator;
+use LogicException;
+use MailCampaigns\ApiClient\Entity\EntityInterface;
 
 abstract class AbstractCollection implements CollectionInterface
 {
@@ -18,6 +20,15 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function __construct(array $elements = [])
     {
+        $calledClass = get_called_class();
+
+        // Check if the implementation of this abstract collection has correctly
+        // set the entity class.
+        if (!$calledClass::ENTITY_CLASS) {
+            throw new LogicException(sprintf('The entity class constant is not set for '
+                . 'this collection (`%s`)! Note: It should implement the entity interface.', $calledClass));
+        }
+
         $this->elements = $elements;
     }
 
@@ -32,19 +43,22 @@ abstract class AbstractCollection implements CollectionInterface
     /**
      * {@inheritDoc}
      */
-    public function toArray($elementsToArray = false): array
+    public function toArray(?string $operation = null): array
     {
-        if ($elementsToArray) {
-            $arr = [];
+        $arr = [];
 
-            foreach ($this->elements as $element) {
-                $arr[] = $element->toArray();
+        /** @var EntityInterface $element */
+        foreach ($this->elements as $element) {
+            switch ($operation) {
+                case EntityInterface::OPERATION_PUT:
+                    $arr[] = $element->toIri();
+                    break;
+                default:
+                    $arr[] = $element->toArray($operation);
             }
-
-            return $arr;
         }
 
-        return $this->elements;
+        return $arr;
     }
 
     /**

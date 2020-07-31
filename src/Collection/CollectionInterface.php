@@ -9,27 +9,24 @@ use IteratorAggregate;
 /**
  * Copyright (c) 2006-2013 Doctrine Project
  *
- * This is a stripped-down and slightly altered version of Doctrine Project's
+ * This is a stripped-down, altered version of Doctrine Project's
  * Collection by MailCampaigns (Bert van der Genugten). For more information
  * on the original code refer to: https://www.doctrine-project.org/projects/collections.html
  */
 interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
 {
     /**
-     * Gets a native PHP array representation of the collection.
-     *
-     * @return array
-     *
-     * @psalm-return array<TKey,T>
+     * FQCN of the entity this collection holds.
      */
-    public function toArray(): array;
+    const ENTITY_CLASS = null;
 
     /**
-     * Returns array containing IRIs to resources contained in this collection.
+     * Gets a native PHP array representation of the collection.
      *
+     * @param string|null $operation
      * @return array
      */
-    public function toIri(): array;
+    public function toArray(?string $operation = null): array;
 
     /**
      * Adds an element at the end of the collection.
@@ -86,9 +83,6 @@ interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
      *
      * @param string|int $key The key/index of the element to set.
      * @param mixed $value The element to set.
-     *
-     * @psalm-param TKey $key
-     * @psalm-param T $value
      */
     public function set($key, $value): void;
 }

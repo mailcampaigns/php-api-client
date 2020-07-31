@@ -255,7 +255,7 @@ class Customer implements EntityInterface
     /**
      * @inheritDoc
      */
-    public function toArray(): array
+    public function toArray(?string $operation = null): array
     {
         return [
             'customer_id' => $this->getCustomerId(),
@@ -293,10 +293,10 @@ class Customer implements EntityInterface
             'address_shipping_region' => $this->getAddressShippingRegion(),
             'address_shipping_country' => $this->getAddressShippingCountry(),
             'language' => $this->getLanguage(),
-            'orders' => $this->getOrders()->toIri(),
-            'product_reviews' => $this->getProductReviews()->toIri(),
-            'favorites' => $this->getFavorites()->toIri(),
-            'quotes' => $this->getQuotes()->toIri()
+            'orders' => $this->getOrders()->toArray($operation),
+            'product_reviews' => $this->getProductReviews()->toArray($operation),
+            'favorites' => $this->getFavorites()->toArray($operation),
+            'quotes' => $this->getQuotes()->toArray($operation)
         ];
     }
 
@@ -306,7 +306,6 @@ class Customer implements EntityInterface
     public function toIri(): string
     {
         if (null === $this->getCustomerId()) {
-            // todo: Throw exception?
             return '';
         }
 

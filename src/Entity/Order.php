@@ -415,42 +415,13 @@ class Order implements EntityInterface
             'discount_coupon_code' => $this->getDiscountCouponCode(),
             'language' => $this->getLanguage(),
             'customer_ref' => $this->getCustomerRef(),
-            'customer' => $this->customerToIri(),
-            'order_products' => $this->orderProductsToArray($operation),
-            'quote' => $this->quoteToIri()
+            'customer' => $this->getCustomerIri(),
+            'order_products' => $this->getOrderProducts()->toArray($operation),
+            'quote' => $this->getQuoteIri()
         ];
     }
 
-    /**
-     * Returns array of linked order products.
-     *
-     * @param string|null $operation
-     * @return array
-     */
-    public function orderProductsToArray(?string $operation): array
-    {
-        $arr = [];
-
-        if (!$this->getOrderProducts() instanceof OrderProductCollection) {
-            return $arr;
-        }
-
-        // Number of set keys/properties should only be limited when retrieving
-        // data as a relation of the order.
-        $limited = !in_array($operation, ['post', 'put']);
-
-        /** @var OrderProduct $orderProduct */
-        foreach ($this->getOrderProducts() as $orderProduct) {
-            $arr[] = $orderProduct->toArray($limited);
-        }
-
-        return $arr;
-    }
-
-    /**
-     * @return string
-     */
-    public function customerToIri(): ?string
+    public function getCustomerIri(): ?string
     {
         if (!$this->getCustomer() instanceof Customer) {
             return null;
@@ -459,7 +430,7 @@ class Order implements EntityInterface
         return $this->getCustomer()->toIri();
     }
 
-    public function quoteToIri()
+    public function getQuoteIri()
     {
         if (!$this->getQuote() instanceof Quote) {
             return null;
@@ -1308,9 +1279,6 @@ class Order implements EntityInterface
         return $this;
     }
 
-    /**
-     * @return OrderProductCollection
-     */
     public function getOrderProducts(): OrderProductCollection
     {
         return $this->orderProducts;
@@ -1344,8 +1312,12 @@ class Order implements EntityInterface
                             ->setQuantityOrdered($data['quantity_ordered'])
                             ->setArticleCode($data['article_code']);
 
+                        // If a product is linked to this order row (order product) add
+                        // product entity based on the product IRI.
                         if ($data['product']) {
-                            $orderProduct->setProduct((new Product)->setIri($data['product']));
+                            $orderProduct->setProduct(
+                                $this->productIriToEntity($data['product'])
+                            );
                         }
                     }
                 } else if ($data instanceof OrderProduct) {
@@ -1357,6 +1329,17 @@ class Order implements EntityInterface
         }
 
         return $this;
+    }
+
+    protected function productIriToEntity(string $iri): ?Product
+    {
+        if (false !== preg_match('/\/products\/(\d+)/', $iri, $matches)) {
+            if (isset($matches[1])) {
+                return (new Product)->setProductId((int)$matches[1]);
+            }
+        }
+
+        return null;
     }
 
     /**

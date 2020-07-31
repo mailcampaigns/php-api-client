@@ -21,12 +21,8 @@ class OrderApi extends AbstractApi
             throw new InvalidArgumentException('Expected order entity!');
         }
 
-        /** @var Order $order */
-        $order = $entity;
-
-        $res = $this->post('orders', $order->toArray('post'), [
-            'content-type: application/json'
-        ]);
+        // Send request.
+        $res = $this->post('orders', $entity, ['content-type: application/json']);
 
         return $this->toEntity($res);
     }
@@ -75,10 +71,7 @@ class OrderApi extends AbstractApi
             throw new InvalidArgumentException('Expected order entity!');
         }
 
-        /** @var Order $order */
-        $order = $entity;
-
-        $res = $this->put("orders/{$order->getOrderId()}", $order->toArray('put'), [
+        $res = $this->put("orders/{$entity->getOrderId()}", $entity, [
             'content-type: application/json'
         ]);
 

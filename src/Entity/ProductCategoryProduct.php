@@ -8,11 +8,6 @@ namespace MailCampaigns\ApiClient\Entity;
 class ProductCategoryProduct implements EntityInterface
 {
     /**
-     * @var string
-     */
-    protected $iri;
-
-    /**
      * @var ProductCategory
      */
     protected $productCategory;
@@ -61,10 +56,12 @@ class ProductCategoryProduct implements EntityInterface
     /**
      * @inheritDoc
      */
-    function toArray(): array
+    function toArray(?string $operation = null): array
     {
-        // todo: ??
-        return [];
+        return [
+            'product_category' => $this->productCategory->toIri(),
+            'product' => $this->product->toIri()
+        ];
     }
 
     /**
@@ -72,7 +69,11 @@ class ProductCategoryProduct implements EntityInterface
      */
     function toIri(): string
     {
-        // todo: combination of product and category iri's?
-        return $this->iri ?? '/products/' . (int)$this->product->getProductId();
+        if (!$this->getProductCategory() || !$this->getProduct()) {
+            return '';
+        }
+
+        return sprintf('/product_category_products/product_category=%d;product=%d',
+            $this->getProductCategory()->getProductCategoryId(), $this->getProduct()->getProductId());
     }
 }

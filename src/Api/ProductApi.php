@@ -26,12 +26,8 @@ class ProductApi extends AbstractApi
             throw new InvalidArgumentException('Expected product entity!');
         }
 
-        /** @var Product $product */
-        $product = $entity;
-
-        $res = $this->post('products', $product->toArray(), [
-            'content-type: application/json'
-        ]);
+        // Send request.
+        $res = $this->post('products', $entity, ['content-type: application/json']);
 
         return $this->toEntity($res);
     }
@@ -55,7 +51,10 @@ class ProductApi extends AbstractApi
 
         $parameters = [
             'page' => $page ?? $this->page,
-            'itemsPerPage' => $perPage ?? $this->perPage
+            'itemsPerPage' => $perPage ?? $this->perPage,
+            'order' => [
+                'updated_at' => 'asc'
+            ]
         ];
 
         $data = $this->get('products', $parameters);
@@ -83,7 +82,7 @@ class ProductApi extends AbstractApi
         /** @var Product $product */
         $product = $entity;
 
-        $res = $this->put("products/{$product->getProductId()}", $product->toArray(), [
+        $res = $this->put("products/{$product->getProductId()}", $product, [
             'content-type: application/json'
         ]);
 

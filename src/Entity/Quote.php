@@ -7,7 +7,7 @@ class Quote implements EntityInterface
     /**
      * @inheritDoc
      */
-    function toArray(): array
+    function toArray(?string $operation = null): array
     {
         // TODO: Implement toArray() method.
         return [

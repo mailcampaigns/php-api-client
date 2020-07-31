@@ -591,38 +591,33 @@ class OrderProduct implements EntityInterface
     /**
      * @inheritDoc
      */
-    public function toArray($limited = false): array
+    public function toArray(?string $operation = null): array
     {
         $arr = [
             'order_product_id' => $this->getOrderProductId(),
             'product_title' => $this->getProductTitle(),
             'quantity_ordered' => $this->getQuantityOrdered(),
             'article_code' => $this->getArticleCode(),
-            'product' => $this->getProduct() ? $this->getProduct()->toIri() : null
+            'product' => $this->getProduct() ? $this->getProduct()->toIri() : null,
+            'supplier_title' => $this->getSupplierTitle(),
+            'brand_title' => $this->getBrandTitle(),
+            'tax_rate' => $this->getTaxRate(),
+            'quantity_invoiced' => $this->getQuantityInvoiced(),
+            'quantity_shipped' => $this->getQuantityShipped(),
+            'quantity_refunded' => $this->getQuantityRefunded(),
+            'quantity_returned' => $this->getQuantityReturned(),
+            'ean' => $this->getEan(),
+            'sku' => $this->getSku(),
+            'quantity' => $this->getQuantity(),
+            'price_cost' => $this->getPriceCost(),
+            'base_price_excl' => $this->getBasePriceExcl(),
+            'base_price_incl' => $this->getBasePriceIncl(),
+            'price_excl' => $this->getPriceExcl(),
+            'price_incl' => $this->getPriceIncl(),
+            'discount_excl' => $this->getDiscountExcl(),
+            'discount_incl' => $this->getDiscountIncl(),
+            'order' => $this->getOrder()->toIri()
         ];
-
-        if (!$limited) {
-            $arr = array_merge($arr, [
-                'supplier_title' => $this->getSupplierTitle(),
-                'brand_title' => $this->getBrandTitle(),
-                'tax_rate' => $this->getTaxRate(),
-                'quantity_invoiced' => $this->getQuantityInvoiced(),
-                'quantity_shipped' => $this->getQuantityShipped(),
-                'quantity_refunded' => $this->getQuantityRefunded(),
-                'quantity_returned' => $this->getQuantityReturned(),
-                'ean' => $this->getEan(),
-                'sku' => $this->getSku(),
-                'quantity' => $this->getQuantity(),
-                'price_cost' => $this->getPriceCost(),
-                'base_price_excl' => $this->getBasePriceExcl(),
-                'base_price_incl' => $this->getBasePriceIncl(),
-                'price_excl' => $this->getPriceExcl(),
-                'price_incl' => $this->getPriceIncl(),
-                'discount_excl' => $this->getDiscountExcl(),
-                'discount_incl' => $this->getDiscountIncl(),
-                'order' => $this->getOrder()->toIri()
-            ]);
-        }
 
         return array_filter($arr);
     }

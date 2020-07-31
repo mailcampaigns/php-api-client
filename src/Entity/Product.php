@@ -3,7 +3,6 @@
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
-use InvalidArgumentException;
 use LogicException;
 use MailCampaigns\ApiClient\Collection\ProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductCategoryProductCollection;
@@ -17,11 +16,6 @@ class Product implements EntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
-
-    /**
-     * @var string
-     */
-    protected $iri;
 
     /**
      * The unique numeric identifier for the product.
@@ -250,9 +244,8 @@ class Product implements EntityInterface
     /**
      * @inheritDoc
      */
-    function toArray(): array
+    function toArray(?string $operation = self::OPERATION_GET): array
     {
-        // TODO: Finish toArray() method.
         return [
             'product_id' => $this->getProductId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),
@@ -278,12 +271,12 @@ class Product implements EntityInterface
             'stock_count' => $this->getStockCount(),
             'tax' => $this->getTax(),
             'tax_rate' => $this->getTaxRate(),
-            'categories' => $this->getCategories()->toIri(),
-            'related_products' => $this->getRelatedProducts()->toIri(),
-            'cross_sell_products' => $this->getCrossSellProducts()->toIri(),
-            'up_sell_products' => $this->getUpSellProducts()->toIri(),
-            'volume_sell_products' => $this->getVolumeSellProducts()->toIri(),
-            'reviews' => $this->getReviews()->toIri()
+            'categories' => $this->getCategories()->toArray($operation),
+            'related_products' => $this->getRelatedProducts()->toArray($operation),
+            'cross_sell_products' => $this->getCrossSellProducts()->toArray($operation),
+            'up_sell_products' => $this->getUpSellProducts()->toArray($operation),
+            'volume_sell_products' => $this->getVolumeSellProducts()->toArray($operation),
+            'reviews' => $this->getReviews()->toArray($operation)
         ];
     }
 
@@ -292,31 +285,7 @@ class Product implements EntityInterface
      */
     function toIri(): string
     {
-        // todo: checken
-//        if (null === $this->getProductId()) {
-//            return '';
-//        }
-
-        return $this->iri ?? '/products/' . $this->getProductId();
-    }
-
-    /**
-     * @param string $iri
-     * @return $this
-     */
-    function setIri(string $iri): self
-    {
-        if (false !== preg_match('/\/products\/(\d+)/', $iri, $matches)) {
-            $this->iri = $iri;
-
-            if (isset($matches[1])) {
-                $this->setProductId((int)$matches[1]);
-            }
-        } else {
-            throw new InvalidArgumentException('Invalid IRI!');
-        }
-
-        return $this;
+        return '/products/' . $this->getProductId();
     }
 
     /**
@@ -715,10 +684,7 @@ class Product implements EntityInterface
         return $this;
     }
 
-    /**
-     * @return ProductCategoryProductCollection
-     */
-    public function getCategories(): ProductCategoryProductCollection
+        public function getCategories(): ProductCategoryProductCollection
     {
         return $this->categories;
     }
@@ -727,27 +693,17 @@ class Product implements EntityInterface
     {
         $this->categories = new ProductCategoryProductCollection;
 
-        foreach ($collection as $pcp) {
-            // todo: zelfde manier als crossSell
-//            if (!$pcp instanceof ProductCategoryProduct) {
-//                $productCategory = (new ProductCategory)
-//                    ->setProductCategoryId($this->IdFromIri('/product_categories/', $pcp['product_category']['@id']));
-//
-//                $pcp = (new ProductCategoryProduct)
-//                    ->setProduct($this)
-//                    ->setProductCategory($productCategory);
-//            }
+        foreach ($collection as $element) {
+            // Convert to entity if raw data (array) for the item is supplied.
+            $entity = !$element instanceof ProductCategoryProduct
+                ? $this->toProductCategoryProductEntity($element) : $element;
 
-            $this->addCategory($pcp);
+            $this->addCategory($entity);
         }
 
         return $this;
     }
 
-    /**
-     * @param ProductCategoryProduct $productCategoryProduct
-     * @return $this
-     */
     public function addCategory(ProductCategoryProduct $productCategoryProduct): self
     {
         if (!$this->categories->contains($productCategoryProduct)) {
@@ -761,10 +717,6 @@ class Product implements EntityInterface
         return $this;
     }
 
-    /**
-     * @param ProductCategoryProduct $productCategoryProduct
-     * @return $this
-     */
     public function removeCategory(ProductCategoryProduct $productCategoryProduct): self
     {
         if ($this->categories->contains($productCategoryProduct)) {
@@ -773,59 +725,6 @@ class Product implements EntityInterface
 
         return $this;
     }
-//
-//    /**
-//     * @return ProductReviewCollection
-//     */
-//    public function getReviews(): ProductReviewCollection
-//    {
-//        return $this->reviews;
-//    }
-//
-//    /**
-//     * @param ProductReviewCollection $reviews
-//     * @return Product
-//     */
-//    public function setReviews(ProductReviewCollection $reviews): self
-//    {
-//        $this->reviews = new ProductReviewCollection;
-//
-//        foreach ($reviews as $review) {
-//            $this->addReview($review);
-//        }
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * @param ProductReview $review
-//     * @return Product
-//     */
-//    public function addReview(ProductReview $review): self
-//    {
-//        if (!$this->reviews->contains($review)) {
-//            if ($review->getProduct() !== $this) {
-//                $review->setProduct($this);
-//            }
-//
-//            $this->reviews->add($review);
-//        }
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * @param ProductReview $review
-//     * @return Product
-//     */
-//    public function removeReview(ProductReview $review): self
-//    {
-//        if ($this->reviews->contains($review)) {
-//            $this->reviews->removeElement($review);
-//        }
-//
-//        return $this;
-//    }
 
     public function getRelatedProducts(): ProductRelatedProductCollection
     {
@@ -864,6 +763,48 @@ class Product implements EntityInterface
     {
         if ($this->relatedProducts->contains($relatedProduct)) {
             $this->relatedProducts->removeElement($relatedProduct);
+        }
+
+        return $this;
+    }
+
+    public function getReviews(): ProductReviewCollection
+    {
+        return $this->reviews;
+    }
+    
+    public function setReviews(ProductReviewCollection $collection): self
+    {
+        $this->reviews = new ProductReviewCollection;
+        
+        foreach ($collection as $element) {
+            // Convert to entity if raw data (array) for the item is supplied.
+            $entity = !$element instanceof ProductReview
+                ? $this->toProductReviewEntity($element) : $element;
+
+            $this->addReview($entity);
+        }
+        
+        return $this;
+    }
+
+    public function addReview(ProductReview $review): self
+    {
+        if (!$this->reviews->contains($review)) {
+            if ($review->getProduct() !== $this) {
+                $review->setProduct($this);
+            }
+
+            $this->reviews->add($review);
+        }
+
+        return $this;
+    }
+    
+    public function removeReview(ProductReview $review): self
+    {
+        if ($this->reviews->contains($review)) {
+            $this->reviews->removeElement($review);
         }
 
         return $this;
@@ -911,124 +852,114 @@ class Product implements EntityInterface
         return $this;
     }
 
-//    /**
-//     * @return ProductUpSellProductCollection
-//     */
-//    public function getUpSellProducts(): ProductUpSellProductCollection
-//    {
-//        return $this->upSellProducts;
-//    }
-//
-//    /**
-//     * @param ProductUpSellProductCollection $upSellProducts
-//     * @return Product
-//     */
-//    public function setUpSellProducts(ProductUpSellProductCollection $upSellProducts): self
-//    {
-//        $this->upSellProducts = new ProductUpSellProductCollection;
-//
-//        foreach ($upSellProducts as $upSellProduct) {
-//            $this->addUpSellProduct($upSellProduct);
-//        }
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * @param ProductUpSellProduct $upSellProduct
-//     * @return Product
-//     */
-//    public function addUpSellProduct(ProductUpSellProduct $upSellProduct): self
-//    {
-//        if (!$this->upSellProducts->contains($upSellProduct)) {
-//            if ($upSellProduct->getProduct() !== $this) {
-//                $upSellProduct->setProduct($this);
-//            }
-//
-//            $this->upSellProducts->add($upSellProduct);
-//        }
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * @param ProductUpSellProduct $upSellProduct
-//     * @return Product
-//     */
-//    public function removeUpSellProduct(ProductUpSellProduct $upSellProduct): self
-//    {
-//        if ($this->upSellProducts->contains($upSellProduct)) {
-//            $this->upSellProducts->removeElement($upSellProduct);
-//        }
-//
-//        return $this;
-//    }
+    public function getUpSellProducts(): ProductUpSellProductCollection
+    {
+        return $this->upSellProducts;
+    }
 
-//    /**
-//     * @return ProductVolumeSellProductCollection
-//     */
-//    public function getVolumeSellProducts(): ProductVolumeSellProductCollection
-//    {
-//        return $this->volumeSellProducts;
-//    }
-//
-//    /**
-//     * @param ProductVolumeSellProductCollection $volumeSellProducts
-//     * @return Product
-//     */
-//    public function setVolumeSellProducts(ProductVolumeSellProductCollection $volumeSellProducts): self
-//    {
-////        $this->volumeSellProducts = new ProductVolumeSellProductCollection;
-//
-////        foreach ($volumeSellProducts as $volumeSellProduct) {
-////            $this->addVolumeSellProduct($volumeSellProduct);
-////        }
-//        $this->volumeSellProducts = $volumeSellProducts;
-//        return $this;
-//    }
-//
-//    /**
-//     * @param ProductVolumeSellProduct $volumeSellProduct
-//     * @return Product
-//     */
-//    public function addVolumeSellProduct(ProductVolumeSellProduct $volumeSellProduct): self
-//    {
-//        if (!$this->volumeSellProducts->contains($volumeSellProduct)) {
-//            if ($volumeSellProduct->getProduct() !== $this) {
-//                $volumeSellProduct->setProduct($this);
-//            }
-//
-//            $this->volumeSellProducts->add($volumeSellProduct);
-//        }
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * @param ProductVolumeSellProduct $volumeSellProduct
-//     * @return Product
-//     */
-//    public function removeVolumeSellProduct(ProductVolumeSellProduct $volumeSellProduct): self
-//    {
-//        if ($this->volumeSellProducts->contains($volumeSellProduct)) {
-//            $this->volumeSellProducts->removeElement($volumeSellProduct);
-//        }
-//
-//        return $this;
-//    }
+    public function setUpSellProducts(ProductUpSellProductCollection $collection): self
+    {
+        $this->upSellProducts = new ProductUpSellProductCollection;
 
-//    protected function idFromIri($path, ?string $iri): ?int
-//    {
-//        $pattern = '/' . str_replace('/', '\\/', $path) . '(\d+)/';
-//
-//        if (false !== preg_match($pattern, $iri, $matches)) {
-//            if (isset($matches[1])) {
-//                return (int)$matches[1];
-//            }
-//        }
-//
-//        return null;
-//    }
+        foreach ($collection as $element) {
+            // Convert to entity if raw data (array) for the item is supplied.
+            $entity = !$element instanceof ProductUpSellProduct
+                ? $this->toProductUpSellProductEntity($element) : $element;
+
+            $this->addUpSellProduct($entity);
+        }
+
+        return $this;
+    }
+
+    public function addUpSellProduct(ProductUpSellProduct $upSellProduct): self
+    {
+        if (!$this->upSellProducts->contains($upSellProduct)) {
+            if ($upSellProduct->getProduct() !== $this) {
+                $upSellProduct->setProduct($this);
+            }
+
+            $this->upSellProducts->add($upSellProduct);
+        }
+
+        return $this;
+    }
+
+    public function removeUpSellProduct(ProductUpSellProduct $upSellProduct): self
+    {
+        if ($this->upSellProducts->contains($upSellProduct)) {
+            $this->upSellProducts->removeElement($upSellProduct);
+        }
+
+        return $this;
+    }
+
+    public function getVolumeSellProducts(): ProductVolumeSellProductCollection
+    {
+        return $this->volumeSellProducts;
+    }
+
+    public function setVolumeSellProducts(ProductVolumeSellProductCollection $collection): self
+    {
+        $this->volumeSellProducts = new ProductVolumeSellProductCollection;
+
+        foreach ($collection as $element) {
+            // Convert to entity if raw data (array) for the item is svolumeplied.
+            $entity = !$element instanceof ProductVolumeSellProduct
+                ? $this->toProductVolumeSellProductEntity($element) : $element;
+
+            $this->addVolumeSellProduct($entity);
+        }
+
+        return $this;
+    }
+
+    public function addVolumeSellProduct(ProductVolumeSellProduct $volumeSellProduct): self
+    {
+        if (!$this->volumeSellProducts->contains($volumeSellProduct)) {
+            if ($volumeSellProduct->getProduct() !== $this) {
+                $volumeSellProduct->setProduct($this);
+            }
+
+            $this->volumeSellProducts->add($volumeSellProduct);
+        }
+
+        return $this;
+    }
+
+    public function removeVolumeSellProduct(ProductVolumeSellProduct $volumeSellProduct): self
+    {
+        if ($this->volumeSellProducts->contains($volumeSellProduct)) {
+            $this->volumeSellProducts->removeElement($volumeSellProduct);
+        }
+
+        return $this;
+    }
+
+    protected function toProductCategoryProductEntity(array $data): ProductCategoryProduct
+    {
+        $data = $data['product_category'];
+
+        $id = null;
+        $title = $data['title'];
+        $pattern = '/\/product_categories\/(?\'category_id\'[\d]+)/';
+
+        if (false !== preg_match($pattern, $data['@id'], $matches)) {
+            if (isset($matches['category_id'])) {
+                $id = (int)$matches['category_id'];
+            }
+        }
+
+        if (null === $id) {
+            throw new LogicException('Could not determine product category id!');
+        }
+
+        $category = (new ProductCategory)->setProductCategoryId($id)->setTitle($title);
+
+        return (new ProductCategoryProduct())
+            ->setProduct($this)
+            ->setProductCategory($category);
+    }
 
     protected function toProductRelatedProductEntity(array $data): ProductRelatedProduct
     {
@@ -1066,7 +997,7 @@ class Product implements EntityInterface
         }
 
         if (null === $id) {
-            throw new LogicException('Could not determine cross sell product id!');
+            throw new LogicException('Could not determine cross-sell product id!');
         }
 
         $crossSellProduct = (new Product)->setProductId($id)->setTitle($title);
@@ -1074,5 +1005,82 @@ class Product implements EntityInterface
         return (new ProductCrossSellProduct)
             ->setProduct($this)
             ->setCrossSellProduct($crossSellProduct);
+    }
+
+    protected function toProductUpSellProductEntity(array $data): ProductUpSellProduct
+    {
+        $id = null;
+        $title = $data['title'];
+        $pattern = '/.*\/[a-zA-Z]+=(?\'product_id\'[\d]+);[a-zA-Z]+=(?\'up_sell_product_id\'[\d]+)/';
+
+        if (false !== preg_match($pattern, $data['@id'], $matches)) {
+            if (isset($matches['up_sell_product_id'])) {
+                $id = (int)$matches['up_sell_product_id'];
+            }
+        }
+
+        if (null === $id) {
+            throw new LogicException('Could not determine up-sell product id!');
+        }
+
+        $upSellProduct = (new Product)->setProductId($id)->setTitle($title);
+
+        return (new ProductUpSellProduct)
+            ->setProduct($this)
+            ->setUpSellProduct($upSellProduct);
+    }
+
+    protected function toProductVolumeSellProductEntity(array $data): ProductVolumeSellProduct
+    {
+        $id = null;
+        $title = $data['title'];
+        $pattern = '/.*\/[a-zA-Z]+=(?\'product_id\'[\d]+);[a-zA-Z]+=(?\'volume_sell_product_id\'[\d]+)/';
+
+        if (false !== preg_match($pattern, $data['@id'], $matches)) {
+            if (isset($matches['volume_sell_product_id'])) {
+                $id = (int)$matches['volume_sell_product_id'];
+            }
+        }
+
+        if (null === $id) {
+            throw new LogicException('Could not determine volume-sell product id!');
+        }
+
+        $volumeSellProduct = (new Product)->setProductId($id)->setTitle($title);
+
+        return (new ProductVolumeSellProduct)
+            ->setProduct($this)
+            ->setVolumeSellProduct($volumeSellProduct);
+    }
+
+    protected function toProductReviewEntity(array $data): ProductReview
+    {
+        $id = null;
+        $score = $data['score'];
+        $title = $data['title'];
+        $customer = $data['customer'] ? $this->iriToCustomerEntity($data['customer']) : null; // IRI
+        $pattern = '/\/product_reviews\/(?\'review_id\'[\d]+)/';
+
+        if (false !== preg_match($pattern, $data['@id'], $matches)) {
+            if (isset($matches['review_id'])) {
+                $id = (int)$matches['review_id'];
+            }
+        }
+
+        if (null === $id) {
+            throw new LogicException('Could not determine product review id!');
+        }
+
+        return (new ProductReview)
+            ->setProductReviewId($id)
+            ->setTitle($title)
+            ->setScore($score)
+            ->setCustomer($customer);
+    }
+
+    protected function iriToCustomerEntity(string $iri): Customer
+    {
+        $id = (int)str_replace('/customers/', '', $iri);
+        return (new Customer)->setCustomerId($id);
     }
 }

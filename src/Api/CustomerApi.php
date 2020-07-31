@@ -12,7 +12,6 @@ use MailCampaigns\ApiClient\Collection\QuoteCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 
-
 class CustomerApi extends AbstractApi
 {
     /**
@@ -21,9 +20,8 @@ class CustomerApi extends AbstractApi
      */
     public function create(EntityInterface $entity): Customer
     {
-        $res = $this->post('customers', $entity->toArray(), [
-            'content-type: application/json'
-        ]);
+        // Send request.
+        $res = $this->post('customers', $entity, ['content-type: application/json']);
 
         return $this->toEntity($res);
     }
@@ -107,7 +105,7 @@ class CustomerApi extends AbstractApi
             throw new InvalidArgumentException('Expected customer entity!');
         }
 
-        $res = $this->put("customers/{$entity->getCustomerId()}", $entity->toArray(), [
+        $res = $this->put("customers/{$entity->getCustomerId()}", $entity, [
             'content-type: application/json'
         ]);
 
