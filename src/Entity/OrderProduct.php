@@ -219,7 +219,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param string $supplierTitle
+     * @param string|null $supplierTitle
      * @return $this
      */
     public function setSupplierTitle(?string $supplierTitle): self
@@ -237,7 +237,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param string $brandTitle
+     * @param string|null $brandTitle
      * @return $this
      */
     public function setBrandTitle(?string $brandTitle): self
@@ -309,7 +309,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param int $quantityInvoiced
+     * @param int|null $quantityInvoiced
      * @return $this
      */
     public function setQuantityInvoiced(?int $quantityInvoiced): self
@@ -327,7 +327,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param int $quantityShipped
+     * @param int|null $quantityShipped
      * @return $this
      */
     public function setQuantityShipped(?int $quantityShipped): self
@@ -345,7 +345,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param int $quantityRefunded
+     * @param int|null $quantityRefunded
      * @return $this
      */
     public function setQuantityRefunded(?int $quantityRefunded): self
@@ -363,7 +363,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param int $quantityReturned
+     * @param int|null $quantityReturned
      * @return $this
      */
     public function setQuantityReturned(?int $quantityReturned): self
@@ -381,7 +381,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param string $articleCode
+     * @param string|null $articleCode
      * @return $this
      */
     public function setArticleCode(?string $articleCode): self
@@ -399,7 +399,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param string $ean
+     * @param string|null $ean
      * @return $this
      */
     public function setEan(?string $ean): self
@@ -417,7 +417,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param string $sku
+     * @param string|null $sku
      * @return $this
      */
     public function setSku(?string $sku): self
@@ -435,7 +435,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param int $quantity
+     * @param int|null $quantity
      * @return $this
      */
     public function setQuantity(?int $quantity): self
@@ -453,7 +453,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param float $priceCost
+     * @param float|null $priceCost
      * @return $this
      */
     public function setPriceCost(?float $priceCost): self
@@ -471,7 +471,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param float $basePriceExcl
+     * @param float|null $basePriceExcl
      * @return $this
      */
     public function setBasePriceExcl(?float $basePriceExcl): self
@@ -489,7 +489,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param float $basePriceIncl
+     * @param float|null $basePriceIncl
      * @return $this
      */
     public function setBasePriceIncl(?float $basePriceIncl): self
@@ -507,7 +507,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param float $priceExcl
+     * @param float|null $priceExcl
      * @return $this
      */
     public function setPriceExcl(?float $priceExcl): self
@@ -525,7 +525,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param float $priceIncl
+     * @param float|null $priceIncl
      * @return $this
      */
     public function setPriceIncl(?float $priceIncl): self
@@ -543,7 +543,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param float $discountExcl
+     * @param float|null $discountExcl
      * @return $this
      */
     public function setDiscountExcl(?float $discountExcl): self
@@ -561,7 +561,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param float $discountIncl
+     * @param float|null $discountIncl
      * @return $this
      */
     public function setDiscountIncl(?float $discountIncl): self
@@ -579,7 +579,7 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param Product $product
+     * @param Product|null $product
      * @return $this
      */
     public function setProduct(?Product $product): self
@@ -616,7 +616,7 @@ class OrderProduct implements EntityInterface
             'price_incl' => $this->getPriceIncl(),
             'discount_excl' => $this->getDiscountExcl(),
             'discount_incl' => $this->getDiscountIncl(),
-            'order' => $this->getOrder()->toIri()
+            'order' => $this->getOrder() instanceof Order ? $this->getOrder()->toIri() : null
         ];
 
         return array_filter($arr);

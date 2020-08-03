@@ -4,6 +4,7 @@ namespace MailCampaigns\ApiClient;
 
 use MailCampaigns\ApiClient\Api\CustomerApi;
 use MailCampaigns\ApiClient\Api\OrderApi;
+use MailCampaigns\ApiClient\Api\OrderProductApi;
 use MailCampaigns\ApiClient\Api\ProductApi;
 use MailCampaigns\ApiClient\Api\QuoteApi;
 use MailCampaigns\ApiClient\Exception\ApiAuthenticationException;
@@ -38,6 +39,11 @@ final class ApiClient
     private $orderApi;
 
     /**
+     * @var OrderApi
+     */
+    private $orderProductApi;
+
+    /**
      * @var ProductApi
      */
     private $productApi;
@@ -62,6 +68,7 @@ final class ApiClient
         // Create API objects.
         $this->customerApi = new CustomerApi($this);
         $this->orderApi = new OrderApi($this);
+        $this->orderProductApi = new OrderProductApi($this);
         $this->quoteApi = new QuoteApi($this);
         $this->productApi = new ProductApi($this);
     }
@@ -74,6 +81,11 @@ final class ApiClient
     public function getOrderApi(): OrderApi
     {
         return $this->orderApi;
+    }
+
+    public function getOrderProductApi(): OrderProductApi
+    {
+        return $this->orderProductApi;
     }
 
     public function getQuoteApi(): QuoteApi
