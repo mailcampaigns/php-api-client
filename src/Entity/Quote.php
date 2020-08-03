@@ -714,6 +714,16 @@ class Quote implements EntityInterface
         return $this;
     }
 
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->contains($order)) {
+            $order->setQuote(null);
+            $this->orders->removeElement($order);
+        }
+
+        return $this;
+    }
+
     public function getCustomerIri(): ?string
     {
         if (!$this->getCustomer() instanceof Customer) {
