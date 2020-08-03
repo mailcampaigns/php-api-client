@@ -56,6 +56,7 @@ class ResponseMediator
     }
 
     /**
+     * Todo: Implement
      * @param ResponseInterface $response
      * @return null|string
      */

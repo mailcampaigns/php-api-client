@@ -1,6 +1,6 @@
 {
     "name": "mailcampaigns/api-client",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "MailCampaigns API client",
     "homepage": "https://docs.mailcampaigns.io",
     "type": "library",

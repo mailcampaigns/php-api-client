@@ -1,0 +1,149 @@
+<?php
+
+namespace MailCampaigns\ApiClient\Api;
+
+use InvalidArgumentException;
+use MailCampaigns\ApiClient\Collection\CollectionInterface;
+use MailCampaigns\ApiClient\Collection\OrderProductCollection;
+use MailCampaigns\ApiClient\Entity\EntityInterface;
+use MailCampaigns\ApiClient\Entity\Order;
+use MailCampaigns\ApiClient\Entity\OrderProduct;
+use MailCampaigns\ApiClient\Entity\Product;
+
+class OrderProductApi extends AbstractApi
+{
+    /**
+     * @param EntityInterface|OrderProduct $entity
+     * @return OrderProduct
+     */
+    public function create(EntityInterface $entity): EntityInterface
+    {
+        if (!$entity instanceof OrderProduct) {
+            throw new InvalidArgumentException('Expected order product entity!');
+        }
+
+        // Send request.
+        $res = $this->post('order_products', $entity, ['content-type: application/json']);
+
+        return $this->toEntity($res);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return OrderProduct
+     */
+    public function getById(int $id): EntityInterface
+    {
+        return $this->toEntity($this->get("order_products/{$id}"));
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return OrderProductCollection
+     */
+    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
+    {
+        $collection = new OrderProductCollection;
+
+        $parameters = [
+            'page' => $page ?? $this->page,
+            'itemsPerPage' => $perPage ?? $this->perPage
+        ];
+
+        $data = $this->get('order_products', $parameters);
+
+        foreach ($data['hydra:member'] as $orderProductData) {
+            $orderProduct = $this->toEntity($orderProductData);
+            $collection->add($orderProduct);
+        }
+
+        return $collection;
+    }
+
+    /**
+     * Updates an order product.
+     *
+     * @param EntityInterface $entity
+     * @return OrderProduct
+     */
+    public function update(EntityInterface $entity): EntityInterface
+    {
+        if (!$entity instanceof OrderProduct) {
+            throw new InvalidArgumentException('Expected order product entity!');
+        }
+
+        $res = $this->put("order_products/{$entity->getOrderProductId()}", $entity, [
+            'content-type: application/json'
+        ]);
+
+        return $this->toEntity($res);
+    }
+
+    /**
+     * Deletes an order product by id.
+     *
+     * @param int $id
+     * @return $this
+     */
+    public function deleteById(int $id): self
+    {
+        $this->delete("order_products/{$id}");
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    function toEntity(array $data): EntityInterface
+    {
+        $orderProduct = (new OrderProduct)
+            ->setOrderProductId($data['order_product_id'])
+            ->setSupplierTitle($data['supplier_title'])
+            ->setBrandTitle($data['brand_title'])
+            ->setProductTitle($data['product_title'])
+            ->setTaxRate($data['tax_rate'])
+            ->setQuantityOrdered($data['quantity_ordered'])
+            ->setQuantityInvoiced($data['quantity_invoiced'])
+            ->setQuantityShipped($data['quantity_shipped'])
+            ->setQuantityRefunded($data['quantity_refunded'])
+            ->setQuantityReturned($data['quantity_returned'])
+            ->setArticleCode($data['article_code'])
+            ->setEan($data['ean'])
+            ->setSku($data['sku'])
+            ->setQuantity($data['quantity'])
+            ->setPriceCost($data['price_cost'])
+            ->setBasePriceExcl($data['base_price_excl'])
+            ->setBasePriceIncl($data['base_price_incl'])
+            ->setPriceExcl($data['price_excl'])
+            ->setPriceIncl($data['price_incl'])
+            ->setDiscountExcl($data['discount_excl'])
+            ->setDiscountIncl($data['discount_incl']);
+
+        // Set linked order.
+        if (isset($data['order']) && is_string($data['order'])) {
+            if (false !== preg_match('/\/orders\/(\d+)/', $data['order'], $matches)) {
+                if (isset($matches[1])) {
+                    $orderId = (int)$matches[1];
+
+                    $orderProduct->setOrder(
+                        (new Order)
+                            ->setOrderId($orderId)
+                            ->addOrderProduct($orderProduct)
+                    );
+                }
+            }
+        }
+
+        // Set linked product.
+        if (isset($data['product']) && is_string($data['product'])) {
+            if (false !== preg_match('/\/products\/(\d+)/', $data['product'], $matches)) {
+                if (isset($matches[1])) {
+                    $product = (new Product)->setProductId((int)$matches[1]);
+                    $orderProduct->setProduct($product);
+                }
+            }
+        }
+
+        return $orderProduct;
+    }
+}

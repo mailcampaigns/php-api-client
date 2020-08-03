@@ -4,6 +4,7 @@ namespace MailCampaigns\ApiClient\Api;
 
 use DateTime;
 use MailCampaigns\ApiClient\ApiClient;
+use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\ResponseMediator;
 
 abstract class AbstractApi implements ApiInterface
@@ -147,30 +148,16 @@ abstract class AbstractApi implements ApiInterface
      * Send a POST request with JSON-encoded parameters.
      *
      * @param string $path Request path.
-     * @param array $parameters POST parameters to be JSON encoded.
+     * @param EntityInterface $entity The entity to be created.
      * @param array $requestHeaders Request headers.
      *
      * @return array|string
      */
-    protected function post($path, array $parameters = [], array $requestHeaders = [])
-    {
-        return $this->postRaw($path, $this->createJsonBody($parameters), $requestHeaders);
-    }
-
-    /**
-     * Send a POST request with raw data.
-     *
-     * @param string $path Request path.
-     * @param string $body Request body.
-     * @param array $requestHeaders Request headers.
-     *
-     * @return array|string
-     */
-    protected function postRaw($path, $body, array $requestHeaders = [])
+    protected function post($path, EntityInterface $entity, array $requestHeaders = [])
     {
         $response = $this->client->getHttpClient()->request('POST', $path, [
             'headers' => $requestHeaders,
-            'body' => $body
+            'body' => $this->createJsonBody($entity->toArray(EntityInterface::OPERATION_POST))
         ]);
 
         return ResponseMediator::getContent($response);
@@ -180,16 +167,16 @@ abstract class AbstractApi implements ApiInterface
      * Send a PATCH request with JSON-encoded parameters.
      *
      * @param string $path Request path.
-     * @param array $parameters POST parameters to be JSON encoded.
+     * @param EntityInterface $entity The entity to be patched.
      * @param array $requestHeaders Request headers.
      *
      * @return array|string
      */
-    protected function patch($path, array $parameters = [], array $requestHeaders = [])
+    protected function patch($path, EntityInterface $entity, array $requestHeaders = [])
     {
         $response = $this->client->getHttpClient()->request('PATCH', $path, [
             'headers' => $requestHeaders,
-            'body' => $this->createJsonBody($parameters)
+            'body' => $this->createJsonBody($entity->toArray(EntityInterface::OPERATION_PATCH))
         ]);
 
         return ResponseMediator::getContent($response);
@@ -199,16 +186,16 @@ abstract class AbstractApi implements ApiInterface
      * Send a PUT request with JSON-encoded parameters.
      *
      * @param string $path Request path.
-     * @param array $parameters POST parameters to be JSON encoded.
+     * @param EntityInterface $entity The updated entity to be sent.
      * @param array $requestHeaders Request headers.
      *
      * @return array|string
      */
-    protected function put($path, array $parameters = [], array $requestHeaders = [])
+    protected function put($path, EntityInterface $entity, array $requestHeaders = [])
     {
         $response = $this->client->getHttpClient()->request('PUT', $path, [
             'headers' => $requestHeaders,
-            'body' => $this->createJsonBody($parameters)
+            'body' => $this->createJsonBody($entity->toArray(EntityInterface::OPERATION_PUT))
         ]);
 
         return ResponseMediator::getContent($response);

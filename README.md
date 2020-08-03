@@ -30,7 +30,7 @@ $apiClient = ApiClient::create('<url>', '<client_key>', '<client_secret>');
 $customerApi = $apiClient->getCustomerApi();
 
 // Example 1 - Retrieve a customer by id:
-$customerApi->getById(1234);
+$customer = $customerApi->getById(1234);
 
 // Example 2 - Retrieve first three pages of customers:
 for ($page = 1; $page <= 3; $page++) {
@@ -65,6 +65,7 @@ $customer = $customerApi->getByCustomerRef('CUST-8539');
 // Example 6 - Get customer by email address:
 $customer = $customerApi->getByEmail('bob@hotmail.com');
 
+// Example 7 - Delete a customer by id.
 $customerApi->deleteById(1234);
 ```
 

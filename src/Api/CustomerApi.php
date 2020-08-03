@@ -2,6 +2,7 @@
 
 namespace MailCampaigns\ApiClient\Api;
 
+use InvalidArgumentException;
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\CustomerCollection;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
@@ -11,7 +12,6 @@ use MailCampaigns\ApiClient\Collection\QuoteCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 
-
 class CustomerApi extends AbstractApi
 {
     /**
@@ -20,9 +20,8 @@ class CustomerApi extends AbstractApi
      */
     public function create(EntityInterface $entity): Customer
     {
-        $res = $this->post('customers', $entity->toArray(), [
-            'content-type: application/json'
-        ]);
+        // Send request.
+        $res = $this->post('customers', $entity, ['content-type: application/json']);
 
         return $this->toEntity($res);
     }
@@ -102,7 +101,11 @@ class CustomerApi extends AbstractApi
      */
     public function update(EntityInterface $entity): Customer
     {
-        $res = $this->put("customers/{$entity->getCustomerId()}", $entity->toArray(), [
+        if (!$entity instanceof Customer) {
+            throw new InvalidArgumentException('Expected customer entity!');
+        }
+
+        $res = $this->put("customers/{$entity->getCustomerId()}", $entity, [
             'content-type: application/json'
         ]);
 
@@ -131,7 +134,6 @@ class CustomerApi extends AbstractApi
         $productReviews = new ProductReviewCollection($data['product_reviews']);
         $favorites = new CustomerFavoriteProductCollection($data['favorites']);
         $quotes = new QuoteCollection($data['favorites']);
-
 
         return (new Customer)
             ->setCustomerId($data['customer_id'])
