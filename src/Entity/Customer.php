@@ -3,7 +3,10 @@
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
+use LogicException;
 use MailCampaigns\ApiClient\Collection;
+use MailCampaigns\ApiClient\Collection\OrderCollection;
+use MailCampaigns\ApiClient\Collection\QuoteCollection;
 
 class Customer implements EntityInterface
 {
@@ -961,20 +964,61 @@ class Customer implements EntityInterface
     }
 
     /**
-     * @return Collection\OrderCollection
+     * @return OrderCollection
      */
-    public function getOrders(): Collection\OrderCollection
+    public function getOrders(): OrderCollection
     {
         return $this->orders;
     }
 
     /**
-     * @param Collection\OrderCollection $orders
+     * @param iterable|OrderCollection|null $orders
      * @return $this
      */
-    public function setOrders(Collection\OrderCollection $orders): self
+    public function setOrders(?iterable $orders): self
     {
-        $this->orders = $orders;
+        $this->orders = new OrderCollection;
+
+        if ($orders) {
+            foreach ($orders as $data) {
+                $order = null;
+
+                if ($data instanceof Order) {
+                    $order = $data;
+                } else if (is_string($data)) {
+                    // Convert order IRI (string) to an Order entity.
+                    $order = $this->iriToOrderEntity($data);
+                } else {
+                    throw new LogicException('Order is neither an array nor an IRI!');
+                }
+
+                $this->addOrder($order);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addOrder(Order $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            if ($order->getCustomer() !== $this) {
+                $order->setCustomer($this);
+            }
+
+            $this->orders->add($order);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->contains($order)) {
+            $order->setCustomer(null);
+            $this->orders->removeElement($order);
+        }
+
         return $this;
     }
 
@@ -1015,20 +1059,73 @@ class Customer implements EntityInterface
     }
 
     /**
-     * @return Collection\QuoteCollection
+     * @return QuoteCollection
      */
-    public function getQuotes(): Collection\QuoteCollection
+    public function getQuotes(): QuoteCollection
     {
         return $this->quotes;
     }
 
     /**
-     * @param Collection\QuoteCollection $quotes
+     * @param iterable|QuoteCollection|null $quotes
      * @return $this
      */
-    public function setQuotes(Collection\QuoteCollection $quotes): self
+    public function setQuotes(?iterable $quotes): self
     {
-        $this->quotes = $quotes;
+        $this->quotes = new QuoteCollection;
+
+        if ($quotes) {
+            foreach ($quotes as $data) {
+                $quote = null;
+
+                if ($data instanceof Quote) {
+                    $quote = $data;
+                } else if (is_string($data)) {
+                    // Convert quote IRI (string) to an Quote entity.
+                    $quote = $this->iriToQuoteEntity($data);
+                } else {
+                    throw new LogicException('Quote is neither an array nor an IRI!');
+                }
+
+                $this->addQuote($quote);
+            }
+        }
+
         return $this;
+    }
+
+    public function addQuote(Quote $quote): self
+    {
+        if (!$this->quotes->contains($quote)) {
+            if ($quote->getCustomer() !== $this) {
+                $quote->setCustomer($this);
+            }
+
+            $this->quotes->add($quote);
+        }
+
+        return $this;
+    }
+
+    public function removeQuote(Quote $quote): self
+    {
+        if ($this->quotes->contains($quote)) {
+            $quote->setCustomer(null);
+            $this->quotes->removeElement($quote);
+        }
+
+        return $this;
+    }
+
+    protected function iriToOrderEntity(string $iri): Order
+    {
+        $id = (int)str_replace('/orders/', '', $iri);
+        return (new Order)->setOrderId($id);
+    }
+
+    protected function iriToQuoteEntity(string $iri): Quote
+    {
+        $id = (int)str_replace('/quotes/', '', $iri);
+        return (new Quote)->setQuoteId($id);
     }
 }

@@ -133,7 +133,7 @@ class CustomerApi extends AbstractApi
         $orders = new OrderCollection($data['orders']);
         $productReviews = new ProductReviewCollection($data['product_reviews']);
         $favorites = new CustomerFavoriteProductCollection($data['favorites']);
-        $quotes = new QuoteCollection($data['favorites']);
+        $quotes = new QuoteCollection($data['quotes']);
 
         return (new Customer)
             ->setCustomerId($data['customer_id'])

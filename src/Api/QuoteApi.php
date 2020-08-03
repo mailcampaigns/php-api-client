@@ -37,6 +37,23 @@ class QuoteApi extends AbstractApi
     }
 
     /**
+     * @param string $ref
+     * @return Quote|null
+     */
+    public function getByQuoteRef(string $ref): ?Quote
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get("quotes", ['quote_ref' => $ref])
+        );
+
+        if (null !== $data) {
+            return $this->toEntity($data);
+        }
+
+        return null;
+    }
+
+    /**
      * {@inheritDoc}
      * @return QuoteCollection
      */
@@ -92,6 +109,7 @@ class QuoteApi extends AbstractApi
 
     /**
      * @inheritDoc
+     * @return Quote
      */
     function toEntity(array $data): EntityInterface
     {

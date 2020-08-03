@@ -1324,7 +1324,7 @@ class Order implements EntityInterface
                         }
                     }
                 } else {
-                    throw new LogicException('Order product is neither an array nor an order product entity!');
+                    throw new LogicException('Order product is neither an array nor an entity!');
                 }
 
                 $this->addOrderProduct($orderProduct);

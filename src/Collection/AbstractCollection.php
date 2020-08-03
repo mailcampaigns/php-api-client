@@ -49,12 +49,16 @@ abstract class AbstractCollection implements CollectionInterface
 
         /** @var EntityInterface $element */
         foreach ($this->elements as $element) {
-            switch ($operation) {
-                case EntityInterface::OPERATION_PUT:
-                    $arr[] = $element->toIri();
-                    break;
-                default:
-                    $arr[] = $element->toArray($operation);
+            if ($element instanceof EntityInterface) {
+                switch ($operation) {
+                    case EntityInterface::OPERATION_PUT:
+                        $arr[] = $element->toIri();
+                        break;
+                    default:
+                        $arr[] = $element->toArray($operation);
+                }
+            } else {
+                $arr[] = $element;
             }
         }
 

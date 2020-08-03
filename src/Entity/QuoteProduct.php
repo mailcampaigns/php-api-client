@@ -527,7 +527,7 @@ class QuoteProduct implements EntityInterface
             'base_additional_cost_excl' => $this->getBaseAdditionalCostExcl(),
             'base_additional_cost_incl' => $this->getBaseAdditionalCostIncl(),
             'product' => $this->getProduct() ? $this->getProduct()->toIri() : null,
-            'quote' => $this->getQuote()->toIri()
+            'quote' => $this->getQuote() ? $this->getQuote()->toIri() : null
         ];
 
         return array_filter($arr);
