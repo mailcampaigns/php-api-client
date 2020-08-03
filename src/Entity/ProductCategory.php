@@ -127,7 +127,7 @@ class ProductCategory implements EntityInterface
     }
 
     /**
-     * @param string $categoryRef
+     * @param string|null $categoryRef
      * @return ProductCategory
      */
     public function setCategoryRef(?string $categoryRef): self

@@ -169,7 +169,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param int $baseColli
+     * @param int|null $baseColli
      * @return QuoteProduct
      */
     public function setBaseColli(?int $baseColli): QuoteProduct
@@ -187,7 +187,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $basePriceCost
+     * @param float|null $basePriceCost
      * @return QuoteProduct
      */
     public function setBasePriceCost(?float $basePriceCost): QuoteProduct
@@ -205,7 +205,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $basePriceExcl
+     * @param float|null $basePriceExcl
      * @return QuoteProduct
      */
     public function setBasePriceExcl(?float $basePriceExcl): QuoteProduct
@@ -223,7 +223,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $basePriceIncl
+     * @param float|null $basePriceIncl
      * @return QuoteProduct
      */
     public function setBasePriceIncl(?float $basePriceIncl): QuoteProduct
@@ -241,7 +241,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param int $quantity
+     * @param int|null $quantity
      * @return QuoteProduct
      */
     public function setQuantity(?int $quantity): QuoteProduct
@@ -259,7 +259,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $discountPercentage
+     * @param float|null $discountPercentage
      * @return QuoteProduct
      */
     public function setDiscountPercentage(?float $discountPercentage): QuoteProduct
@@ -277,7 +277,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $taxRate
+     * @param float|null $taxRate
      * @return QuoteProduct
      */
     public function setTaxRate(?float $taxRate): QuoteProduct
@@ -295,7 +295,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $priceCost
+     * @param float|null $priceCost
      * @return QuoteProduct
      */
     public function setPriceCost(?float $priceCost): QuoteProduct
@@ -313,7 +313,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $priceTax
+     * @param float|null $priceTax
      * @return QuoteProduct
      */
     public function setPriceTax(?float $priceTax): QuoteProduct
@@ -331,7 +331,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $priceExcl
+     * @param float|null $priceExcl
      * @return QuoteProduct
      */
     public function setPriceExcl(?float $priceExcl): QuoteProduct
@@ -349,7 +349,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $priceIncl
+     * @param float|null $priceIncl
      * @return QuoteProduct
      */
     public function setPriceIncl(?float $priceIncl): QuoteProduct
@@ -367,7 +367,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $discountExcl
+     * @param float|null $discountExcl
      * @return QuoteProduct
      */
     public function setDiscountExcl(?float $discountExcl): QuoteProduct
@@ -385,7 +385,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $discountIncl
+     * @param float|null $discountIncl
      * @return QuoteProduct
      */
     public function setDiscountIncl(?float $discountIncl): QuoteProduct
@@ -403,7 +403,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $additionalCostExcl
+     * @param float|null $additionalCostExcl
      * @return QuoteProduct
      */
     public function setAdditionalCostExcl(?float $additionalCostExcl): QuoteProduct
@@ -421,7 +421,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $additionalCostIncl
+     * @param float|null $additionalCostIncl
      * @return QuoteProduct
      */
     public function setAdditionalCostIncl(?float $additionalCostIncl): QuoteProduct
@@ -439,7 +439,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $baseAdditionalCostExcl
+     * @param float|null $baseAdditionalCostExcl
      * @return QuoteProduct
      */
     public function setBaseAdditionalCostExcl(?float $baseAdditionalCostExcl): QuoteProduct
@@ -457,7 +457,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param float $baseAdditionalCostIncl
+     * @param float|null $baseAdditionalCostIncl
      * @return QuoteProduct
      */
     public function setBaseAdditionalCostIncl(?float $baseAdditionalCostIncl): QuoteProduct
@@ -493,7 +493,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param Quote $quote
+     * @param Quote|null $quote
      * @return QuoteProduct
      */
     public function setQuote(?Quote $quote): QuoteProduct

@@ -351,7 +351,7 @@ class Product implements EntityInterface
     }
 
     /**
-     * @param string $visibility
+     * @param string|null $visibility
      * @return Product
      */
     public function setVisibility(?string $visibility): self
@@ -369,7 +369,7 @@ class Product implements EntityInterface
     }
 
     /**
-     * @param string $url
+     * @param string|null $url
      * @return Product
      */
     public function setUrl(?string $url): self
@@ -639,7 +639,7 @@ class Product implements EntityInterface
     }
 
     /**
-     * @param int $stockCount
+     * @param int|null $stockCount
      * @return Product
      */
     public function setStockCount(?int $stockCount): self

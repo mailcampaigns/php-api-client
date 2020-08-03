@@ -217,7 +217,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param string $quoteRef
+     * @param string|null $quoteRef
      * @return Quote
      */
     public function setQuoteRef(?string $quoteRef): Quote
@@ -235,7 +235,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param int $quantity
+     * @param int|null $quantity
      * @return Quote
      */
     public function setQuantity(?int $quantity): Quote
@@ -253,7 +253,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param float $priceCost
+     * @param float|null $priceCost
      * @return Quote
      */
     public function setPriceCost(?float $priceCost): Quote
@@ -271,7 +271,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param float $priceExcl
+     * @param float|null $priceExcl
      * @return Quote
      */
     public function setPriceExcl(?float $priceExcl): Quote
@@ -289,7 +289,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param float $priceIncl
+     * @param float|null $priceIncl
      * @return Quote
      */
     public function setPriceIncl(?float $priceIncl): Quote
@@ -343,7 +343,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param float $discountExcl
+     * @param float|null $discountExcl
      * @return Quote
      */
     public function setDiscountExcl(?float $discountExcl): Quote
@@ -361,7 +361,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param float $discountIncl
+     * @param float|null $discountIncl
      * @return Quote
      */
     public function setDiscountIncl(?float $discountIncl): Quote
@@ -379,7 +379,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param int $productsCount
+     * @param int|null $productsCount
      * @return Quote
      */
     public function setProductsCount(?int $productsCount): Quote
@@ -397,7 +397,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param int $productsQuantity
+     * @param int|null $productsQuantity
      * @return Quote
      */
     public function setProductsQuantity(?int $productsQuantity): Quote
@@ -415,7 +415,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param string $discountRef
+     * @param string|null $discountRef
      * @return Quote
      */
     public function setDiscountRef(?string $discountRef): Quote
@@ -433,7 +433,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param string $discountType
+     * @param string|null $discountType
      * @return Quote
      */
     public function setDiscountType(?string $discountType): Quote
@@ -451,7 +451,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param float $discountAmount
+     * @param float|null $discountAmount
      * @return Quote
      */
     public function setDiscountAmount(?float $discountAmount): Quote
@@ -469,7 +469,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param float $discountPercentage
+     * @param float|null $discountPercentage
      * @return Quote
      */
     public function setDiscountPercentage(?float $discountPercentage): Quote
@@ -487,7 +487,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param string $discountShipment
+     * @param string|null $discountShipment
      * @return Quote
      */
     public function setDiscountShipment(?string $discountShipment): Quote
@@ -505,7 +505,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param float $discountMinimumAmount
+     * @param float|null $discountMinimumAmount
      * @return Quote
      */
     public function setDiscountMinimumAmount(?float $discountMinimumAmount): Quote
@@ -523,7 +523,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param string $discountCouponCode
+     * @param string|null $discountCouponCode
      * @return Quote
      */
     public function setDiscountCouponCode(?string $discountCouponCode): Quote
@@ -541,7 +541,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param string $customerRef
+     * @param string|null $customerRef
      * @return Quote
      */
     public function setCustomerRef(?string $customerRef): Quote
@@ -577,7 +577,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param QuoteProductCollection|array $quoteProducts
+     * @param iterable|QuoteProductCollection|null $quoteProducts
      * @return Quote
      */
     public function setQuoteProducts(?iterable $quoteProducts): Quote
@@ -674,7 +674,7 @@ class Quote implements EntityInterface
     }
 
     /**
-     * @param OrderCollection $orders
+     * @param iterable|OrderCollection|null $orders
      * @return Quote
      */
     public function setOrders(?iterable $orders): Quote

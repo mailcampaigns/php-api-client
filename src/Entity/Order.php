@@ -1253,7 +1253,7 @@ class Order implements EntityInterface
     }
 
     /**
-     * @param string $customerRef
+     * @param string|null $customerRef
      * @return Order
      */
     public function setCustomerRef(?string $customerRef): Order
@@ -1286,7 +1286,7 @@ class Order implements EntityInterface
     }
 
     /**
-     * @param OrderProductCollection|array $orderProducts
+     * @param iterable|OrderProductCollection|null $orderProducts
      * @return Order
      */
     public function setOrderProducts(?iterable $orderProducts): Order

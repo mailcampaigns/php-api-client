@@ -7,6 +7,7 @@ use MailCampaigns\ApiClient\Api\OrderApi;
 use MailCampaigns\ApiClient\Api\OrderProductApi;
 use MailCampaigns\ApiClient\Api\ProductApi;
 use MailCampaigns\ApiClient\Api\QuoteApi;
+use MailCampaigns\ApiClient\Api\QuoteProductApi;
 use MailCampaigns\ApiClient\Exception\ApiAuthenticationException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -32,6 +33,11 @@ final class ApiClient
      * @var QuoteApi
      */
     private $quoteApi;
+
+    /**
+     * @var QuoteProductApi
+     */
+    private $quoteProductApi;
 
     /**
      * @var OrderApi
@@ -65,11 +71,12 @@ final class ApiClient
             'base_uri' => $baseUri
         ]);
 
-        // Create API objects.
+        // Create API objects. todo: use lazy loading
         $this->customerApi = new CustomerApi($this);
         $this->orderApi = new OrderApi($this);
         $this->orderProductApi = new OrderProductApi($this);
         $this->quoteApi = new QuoteApi($this);
+        $this->quoteProductApi = new QuoteProductApi($this);
         $this->productApi = new ProductApi($this);
     }
 
@@ -91,6 +98,11 @@ final class ApiClient
     public function getQuoteApi(): QuoteApi
     {
         return $this->quoteApi;
+    }
+
+    public function getQuoteProductApi(): QuoteProductApi
+    {
+        return $this->quoteProductApi;
     }
 
     public function getProductApi(): ProductApi
