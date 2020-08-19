@@ -60,7 +60,7 @@ abstract class AbstractApi implements ApiInterface
         $response = $this->client->getHttpClient()->request('GET', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders)
         ]);
-dump(json_decode($response->getContent()));
+
         return ResponseMediator::getContent($response);
     }
 

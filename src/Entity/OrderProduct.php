@@ -174,10 +174,10 @@ class OrderProduct implements EntityInterface
     }
 
     /**
-     * @param int $orderProductId
+     * @param int|null $orderProductId
      * @return $this
      */
-    public function setOrderProductId(int $orderProductId): self
+    public function setOrderProductId(?int $orderProductId): self
     {
         $this->orderProductId = $orderProductId;
         return $this;

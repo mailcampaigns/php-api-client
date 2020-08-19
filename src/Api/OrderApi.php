@@ -8,6 +8,7 @@ use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
+use MailCampaigns\ApiClient\Entity\Quote;
 
 /**
  * @link https://docs.mailcampaigns.io/?version=latest#486611d7-bb98-4e95-8e08-564cdbed6b7f
@@ -113,8 +114,9 @@ class OrderApi extends AbstractApi
      */
     function toEntity(array $data): EntityInterface
     {
-        $customer = null;
+        $customer = $quote = null;
 
+        // Convert customer IRI to an entity.
         if (isset($data['customer']) && is_string($data['customer'])) {
             if (false !== preg_match('/\/customers\/(\d+)/', $data['customer'], $matches)) {
                 if (isset($matches[1])) {
@@ -124,8 +126,18 @@ class OrderApi extends AbstractApi
             }
         }
 
+        // Convert quote IRI to an entity.
+        if (isset($data['quote']) && is_string($data['quote'])) {
+            if (false !== preg_match('/\/quotes\/(\d+)/', $data['quote'], $matches)) {
+                if (isset($matches[1])) {
+                    $quoteId = (int)$matches[1];
+                    $quote = (new Quote)->setQuoteId($quoteId);
+                }
+            }
+        }
+
         return (new Order)
-            ->setOrderId($data['order_id'])
+            ->setOrderId($data['order_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
             ->setNumber($data['number'])
@@ -173,6 +185,6 @@ class OrderApi extends AbstractApi
             ->setCustomerRef($data['customer_ref'])
             ->setCustomer($customer)
             ->setOrderProducts($data['order_products'])
-            ->setQuote($data['quote']);
+            ->setQuote($quote);
     }
 }

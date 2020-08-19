@@ -461,10 +461,10 @@ class Order implements EntityInterface
     }
 
     /**
-     * @param int $orderId
+     * @param int|null $orderId
      * @return Order
      */
-    public function setOrderId(int $orderId): Order
+    public function setOrderId(?int $orderId): Order
     {
         $this->orderId = $orderId;
         return $this;
@@ -1300,28 +1300,31 @@ class Order implements EntityInterface
                 if ($data instanceof OrderProduct) {
                     $orderProduct = $data;
                 } else if (is_array($data)) {
-                    if (isset($data['@id']) && is_string($data['@id'])) {
-                        $orderProduct = new OrderProduct;
+                    $orderProductId = null;
+                    $orderProduct = new OrderProduct;
 
+                    if (isset($data['@id']) && is_string($data['@id'])) {
                         if (false !== preg_match('/\/order_products\/(\d+)/', $data['@id'], $matches)) {
                             if (isset($matches[1])) {
                                 $orderProductId = (int)$matches[1];
-                                $orderProduct->setOrderProductId($orderProductId);
                             }
                         }
+                    } else if (isset($data['order_id'])) {
+                        $orderProductId = (int)$data['order_id'];
+                    }
 
-                        $orderProduct
-                            ->setProductTitle($data['product_title'])
-                            ->setQuantityOrdered($data['quantity_ordered'])
-                            ->setArticleCode($data['article_code']);
+                    $orderProduct
+                        ->setOrderProductId($orderProductId)
+                        ->setProductTitle($data['product_title'])
+                        ->setQuantityOrdered($data['quantity_ordered'])
+                        ->setArticleCode($data['article_code']);
 
-                        // If a product is linked to this order row (order product) add
-                        // product entity based on the product IRI.
-                        if ($data['product']) {
-                            $orderProduct->setProduct(
-                                $this->productIriToEntity($data['product'])
-                            );
-                        }
+                    // If a product is linked to this order row (order product) add
+                    // product entity based on the product IRI.
+                    if ($data['product']) {
+                        $orderProduct->setProduct(
+                            $this->productIriToEntity($data['product'])
+                        );
                     }
                 } else {
                     throw new LogicException('Order product is neither an array nor an entity!');

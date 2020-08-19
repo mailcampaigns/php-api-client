@@ -73,7 +73,6 @@ abstract class AbstractCollection implements CollectionInterface
                         $arr[] = $element->toArray($operation);
                         break;
                     default:
-                        dd($operation, $toType);
                         throw new LogicException('Invalid or missing type mapping!');
                 }
             } else {
