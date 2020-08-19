@@ -9,20 +9,20 @@ use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
 
+/**
+ * @link https://docs.mailcampaigns.io/?version=latest#486611d7-bb98-4e95-8e08-564cdbed6b7f
+ */
 class OrderApi extends AbstractApi
 {
     /**
-     * @param EntityInterface|Order $entity
+     * {@inheritDoc}
+     * @param Order|EntityInterface $entity
      * @return Order
      */
     public function create(EntityInterface $entity): EntityInterface
     {
-        if (!$entity instanceof Order) {
-            throw new InvalidArgumentException('Expected order entity!');
-        }
-
-        // Send request.
-        $res = $this->post('orders', $entity, ['content-type: application/json']);
+        $this->validateEntityType($entity, Order::class);
+        $res = $this->post('orders', $entity);
 
         return $this->toEntity($res);
     }
@@ -37,6 +37,27 @@ class OrderApi extends AbstractApi
     }
 
     /**
+     * Tries to find a order by number, returns null when no order was found with
+     * the given order number.
+     *
+     * @param string $number
+     * @return Order|null
+     */
+    public function getByNumber(string $number): ?EntityInterface
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('orders', ['number' => $number])
+        );
+
+        if (null !== $data) {
+            return $this->toEntity($data);
+        }
+
+        // Order was not found.
+        return null;
+    }
+
+    /**
      * {@inheritDoc}
      * @return OrderCollection
      */
@@ -44,12 +65,10 @@ class OrderApi extends AbstractApi
     {
         $collection = new OrderCollection;
 
-        $parameters = [
-            'page' => $page ?? $this->page,
-            'itemsPerPage' => $perPage ?? $this->perPage
-        ];
-
-        $data = $this->get('orders', $parameters);
+        $data = $this->get('orders', [
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+        ]);
 
         foreach ($data['hydra:member'] as $orderData) {
             $order = $this->toEntity($orderData);
@@ -68,12 +87,11 @@ class OrderApi extends AbstractApi
     public function update(EntityInterface $entity): EntityInterface
     {
         if (!$entity instanceof Order) {
-            throw new InvalidArgumentException('Expected order entity!');
+            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
+                Order::class));
         }
 
-        $res = $this->put("orders/{$entity->getOrderId()}", $entity, [
-            'content-type: application/json'
-        ]);
+        $res = $this->put("orders/{$entity->getOrderId()}", $entity);
 
         return $this->toEntity($res);
     }
@@ -84,7 +102,7 @@ class OrderApi extends AbstractApi
      * @param int $id
      * @return $this
      */
-    public function deleteById(int $id): self
+    public function deleteById(int $id): ApiInterface
     {
         $this->delete("orders/{$id}");
         return $this;

@@ -22,7 +22,7 @@ class QuoteApi extends AbstractApi
         }
 
         // Send request.
-        $res = $this->post('quotes', $entity, ['content-type: application/json']);
+        $res = $this->post('quotes', $entity);
 
         return $this->toEntity($res);
     }
@@ -61,12 +61,10 @@ class QuoteApi extends AbstractApi
     {
         $collection = new QuoteCollection;
 
-        $parameters = [
-            'page' => $page ?? $this->page,
-            'itemsPerPage' => $perPage ?? $this->perPage
-        ];
-
-        $data = $this->get('quotes', $parameters);
+        $data = $this->get('quotes', [
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+        ]);
 
         foreach ($data['hydra:member'] as $quoteData) {
             $quote = $this->toEntity($quoteData);
@@ -85,12 +83,11 @@ class QuoteApi extends AbstractApi
     public function update(EntityInterface $entity): EntityInterface
     {
         if (!$entity instanceof Quote) {
-            throw new InvalidArgumentException('Expected quote entity!');
+            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
+                Quote::class));
         }
 
-        $res = $this->put("quotes/{$entity->getQuoteId()}", $entity, [
-            'content-type: application/json'
-        ]);
+        $res = $this->put("quotes/{$entity->getQuoteId()}", $entity);
 
         return $this->toEntity($res);
     }
@@ -101,7 +98,7 @@ class QuoteApi extends AbstractApi
      * @param int $id
      * @return $this
      */
-    public function deleteById(int $id): self
+    public function deleteById(int $id): ApiInterface
     {
         $this->delete("quotes/{$id}");
         return $this;

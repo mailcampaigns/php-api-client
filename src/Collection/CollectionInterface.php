@@ -5,6 +5,7 @@ namespace MailCampaigns\ApiClient\Collection;
 use ArrayAccess;
 use Countable;
 use IteratorAggregate;
+use MailCampaigns\ApiClient\Api\ApiInterface;
 
 /**
  * Copyright (c) 2006-2013 Doctrine Project

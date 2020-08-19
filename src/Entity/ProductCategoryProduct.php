@@ -2,6 +2,8 @@
 
 namespace MailCampaigns\ApiClient\Entity;
 
+use MailCampaigns\ApiClient\Api\ApiInterface;
+
 /**
  * This entity connects products and product categories.
  */
@@ -58,10 +60,16 @@ class ProductCategoryProduct implements EntityInterface
      */
     function toArray(?string $operation = null): array
     {
-        return [
-            'product_category' => $this->productCategory->toIri(),
-            'product' => $this->product->toIri()
-        ];
+        if ($operation !== ApiInterface::OPERATION_PUT) {
+            return [
+                'product_category' => $this->productCategory->toArray($operation)
+            ];
+        } else {
+            return [
+                'product' => $this->product->toIri(),
+                'product_category' => $this->productCategory->toIri()
+            ];
+        }
     }
 
     /**

@@ -63,10 +63,15 @@ class ProductRelatedProduct implements EntityInterface
      */
     function toArray(?string $operation = null): array
     {
-        return [
-            'product' => $this->product->toIri(),
+        $arr = [
             'related_product' => $this->relatedProduct->toIri()
         ];
+
+        if ($this->product instanceof Product && $this->product->getProductId()) {
+            $arr['product'] = $this->product->toIri();
+        }
+
+        return $arr;
     }
 
     /**

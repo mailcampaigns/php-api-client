@@ -3,6 +3,7 @@
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
+use MailCampaigns\ApiClient\Api\ApiInterface;
 use MailCampaigns\ApiClient\Collection\ProductCollection;
 
 class ProductCategory implements EntityInterface
@@ -147,15 +148,31 @@ class ProductCategory implements EntityInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    function toArray(?string $operation = null): array
+
+    function toArray2(?string $operation = null): array
     {
         return [
             'product_category_id' => $this->getProductCategoryId(),
             'products' => $this->getProducts()->toArray($operation)
         ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    function toArray(?string $operation = null): array
+    {
+        if ($operation !== ApiInterface::OPERATION_PUT) {
+            return [
+                'product_category_id' => $this->getProductCategoryId(),
+                'title' => $this->getTitle()
+            ];
+        } else {
+            return [
+                'product_category_id' => $this->getProductCategoryId(),
+                'products' => $this->getProducts()->toArray($operation)
+            ];
+        }
     }
 
     /**

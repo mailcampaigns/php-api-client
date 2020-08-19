@@ -4,8 +4,9 @@ namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
 use LogicException;
-use MailCampaigns\ApiClient\Collection;
+use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
+use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Collection\QuoteCollection;
 
 class Customer implements EntityInterface
@@ -227,32 +228,32 @@ class Customer implements EntityInterface
     protected $language;
 
     /**
-     * @var Collection\OrderCollection
+     * @var OrderCollection
      */
     protected $orders;
 
     /**
-     * @var Collection\ProductReviewCollection
+     * @var ProductReviewCollection
      */
     protected $productReviews;
 
     /**
-     * @var Collection\CustomerFavoriteProductCollection
+     * @var CustomerFavoriteProductCollection
      */
     protected $favorites;
 
     /**
-     * @var Collection\QuoteCollection
+     * @var QuoteCollection
      */
     protected $quotes;
 
     public function __construct()
     {
         $this->createdAt = new DateTime;
-        $this->orders = new Collection\OrderCollection;
-        $this->productReviews = new Collection\ProductReviewCollection;
-        $this->favorites = new Collection\CustomerFavoriteProductCollection();
-        $this->quotes = new Collection\QuoteCollection();
+        $this->orders = new OrderCollection;
+        $this->productReviews = new ProductReviewCollection;
+        $this->favorites = new CustomerFavoriteProductCollection;
+        $this->quotes = new QuoteCollection;
     }
 
     /**
@@ -1023,38 +1024,71 @@ class Customer implements EntityInterface
     }
 
     /**
-     * @return Collection\ProductReviewCollection
+     * @return ProductReviewCollection
      */
-    public function getProductReviews(): Collection\ProductReviewCollection
+    public function getProductReviews(): ProductReviewCollection
     {
         return $this->productReviews;
     }
 
     /**
-     * @param Collection\ProductReviewCollection $productReviews
+     * @param ProductReviewCollection $productReviews
      * @return $this
      */
-    public function setProductReviews(Collection\ProductReviewCollection $productReviews): self
+    public function setProductReviews(ProductReviewCollection $productReviews): self
     {
         $this->productReviews = $productReviews;
         return $this;
     }
 
     /**
-     * @return Collection\CustomerFavoriteProductCollection
+     * @return CustomerFavoriteProductCollection
      */
-    public function getFavorites(): Collection\CustomerFavoriteProductCollection
+    public function getFavorites(): CustomerFavoriteProductCollection
     {
         return $this->favorites;
     }
 
     /**
-     * @param Collection\CustomerFavoriteProductCollection $favorites
+     * @param iterable|CustomerFavoriteProductCollection|null $favorites
      * @return $this
      */
-    public function setFavorites(Collection\CustomerFavoriteProductCollection $favorites): self
+    public function setFavorites(?iterable $favorites): self
     {
-        $this->favorites = $favorites;
+        $this->favorites = new CustomerFavoriteProductCollection;
+
+        if ($favorites) {
+            foreach ($favorites as $data) {
+                $favorite = null;
+
+                if ($data instanceof CustomerFavoriteProduct) {
+                    $favorite = $data;
+                } else if (is_string($data)) {
+                    // Convert favorite IRI to a favorite entity.
+                    $favorite = $this->iriToFavoriteEntity($data);
+                } else if (is_array($data)) {
+                    $favorite = $this->arrayToFavorite($data);
+                } else {
+                    throw new LogicException('Favorite is neither an array nor an IRI!');
+                }
+
+                $this->addFavorite($favorite);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addFavorite(CustomerFavoriteProduct $favorite): self
+    {
+        if (!$this->favorites->contains($favorite)) {
+            if ($favorite->getCustomer() !== $this) {
+                $favorite->setCustomer($this);
+            }
+            dump($favorite);
+            $this->favorites->add($favorite);
+        }
+
         return $this;
     }
 
@@ -1081,7 +1115,7 @@ class Customer implements EntityInterface
                 if ($data instanceof Quote) {
                     $quote = $data;
                 } else if (is_string($data)) {
-                    // Convert quote IRI (string) to an Quote entity.
+                    // Convert quote IRI to a quote entity.
                     $quote = $this->iriToQuoteEntity($data);
                 } else {
                     throw new LogicException('Quote is neither an array nor an IRI!');
@@ -1127,5 +1161,37 @@ class Customer implements EntityInterface
     {
         $id = (int)str_replace('/quotes/', '', $iri);
         return (new Quote)->setQuoteId($id);
+    }
+
+    protected function iriToFavoriteEntity(string $iri): CustomerFavoriteProduct
+    {
+        //"/customer_favorite_products/customer=4;favoriteProduct=1"
+        $id = (int)str_replace('/customer_favorite_products/', '', $iri);
+
+        return (new CustomerFavoriteProduct)
+            ->setCustomer($this)
+            ->setProduct((new Product)->setProductId($id));
+    }
+
+    protected function arrayToFavorite(array $data): CustomerFavoriteProduct
+    {
+        $productId = null;
+        $pattern = '/\/products\/(?\'product_id\'[\d]+)/';
+
+        if (false !== preg_match($pattern, $data['favorite_product'], $matches)) {
+            if (isset($matches['product_id'])) {
+                $productId = (int)$matches['product_id'];
+            }
+        }
+
+        if (null === $productId) {
+            throw new LogicException('Could not determine product id!');
+        }
+
+        $product = (new Product)->setProductId($productId);
+
+        return (new CustomerFavoriteProduct)
+            ->setCustomer($this)
+            ->setProduct($product);
     }
 }

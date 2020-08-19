@@ -4,6 +4,7 @@ namespace MailCampaigns\ApiClient\Collection;
 
 use ArrayIterator;
 use LogicException;
+use MailCampaigns\ApiClient\Api\ApiInterface;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 
 abstract class AbstractCollection implements CollectionInterface
@@ -13,7 +14,12 @@ abstract class AbstractCollection implements CollectionInterface
      *
      * @var array
      */
-    private $elements;
+    protected $elements;
+
+    /**
+     * @var array
+     */
+    protected $toArrayTypeMapping;
 
     /**
      * @param array $elements
@@ -30,6 +36,14 @@ abstract class AbstractCollection implements CollectionInterface
         }
 
         $this->elements = $elements;
+
+        // Set the default mapping for 'hydration' of a collection.
+        $this->toArrayTypeMapping = [
+            ApiInterface::OPERATION_GET => 'array',
+            ApiInterface::OPERATION_PUT => 'iri',
+            ApiInterface::OPERATION_POST => 'array',
+            ApiInterface::OPERATION_PATCH => 'array'
+        ];
     }
 
     /**
@@ -46,16 +60,21 @@ abstract class AbstractCollection implements CollectionInterface
     public function toArray(?string $operation = null): array
     {
         $arr = [];
+        $toType = $this->toArrayTypeMapping[$operation] ?? null;
 
         /** @var EntityInterface $element */
         foreach ($this->elements as $element) {
             if ($element instanceof EntityInterface) {
-                switch ($operation) {
-                    case EntityInterface::OPERATION_PUT:
+                switch ($toType) {
+                    case 'iri':
                         $arr[] = $element->toIri();
                         break;
-                    default:
+                    case 'array':
                         $arr[] = $element->toArray($operation);
+                        break;
+                    default:
+                        dd($operation, $toType);
+                        throw new LogicException('Invalid or missing type mapping!');
                 }
             } else {
                 $arr[] = $element;

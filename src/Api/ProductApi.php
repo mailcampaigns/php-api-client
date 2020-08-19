@@ -27,7 +27,7 @@ class ProductApi extends AbstractApi
         }
 
         // Send request.
-        $res = $this->post('products', $entity, ['content-type: application/json']);
+        $res = $this->post('products', $entity);
 
         return $this->toEntity($res);
     }
@@ -42,22 +42,39 @@ class ProductApi extends AbstractApi
     }
 
     /**
+     * Tries to find a product by SKU (Stock Keeping Unit), returns null when no
+     * product was found with the given product SKU.
+     *
+     * @param string $sku
+     * @return Product|null
+     */
+    public function getBySku(string $sku): ?EntityInterface
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('products', ['sku' => $sku])
+        );
+
+        if (null !== $data) {
+            return $this->toEntity($data);
+        }
+
+        // Product was not found.
+        return null;
+    }
+
+    /**
      * {@inheritDoc}
      * @return ProductCollection
      */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
+    public function getCollection(?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
     {
         $collection = new ProductCollection;
 
-        $parameters = [
-            'page' => $page ?? $this->page,
-            'itemsPerPage' => $perPage ?? $this->perPage,
-            'order' => [
-                'updated_at' => 'asc'
-            ]
-        ];
-
-        $data = $this->get('products', $parameters);
+        $data = $this->get('products', [
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? ['updated_at' => 'asc']
+        ]);
 
         foreach ($data['hydra:member'] as $productData) {
             $product = $this->toEntity($productData);
@@ -76,15 +93,11 @@ class ProductApi extends AbstractApi
     public function update(EntityInterface $entity): EntityInterface
     {
         if (!$entity instanceof Product) {
-            throw new InvalidArgumentException('Expected product entity!');
+            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
+                Product::class));
         }
 
-        /** @var Product $product */
-        $product = $entity;
-
-        $res = $this->put("products/{$product->getProductId()}", $product, [
-            'content-type: application/json'
-        ]);
+        $res = $this->put("products/{$entity->getProductId()}", $entity);
 
         return $this->toEntity($res);
     }
@@ -95,7 +108,7 @@ class ProductApi extends AbstractApi
      * @param int $id
      * @return $this
      */
-    public function deleteById(int $id): self
+    public function deleteById(int $id): ApiInterface
     {
         $this->delete("products/{$id}");
         return $this;
@@ -134,6 +147,7 @@ class ProductApi extends AbstractApi
             ->setPriceIncl($data['price_incl'])
             ->setOldPriceExcl($data['old_price_excl'])
             ->setOldPriceIncl($data['old_price_incl'])
+            ->setDiscountPercentage($data['discount_percentage'])
             ->setStockStatus($data['stock_status'])
             ->setStockCount($data['stock_count'])
             ->setTax($data['tax'])

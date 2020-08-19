@@ -2,7 +2,6 @@
 
 namespace MailCampaigns\ApiClient\Api;
 
-use InvalidArgumentException;
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\CustomerCollection;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
@@ -12,22 +11,26 @@ use MailCampaigns\ApiClient\Collection\QuoteCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 
+/**
+ * @link https://docs.mailcampaigns.io/?version=latest#56216160-9758-47bc-a2cd-aebb6296fdb0
+ */
 class CustomerApi extends AbstractApi
 {
     /**
-     * @param EntityInterface $entity
+     * {@inheritDoc}
+     * @param Customer|EntityInterface $entity
      * @return Customer
      */
-    public function create(EntityInterface $entity): Customer
+    public function create(EntityInterface $entity): EntityInterface
     {
-        // Send request.
-        $res = $this->post('customers', $entity, ['content-type: application/json']);
+        $this->validateEntityType($entity, Customer::class);
+        $res = $this->post('customers', $entity);
 
         return $this->toEntity($res);
     }
 
     /**
-     * @param int $id
+     * {@inheritDoc}
      * @return Customer
      */
     public function getById(int $id): EntityInterface
@@ -36,54 +39,59 @@ class CustomerApi extends AbstractApi
     }
 
     /**
+     * Tries to find a customer by reference, returns null when no customer was
+     * found with the given customer reference.
+     *
      * @param string $customerRef
      * @return Customer|null
      */
     public function getByCustomerRef(string $customerRef): ?EntityInterface
     {
         $data = $this->handleSingleItemResponse(
-            $this->get("customers", ['customer_ref' => $customerRef])
+            $this->get('customers', ['customer_ref' => $customerRef])
         );
 
         if (null !== $data) {
             return $this->toEntity($data);
         }
 
+        // Customer was not found.
         return null;
     }
 
     /**
+     * Tries to find a customer by email address, returns null if no customer was
+     * found with the given email address.
+     *
      * @param string $email
      * @return Customer|null
      */
     public function getByEmail(string $email): ?EntityInterface
     {
         $data = $this->handleSingleItemResponse(
-            $this->get("customers", ['email' => $email])
+            $this->get('customers', ['email' => $email])
         );
 
         if (null !== $data) {
             return $this->toEntity($data);
         }
 
+        // Customer was not found.
         return null;
     }
 
     /**
-     * @param int|null $page
-     * @param int|null $perPage
+     * {@inheritDoc}
      * @return CustomerCollection
      */
     public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
         $collection = new CustomerCollection;
 
-        $parameters = [
-            'page' => $page ?? $this->page,
-            'itemsPerPage' => $perPage ?? $this->perPage
-        ];
-
-        $data = $this->get('customers', $parameters);
+        $data = $this->get('customers', [
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+        ]);
 
         foreach ($data['hydra:member'] as $customerData) {
             $customer = $this->toEntity($customerData);
@@ -94,31 +102,23 @@ class CustomerApi extends AbstractApi
     }
 
     /**
-     * Updates a customer.
-     *
-     * @param EntityInterface $entity
+     * {@inheritDoc}
+     * @param Customer|EntityInterface $entity
      * @return Customer
      */
-    public function update(EntityInterface $entity): Customer
+    public function update(EntityInterface $entity): EntityInterface
     {
-        if (!$entity instanceof Customer) {
-            throw new InvalidArgumentException('Expected customer entity!');
-        }
+        $this->validateEntityType($entity, Customer::class);
 
-        $res = $this->put("customers/{$entity->getCustomerId()}", $entity, [
-            'content-type: application/json'
-        ]);
+        $res = $this->put("customers/{$entity->getCustomerId()}", $entity);
 
         return $this->toEntity($res);
     }
 
     /**
-     * Deletes a customer by id.
-     *
-     * @param int $id
-     * @return $this
+     * @inheritDoc
      */
-    public function deleteById(int $id): self
+    public function deleteById(int $id): ApiInterface
     {
         $this->delete("customers/{$id}");
         return $this;
@@ -128,8 +128,12 @@ class CustomerApi extends AbstractApi
      * @param array $data
      * @return Customer
      */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity($data): EntityInterface
     {
+        if (is_string($data)) {
+            print $data;exit;
+        }
+
         $orders = new OrderCollection($data['orders']);
         $productReviews = new ProductReviewCollection($data['product_reviews']);
         $favorites = new CustomerFavoriteProductCollection($data['favorites']);

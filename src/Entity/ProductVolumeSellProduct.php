@@ -2,6 +2,8 @@
 
 namespace MailCampaigns\ApiClient\Entity;
 
+use MailCampaigns\ApiClient\Api\ApiInterface;
+
 class ProductVolumeSellProduct implements EntityInterface
 {
     /**
@@ -63,10 +65,16 @@ class ProductVolumeSellProduct implements EntityInterface
      */
     function toArray(?string $operation = null): array
     {
-        return [
-            'product' => $this->product->toIri(),
-            'volume_sell_product' => $this->volumeSellProduct->toIri()
-        ];
+        if ($operation !== ApiInterface::OPERATION_PUT) {
+            return [
+                'volume_sell_product' => $this->volumeSellProduct->toArray($operation)
+            ];
+        } else {
+            return [
+                'product' => $this->product->toIri(),
+                'volume_sell_product' => $this->volumeSellProduct->toIri()
+            ];
+        }
     }
 
     /**

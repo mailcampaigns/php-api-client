@@ -3,6 +3,7 @@
 namespace MailCampaigns\ApiClient\Api;
 
 use DateTime;
+use InvalidArgumentException;
 use MailCampaigns\ApiClient\ApiClient;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\ResponseMediator;
@@ -18,61 +19,11 @@ abstract class AbstractApi implements ApiInterface
     protected $client;
 
     /**
-     * The requested page.
-     *
-     * @var int
-     */
-    protected $page;
-
-    /**
-     * Number of items per page.
-     *
-     * @var int
-     */
-    protected $perPage;
-
-    /**
      * @param ApiClient $client
      */
     public function __construct(ApiClient $client)
     {
-        $this->page = 1;
-        $this->perPage = self::DEFAULT_ITEMS_PER_PAGE;
         $this->client = $client;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setPage(int $page): ApiInterface
-    {
-        $this->page = $page;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPage(): int
-    {
-        return $this->page;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setPerPage(int $perPage): ApiInterface
-    {
-        $this->perPage = $perPage;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPerPage(): int
-    {
-        return $this->perPage;
     }
 
     /**
@@ -98,29 +49,18 @@ abstract class AbstractApi implements ApiInterface
      * @param string $path Request path.
      * @param array $parameters GET parameters.
      * @param array $requestHeaders Request Headers.
-     *
      * @return array|string
      */
     protected function get($path, array $parameters = [], array $requestHeaders = [])
     {
-        if (null !== $this->page && !isset($parameters['page'])) {
-            $parameters['page'] = $this->page;
-        }
-
-        if (null !== $this->perPage && !isset($parameters['per_page'])) {
-            $parameters['per_page'] = $this->perPage;
-        }
-
-        if (array_key_exists('ref', $parameters) && null === $parameters['ref']) {
-            unset($parameters['ref']);
-        }
-
         if (count($parameters) > 0) {
             $path .= '?' . http_build_query($parameters);
         }
 
-        $response = $this->client->getHttpClient()->request('GET', $path, $requestHeaders);
-
+        $response = $this->client->getHttpClient()->request('GET', $path, [
+            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders)
+        ]);
+dump(json_decode($response->getContent()));
         return ResponseMediator::getContent($response);
     }
 
@@ -134,12 +74,12 @@ abstract class AbstractApi implements ApiInterface
      */
     protected function head($path, array $parameters = [], array $requestHeaders = [])
     {
-        if (array_key_exists('ref', $parameters) && null === $parameters['ref']) {
-            unset($parameters['ref']);
+        if (count($parameters) > 0) {
+            $path .= '?' . http_build_query($parameters);
         }
 
-        $url = $path . '?' . http_build_query($parameters);
-        $response = $this->client->getHttpClient()->request('HEAD', $url, $requestHeaders);
+        $response = $this->client->getHttpClient()->request('HEAD', $path,
+            array_merge(['content-type: application/ld+json'], $requestHeaders));
 
         return ResponseMediator::getContent($response);
     }
@@ -150,14 +90,13 @@ abstract class AbstractApi implements ApiInterface
      * @param string $path Request path.
      * @param EntityInterface $entity The entity to be created.
      * @param array $requestHeaders Request headers.
-     *
      * @return array|string
      */
     protected function post($path, EntityInterface $entity, array $requestHeaders = [])
     {
         $response = $this->client->getHttpClient()->request('POST', $path, [
-            'headers' => $requestHeaders,
-            'body' => $this->createJsonBody($entity->toArray(EntityInterface::OPERATION_POST))
+            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
+            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_POST))
         ]);
 
         return ResponseMediator::getContent($response);
@@ -169,14 +108,13 @@ abstract class AbstractApi implements ApiInterface
      * @param string $path Request path.
      * @param EntityInterface $entity The entity to be patched.
      * @param array $requestHeaders Request headers.
-     *
      * @return array|string
      */
     protected function patch($path, EntityInterface $entity, array $requestHeaders = [])
     {
         $response = $this->client->getHttpClient()->request('PATCH', $path, [
-            'headers' => $requestHeaders,
-            'body' => $this->createJsonBody($entity->toArray(EntityInterface::OPERATION_PATCH))
+            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
+            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PATCH))
         ]);
 
         return ResponseMediator::getContent($response);
@@ -188,14 +126,13 @@ abstract class AbstractApi implements ApiInterface
      * @param string $path Request path.
      * @param EntityInterface $entity The updated entity to be sent.
      * @param array $requestHeaders Request headers.
-     *
      * @return array|string
      */
     protected function put($path, EntityInterface $entity, array $requestHeaders = [])
     {
         $response = $this->client->getHttpClient()->request('PUT', $path, [
-            'headers' => $requestHeaders,
-            'body' => $this->createJsonBody($entity->toArray(EntityInterface::OPERATION_PUT))
+            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
+            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PUT))
         ]);
 
         return ResponseMediator::getContent($response);
@@ -207,13 +144,12 @@ abstract class AbstractApi implements ApiInterface
      * @param string $path Request path.
      * @param array $parameters POST parameters to be JSON encoded.
      * @param array $requestHeaders Request headers.
-     *
      * @return array|string
      */
     protected function delete($path, array $parameters = [], array $requestHeaders = [])
     {
         $response = $this->client->getHttpClient()->request('DELETE', $path, [
-            'headers' => $requestHeaders,
+            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
             'body' => $this->createJsonBody($parameters)
         ]);
 
@@ -248,5 +184,22 @@ abstract class AbstractApi implements ApiInterface
         }
 
         return DateTime::createFromFormat(DateTime::ISO8601, $time);
+    }
+
+    /**
+     * Validates given entity instance against a concrete entity type.
+     *
+     * @param EntityInterface $entity
+     * @param string $type
+     * @return $this
+     * @throws InvalidArgumentException
+     */
+    protected function validateEntityType(EntityInterface $entity, string $type): self
+    {
+        if (!$entity instanceof $type) {
+            throw new InvalidArgumentException(sprintf('Expected an instance of %s!', $type));
+        }
+
+        return $this;
     }
 }

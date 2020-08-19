@@ -4,12 +4,6 @@ namespace MailCampaigns\ApiClient\Entity;
 
 interface EntityInterface
 {
-    const OPERATION_GET = 'GET';
-    const OPERATION_PUT = 'PUT';
-    const OPERATION_POST = 'POST';
-    const OPERATION_PATCH = 'PATCH';
-    const OPERATION_DELETE = 'DELETE';
-
     /**
      * Converts the entity to an array.
      *

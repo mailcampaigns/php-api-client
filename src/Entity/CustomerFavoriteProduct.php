@@ -15,9 +15,9 @@ class CustomerFavoriteProduct implements EntityInterface
     protected $product;
 
     /**
-     * @return Customer
+     * @return Customer|null
      */
-    public function getCustomer(): Customer
+    public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
@@ -55,10 +55,15 @@ class CustomerFavoriteProduct implements EntityInterface
      */
     function toArray(?string $operation = null): array
     {
-        return [
-            'customer' => $this->customer->toIri(),
-            'product' => $this->product->toIri()
+        $arr = [
+            'customer' => $this->customer->toIri()
         ];
+
+        if ($this->product instanceof Product && $this->product->getProductId()) {
+            $arr['favorite_product'] = $this->product->toIri();
+        }
+
+        return $arr;
     }
 
     /**

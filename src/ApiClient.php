@@ -65,7 +65,7 @@ final class ApiClient
         // Create an instance of the HTTP client.
         $this->httpClient = HttpClient::create([
             'headers' => [
-                'User-Agent' => 'MailCampaigns PHP API Client ' . $composerConfig->version
+                'User-Agent' => 'MailCampaigns PHP API client ' . $composerConfig->version
             ],
             'auth_bearer' => $bearerToken,
             'base_uri' => $baseUri
