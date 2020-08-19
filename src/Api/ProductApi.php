@@ -42,6 +42,48 @@ class ProductApi extends AbstractApi
     }
 
     /**
+     * Tries to find a product by EAN (International Article Number), returns null
+     * when no product was found with the given EAN.
+     *
+     * @param string $ean
+     * @return Product|null
+     */
+    public function getByEan(string $ean): ?EntityInterface
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('products', ['ean' => $ean])
+        );
+
+        if (null !== $data) {
+            return $this->toEntity($data);
+        }
+
+        // Product was not found.
+        return null;
+    }
+    
+    /**
+     * Tries to find a product by SKU (Stock Keeping Unit), returns null when no
+     * product was found with the given SKU.
+     *
+     * @param string $sku
+     * @return Product|null
+     */
+    public function getBySku(string $sku): ?EntityInterface
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('products', ['sku' => $sku])
+        );
+
+        if (null !== $data) {
+            return $this->toEntity($data);
+        }
+
+        // Product was not found.
+        return null;
+    }
+
+    /**
      * {@inheritDoc}
      * @return ProductCollection
      */
