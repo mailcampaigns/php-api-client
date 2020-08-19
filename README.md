@@ -8,7 +8,7 @@ MailCampaigns PHP API client
 
 The MailCampaigns PHP Api client provides an easy way to communicate with the MailCampaigns RESTful API (v3).
 
-###### **Please note: This API client is still WIP and only covers the `customers` endpoint without any relations other than URIs!**
+###### **Please note: This API client is still WIP! Please report bugs/issues.**
 
 Installation
 ------------
