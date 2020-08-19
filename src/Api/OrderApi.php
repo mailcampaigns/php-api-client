@@ -37,6 +37,23 @@ class OrderApi extends AbstractApi
     }
 
     /**
+     * @param string $number
+     * @return Order|null
+     */
+    public function getByNumber(string $number): ?EntityInterface
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get("orders", ['number' => $number])
+        );
+
+        if (null !== $data) {
+            return $this->toEntity($data);
+        }
+
+        return null;
+    }
+
+    /**
      * {@inheritDoc}
      * @return OrderCollection
      */
