@@ -53,7 +53,7 @@ class CustomerFavoriteProduct implements EntityInterface
     /**
      * @inheritDoc
      */
-    function toArray(?string $operation = null): array
+    function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         $arr = [
             'customer' => $this->customer->toIri()
@@ -69,13 +69,24 @@ class CustomerFavoriteProduct implements EntityInterface
     /**
      * @inheritDoc
      */
-    function toIri(): string
+    function toIri(): ?string
     {
-        if (!$this->getCustomer() || !$this->getProduct()) {
-            return '';
+        $customer = $this->getCustomer();
+        $product = $this->getProduct();
+
+        if (!$customer || !$product) {
+            return null;
+        }
+
+        if (null === $customer->getCustomerId()) {
+            return null;
+        }
+
+        if (null === $product->getProductId()) {
+            return null;
         }
 
         return sprintf('/customer_favorite_products/customer=%d;favoriteProduct=%d',
-            $this->getCustomer()->getCustomerId(), $this->getProduct()->getProductId());
+            $customer->getCustomerId(), $product->getProductId());
     }
 }

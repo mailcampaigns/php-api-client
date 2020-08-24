@@ -32,7 +32,7 @@ class OrderProductApi extends AbstractApi
      * {@inheritDoc}
      * @return OrderProduct
      */
-    public function getById(int $id): EntityInterface
+    public function getById($id): EntityInterface
     {
         return $this->toEntity($this->get("order_products/{$id}"));
     }
@@ -82,7 +82,7 @@ class OrderProductApi extends AbstractApi
      * @param int $id
      * @return $this
      */
-    public function deleteById(int $id): ApiInterface
+    public function deleteById($id): ApiInterface
     {
         $this->delete("order_products/{$id}");
         return $this;
@@ -91,7 +91,7 @@ class OrderProductApi extends AbstractApi
     /**
      * @inheritDoc
      */
-    function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): EntityInterface
     {
         $orderProduct = (new OrderProduct)
             ->setOrderProductId($data['order_product_id'])

@@ -5,7 +5,6 @@ namespace MailCampaigns\ApiClient\Collection;
 use ArrayAccess;
 use Countable;
 use IteratorAggregate;
-use MailCampaigns\ApiClient\Api\ApiInterface;
 
 /**
  * Copyright (c) 2006-2013 Doctrine Project
@@ -25,9 +24,10 @@ interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
      * Gets a native PHP array representation of the collection.
      *
      * @param string|null $operation
+     * @param bool|null $isRoot
      * @return array
      */
-    public function toArray(?string $operation = null): array;
+    public function toArray(?string $operation = null, ?bool $isRoot): array;
 
     /**
      * Adds an element at the end of the collection.

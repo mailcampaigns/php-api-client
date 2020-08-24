@@ -2,9 +2,8 @@
 
 namespace MailCampaigns\ApiClient\Api;
 
-use InvalidArgumentException;
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
-use MailCampaigns\ApiClient\Collection\ProductCategoryProductCollection;
+use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductRelatedProductCollection;
@@ -16,17 +15,24 @@ use MailCampaigns\ApiClient\Entity\Product;
 
 class ProductApi extends AbstractApi
 {
+    const ORDERABLE_PARAMS = [
+        'product_id',
+        'created_at',
+        'updated_at'
+    ];
+
+    const DEFAULT_ORDER = [
+        'created_at' => 'desc'
+    ];
+
     /**
-     * @param EntityInterface|Product $entity
+     * {@inheritDoc}
+     * @param Product|EntityInterface $entity
      * @return Product
      */
     public function create(EntityInterface $entity): EntityInterface
     {
-        if (!$entity instanceof Product) {
-            throw new InvalidArgumentException('Expected product entity!');
-        }
-
-        // Send request.
+        $this->validateEntityType($entity, Product::class);
         $res = $this->post('products', $entity);
 
         return $this->toEntity($res);
@@ -36,9 +42,51 @@ class ProductApi extends AbstractApi
      * {@inheritDoc}
      * @return Product
      */
-    public function getById(int $id): EntityInterface
+    public function getById($id): EntityInterface
     {
         return $this->toEntity($this->get("products/{$id}"));
+    }
+
+    /**
+     * Tries to find a product by article code, returns null when no
+     * product was found with the given article code.
+     *
+     * @param string $articleCode
+     * @return Product|null
+     */
+    public function getByArticleCode(string $articleCode): ?EntityInterface
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('products', ['article_code' => $articleCode])
+        );
+
+        if (null !== $data) {
+            return $this->toEntity($data);
+        }
+
+        // Product was not found.
+        return null;
+    }
+
+    /**
+     * Tries to find a product by EAN (International Article Number), returns null
+     * when no product was found with the given product EAN.
+     *
+     * @param string $ean
+     * @return Product|null
+     */
+    public function getByEan(string $ean): ?EntityInterface
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('products', ['ean' => $ean])
+        );
+
+        if (null !== $data) {
+            return $this->toEntity($data);
+        }
+
+        // Product was not found.
+        return null;
     }
 
     /**
@@ -73,10 +121,18 @@ class ProductApi extends AbstractApi
         $data = $this->get('products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
-            'order' => $order ?? ['updated_at' => 'asc']
+            'order' => $order ?? self::DEFAULT_ORDER
         ]);
 
-        foreach ($data['hydra:member'] as $productData) {
+        if (isset($data['hydra:member'])) {
+            $arr = $data['hydra:member'];
+        } else if (isset($data) && is_array($data)) {
+            $arr = $data;
+        } else {
+            $arr = [];
+        }
+
+        foreach ($arr as $productData) {
             $product = $this->toEntity($productData);
             $collection->add($product);
         }
@@ -85,17 +141,13 @@ class ProductApi extends AbstractApi
     }
 
     /**
-     * Updates a product.
-     *
-     * @param EntityInterface $entity
+     * {@inheritDoc}
+     * @param Product|EntityInterface $entity
      * @return Product
      */
     public function update(EntityInterface $entity): EntityInterface
     {
-        if (!$entity instanceof Product) {
-            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
-                Product::class));
-        }
+        $this->validateEntityType($entity, Product::class);
 
         $res = $this->put("products/{$entity->getProductId()}", $entity);
 
@@ -103,12 +155,9 @@ class ProductApi extends AbstractApi
     }
 
     /**
-     * Deletes a product by id.
-     *
-     * @param int $id
-     * @return $this
+     * @inheritDoc
      */
-    public function deleteById(int $id): ApiInterface
+    public function deleteById($id): ApiInterface
     {
         $this->delete("products/{$id}");
         return $this;
@@ -116,18 +165,19 @@ class ProductApi extends AbstractApi
 
     /**
      * @inheritDoc
+     * @return Product
      */
-    function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): EntityInterface
     {
-        $categories = new ProductCategoryProductCollection($data['categories']);
-        $relatedProducts = new ProductRelatedProductCollection($data['related_products']);
-        $crossSellProducts = new ProductCrossSellProductCollection($data['cross_sell_products']);
-        $upSellProducts = new ProductUpSellProductCollection($data['up_sell_products']);
-        $volumeSellProducts = new ProductVolumeSellProductCollection($data['volume_sell_products']);
-        $reviews = new ProductReviewCollection($data['reviews']);
+        $categories = new ProductProductCategoryCollection($data['categories'] ?? []);
+        $relatedProducts = new ProductRelatedProductCollection($data['related_products'] ?? []);
+        $crossSellProducts = new ProductCrossSellProductCollection($data['cross_sell_products'] ?? []);
+        $upSellProducts = new ProductUpSellProductCollection($data['up_sell_products'] ?? []);
+        $volumeSellProducts = new ProductVolumeSellProductCollection($data['volume_sell_products'] ?? []);
+        $reviews = new ProductReviewCollection($data['reviews'] ?? []);
 
         return (new Product)
-            ->setProductId($data['product_id'])
+            ->setProductId($data['product_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
             ->setIsVisible($data['is_visible'])

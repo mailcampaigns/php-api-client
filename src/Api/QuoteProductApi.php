@@ -32,7 +32,7 @@ class QuoteProductApi extends AbstractApi
      * {@inheritDoc}
      * @return QuoteProduct
      */
-    public function getById(int $id): EntityInterface
+    public function getById($id): EntityInterface
     {
         return $this->toEntity($this->get("quote_products/{$id}"));
     }
@@ -82,7 +82,7 @@ class QuoteProductApi extends AbstractApi
      * @param int $id
      * @return $this
      */
-    public function deleteById(int $id): ApiInterface
+    public function deleteById($id): ApiInterface
     {
         $this->delete("quote_products/{$id}");
         return $this;
@@ -91,7 +91,7 @@ class QuoteProductApi extends AbstractApi
     /**
      * @inheritDoc
      */
-    function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): EntityInterface
     {
         $quoteProduct = (new QuoteProduct)
             ->setQuoteProductId($data['quote_product_id'])

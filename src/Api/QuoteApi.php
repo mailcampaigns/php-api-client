@@ -31,7 +31,7 @@ class QuoteApi extends AbstractApi
      * {@inheritDoc}
      * @return Quote
      */
-    public function getById(int $id): EntityInterface
+    public function getById($id): EntityInterface
     {
         return $this->toEntity($this->get("quotes/{$id}"));
     }
@@ -98,7 +98,7 @@ class QuoteApi extends AbstractApi
      * @param int $id
      * @return $this
      */
-    public function deleteById(int $id): ApiInterface
+    public function deleteById($id): ApiInterface
     {
         $this->delete("quotes/{$id}");
         return $this;
@@ -108,7 +108,7 @@ class QuoteApi extends AbstractApi
      * @inheritDoc
      * @return Quote
      */
-    function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): EntityInterface
     {
         $customer = null;
 

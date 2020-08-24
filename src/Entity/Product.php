@@ -4,9 +4,8 @@ namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
 use LogicException;
-use MailCampaigns\ApiClient\Api\ApiInterface;
 use MailCampaigns\ApiClient\Collection\ProductCategoryCollection;
-use MailCampaigns\ApiClient\Collection\ProductCategoryProductCollection;
+use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductRelatedProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
@@ -249,7 +248,7 @@ class Product implements EntityInterface
         $this->createdAt = new DateTime;
         $this->isVisible = true;
         $this->reviews = new ProductReviewCollection;
-        $this->categories = new ProductCategoryProductCollection;
+        $this->categories = new ProductProductCategoryCollection;
         $this->relatedProducts = new ProductRelatedProductCollection;
         $this->crossSellProducts = new ProductCrossSellProductCollection;
         $this->upSellProducts = new ProductUpSellProductCollection;
@@ -257,56 +256,7 @@ class Product implements EntityInterface
     }
 
     /**
-     * @inheritDoc
-     */
-    function toArray(?string $operation = ApiInterface::OPERATION_GET): array
-    {
-        return [
-            'product_id' => $this->getProductId(),
-            'created_at' => $this->dtToString($this->getCreatedAt()),
-            'updated_at' => $this->dtToString($this->getUpdatedAt()),
-            'is_visible' => $this->getIsVisible(),
-            'visibility' => $this->getVisibility(),
-            'url' => $this->getUrl(),
-            'title' => $this->getTitle(),
-            'full_title' => $this->getFullTitle(),
-            'brand' => $this->getBrand(),
-            'description' => $this->getDescription(),
-            'content' => $this->getContent(),
-            'image' => $this->getImage(),
-            'article_code' => $this->getArticleCode(),
-            'ean' => $this->getEan(),
-            'sku' => $this->getSku(),
-            'price_cost' => $this->getPriceCost(),
-            'price_excl' => $this->getPriceExcl(),
-            'price_incl' => $this->getPriceIncl(),
-            'old_price_excl' => $this->getOldPriceExcl(),
-            'old_price_incl' => $this->getOldPriceIncl(),
-            'discount_type' => $this->getDiscountType(),
-            'discount_percentage' => $this->getDiscountPercentage(),
-            'stock_status' => $this->getStockStatus(),
-            'stock_count' => $this->getStockCount(),
-            'tax' => $this->getTax(),
-            'tax_rate' => $this->getTaxRate(),
-            'categories' => $this->getCategories()->toArray($operation),
-            'related_products' => $this->getRelatedProducts()->toArray($operation),
-            'cross_sell_products' => $this->getCrossSellProducts()->toArray($operation),
-            'up_sell_products' => $this->getUpSellProducts()->toArray($operation),
-            'volume_sell_products' => $this->getVolumeSellProducts()->toArray($operation),
-            'reviews' => $this->getReviews()->toArray($operation)
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    function toIri(): string
-    {
-        return '/products/' . $this->getProductId();
-    }
-
-    /**
-     * @return int
+     * @return int|null
      */
     public function getProductId(): ?int
     {
@@ -314,10 +264,10 @@ class Product implements EntityInterface
     }
 
     /**
-     * @param int $productId
+     * @param int|null $productId
      * @return Product
      */
-    public function setProductId(int $productId): self
+    public function setProductId(?int $productId): self
     {
         $this->productId = $productId;
         return $this;
@@ -332,10 +282,10 @@ class Product implements EntityInterface
     }
 
     /**
-     * @param string $title
+     * @param string|null $title
      * @return Product
      */
-    public function setTitle(string $title): self
+    public function setTitle(?string $title): self
     {
         $this->title = $title;
         return $this;
@@ -737,23 +687,23 @@ class Product implements EntityInterface
         return $this;
     }
 
-        public function getCategories(): ProductCategoryProductCollection
+        public function getCategories(): ProductProductCategoryCollection
     {
         return $this->categories;
     }
 
-    public function setCategories(ProductCategoryProductCollection $collection): self
+    public function setCategories(ProductProductCategoryCollection $collection): self
     {
-        $this->categories = new ProductCategoryProductCollection;
+        $this->categories = new ProductProductCategoryCollection;
 
         foreach ($collection as $element) {
             // Convert to entity if raw data (array) or IRI for the item is supplied.
-            if ($element instanceof ProductCategoryProduct) {
+            if ($element instanceof ProductProductCategory) {
                 $entity = $element;
             } else if (is_array($element)) {
-                $entity = $this->arrayToProductCategoryProduct($element);
+                $entity = $this->toProductProductCategory($element);
             } else if (is_string($element)) {
-                $entity = $this->iriToProductCategoryProduct($element);
+                $entity = $this->iriToProductProductCategory($element);
             } else {
                 throw new LogicException('Unexpected element type in collection!');
             }
@@ -764,23 +714,23 @@ class Product implements EntityInterface
         return $this;
     }
 
-    public function addCategory(ProductCategoryProduct $productCategoryProduct): self
+    public function addCategory(ProductProductCategory $ProductProductCategory): self
     {
-        if (!$this->categories->contains($productCategoryProduct)) {
-            if ($productCategoryProduct->getProduct() !== $this) {
-                $productCategoryProduct->setProduct($this);
+        if (!$this->categories->contains($ProductProductCategory)) {
+            if ($ProductProductCategory->getProduct() !== $this) {
+                $ProductProductCategory->setProduct($this);
             }
 
-            $this->categories->add($productCategoryProduct);
+            $this->categories->add($ProductProductCategory);
         }
 
         return $this;
     }
 
-    public function removeCategory(ProductCategoryProduct $productCategoryProduct): self
+    public function removeCategory(ProductProductCategory $ProductProductCategory): self
     {
-        if ($this->categories->contains($productCategoryProduct)) {
-            $this->categories->removeElement($productCategoryProduct);
+        if ($this->categories->contains($ProductProductCategory)) {
+            $this->categories->removeElement($ProductProductCategory);
         }
 
         return $this;
@@ -800,7 +750,7 @@ class Product implements EntityInterface
             if ($element instanceof ProductRelatedProduct) {
                 $entity = $element;
             } else if (is_array($element)) {
-                $entity = $this->arrayToProductRelatedProduct($element);
+                $entity = $this->toProductRelatedProduct($element);
             } else if (is_string($element)) {
                 $entity = $this->iriToProductRelatedProduct($element);
             } else {
@@ -849,7 +799,9 @@ class Product implements EntityInterface
             if ($element instanceof ProductReview) {
                 $entity = $element;
             } else if (is_array($element)) {
-                $entity = $this->arrayToProductReview($element);
+                $entity = $this->toProductReview($element);
+            } else if (is_string($element)) {
+                $entity = $this->iriToProductReview($element);
             } else {
                 throw new LogicException('Unexpected element type in collection!');
             }
@@ -896,7 +848,7 @@ class Product implements EntityInterface
             if ($element instanceof ProductCrossSellProduct) {
                 $entity = $element;
             } else if (is_array($element)) {
-                $entity = $this->arrayToProductCrossSellProduct($element);
+                $entity = $this->toProductCrossSellProduct($element);
             } else if (is_string($element)) {
                 $entity = $this->iriToProductCrossSellProduct($element);
             } else {
@@ -945,7 +897,7 @@ class Product implements EntityInterface
             if ($element instanceof ProductUpSellProduct) {
                 $entity = $element;
             } else if (is_array($element)) {
-                $entity = $this->arrayToProductUpSellProduct($element);
+                $entity = $this->toProductUpSellProduct($element);
             } else if (is_string($element)) {
                 $entity = $this->iriToProductUpSellProduct($element);
             } else {
@@ -994,7 +946,7 @@ class Product implements EntityInterface
             if ($element instanceof ProductVolumeSellProduct) {
                 $entity = $element;
             } else if (is_array($element)) {
-                $entity = $this->arrayToProductVolumeSellProduct($element);
+                $entity = $this->toProductVolumeSellProduct($element);
             } else if (is_string($element)) {
                 $entity = $this->iriToProductVolumeSellProduct($element);
             } else {
@@ -1029,37 +981,100 @@ class Product implements EntityInterface
         return $this;
     }
 
-    protected function arrayToProductCategoryProduct(array $data): ProductCategoryProduct
+    /**
+     * @inheritDoc
+     */
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
-        $data = $data['product_category'];
+        return [
+            'product_id' => $this->getProductId(),
+            'created_at' => $this->dtToString($this->getCreatedAt()),
+            'updated_at' => $this->dtToString($this->getUpdatedAt()),
+            'is_visible' => $this->getIsVisible(),
+            'visibility' => $this->getVisibility(),
+            'url' => $this->getUrl(),
+            'title' => $this->getTitle(),
+            'full_title' => $this->getFullTitle(),
+            'brand' => $this->getBrand(),
+            'description' => $this->getDescription(),
+            'content' => $this->getContent(),
+            'image' => $this->getImage(),
+            'article_code' => $this->getArticleCode(),
+            'ean' => $this->getEan(),
+            'sku' => $this->getSku(),
+            'price_cost' => $this->getPriceCost(),
+            'price_excl' => $this->getPriceExcl(),
+            'price_incl' => $this->getPriceIncl(),
+            'old_price_excl' => $this->getOldPriceExcl(),
+            'old_price_incl' => $this->getOldPriceIncl(),
+            'discount_type' => $this->getDiscountType(),
+            'discount_percentage' => $this->getDiscountPercentage(),
+            'stock_status' => $this->getStockStatus(),
+            'stock_count' => $this->getStockCount(),
+            'tax' => $this->getTax(),
+            'tax_rate' => $this->getTaxRate(),
+            'categories' => $this->getCategories()->toArray($operation),
+            'related_products' => $this->getRelatedProducts()->toArray($operation),
+            'cross_sell_products' => $this->getCrossSellProducts()->toArray($operation),
+            'up_sell_products' => $this->getUpSellProducts()->toArray($operation),
+            'volume_sell_products' => $this->getVolumeSellProducts()->toArray($operation),
+            'reviews' => $this->getReviews()->toArray($operation)
+        ];
+    }
 
-        $id = null;
-        $title = $data['title'];
-        $pattern = '/\/product_categories\/(?\'category_id\'[\d]+)/';
+    /**
+     * @inheritDoc
+     */
+    public function toIri(): ?string
+    {
+        if (null === $this->getProductId()) {
+            return null;
+        }
 
-        if (false !== preg_match($pattern, $data['@id'], $matches)) {
-            if (isset($matches['category_id'])) {
-                $id = (int)$matches['category_id'];
+        return '/products/' . $this->getProductId();
+    }
+
+    protected function toProductProductCategory(array $data): ProductProductCategory
+    {
+        $id = $title = $isVisible = null;
+
+        if (isset($data['product_category'])) {
+            $data = $data['product_category'];
+        }
+
+        if (is_int($data)) {
+            $id = $data;
+        } else if (is_string($data)) {
+            $pattern = '/\/product_categories\/(?\'id\'[\d]+)/';
+
+            if (false !== preg_match($pattern, $data, $matches) && isset($matches['id'])) {
+                $id = (int)$matches['id'];
             }
+        } else {
+            $id = isset($data['product_category_id']) ? (int)$data['product_category_id'] : null;
+            $title = $data['title'] ?? null;
+            $isVisible = $data['is_visible'] ?? null;
         }
 
         if (null === $id) {
-            throw new LogicException('Could not determine product category id!');
+            throw new LogicException('Could not determine id!');
         }
 
-        $category = (new ProductCategory)->setProductCategoryId($id)->setTitle($title);
-
-        return (new ProductCategoryProduct)
+        return (new ProductProductCategory)
             ->setProduct($this)
-            ->setProductCategory($category);
+            ->setProductCategory(
+                (new ProductCategory)
+                    ->setProductCategoryId($id)
+                    ->setTitle($title)
+                    ->setIsVisible($isVisible)
+            );
     }
 
-    protected function iriToProductCategoryProduct(string $iri): ProductCategoryProduct
+    protected function iriToProductProductCategory(string $iri): ProductProductCategory
     {
         $categoryId = $productId = null;
 
-        // IRI example: "/product_category_products/productCategory=1;product=4"
-        $pattern = '/^\/product_category_products\/productCategory=(?\'category_id\'[\d]+);product=(?\'product_id\'[\d]+)$/';
+        $pattern = '/^\/product_product_categories\/product=(?\'product_id\'[\d]+);productCategory=(?\'category_id\'[\d]+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['category_id'])) {
@@ -1075,38 +1090,24 @@ class Product implements EntityInterface
             throw new LogicException('IRI error: Could not determine product and/or category id!');
         }
 
-        if ((int)$productId !== $this->getProductId()) {
+        if ($productId !== $this->getProductId()) {
             throw new LogicException('IRI error: Product id does not match.');
         }
 
         $category = (new ProductCategory)->setProductCategoryId($categoryId);
 
-        return (new ProductCategoryProduct)
+        return (new ProductProductCategory)
             ->setProduct($this)
             ->setProductCategory($category);
     }
 
-    protected function arrayToProductRelatedProduct(array $data): ProductRelatedProduct
+    protected function toProductRelatedProduct(array $data): ProductRelatedProduct
     {
-        $id = null;
-        $title = $data['title'];
-        $pattern = '/.*\/[a-zA-Z]+=(?\'product_id\'[\d]+);[a-zA-Z]+=(?\'cross_sell_product_id\'[\d]+)/';
-
-        if (false !== preg_match($pattern, $data['@id'], $matches)) {
-            if (isset($matches['cross_sell_product_id'])) {
-                $id = (int)$matches['cross_sell_product_id'];
-            }
-        }
-
-        if (null === $id) {
-            throw new LogicException('Could not determine cross sell product id!');
-        }
-
-        $relatedProduct = (new Product)->setProductId($id)->setTitle($title);
+        $linkedProduct = $this->getLinkedProduct($data);
 
         return (new ProductRelatedProduct)
             ->setProduct($this)
-            ->setRelatedProduct($relatedProduct);
+            ->setLinkedProduct($linkedProduct);
     }
 
     protected function iriToProductRelatedProduct(string $iri): ProductRelatedProduct
@@ -1137,30 +1138,16 @@ class Product implements EntityInterface
 
         return (new ProductRelatedProduct)
             ->setProduct($this)
-            ->setRelatedProduct($relatedProduct);
+            ->setLinkedProduct($relatedProduct);
     }
 
-    protected function arrayToProductCrossSellProduct(array $data): ProductCrossSellProduct
+    protected function toProductCrossSellProduct(array $data): ProductCrossSellProduct
     {
-        $id = null;
-        $title = $data['title'];
-        $pattern = '/.*\/[a-zA-Z]+=(?\'product_id\'[\d]+);[a-zA-Z]+=(?\'cross_sell_product_id\'[\d]+)/';
-
-        if (false !== preg_match($pattern, $data['@id'], $matches)) {
-            if (isset($matches['cross_sell_product_id'])) {
-                $id = (int)$matches['cross_sell_product_id'];
-            }
-        }
-
-        if (null === $id) {
-            throw new LogicException('Could not determine cross-sell product id!');
-        }
-
-        $crossSellProduct = (new Product)->setProductId($id)->setTitle($title);
+        $linkedProduct = $this->getLinkedProduct($data);
 
         return (new ProductCrossSellProduct)
             ->setProduct($this)
-            ->setCrossSellProduct($crossSellProduct);
+            ->setLinkedProduct($linkedProduct);
     }
 
     protected function iriToProductCrossSellProduct(string $iri): ProductCrossSellProduct
@@ -1191,30 +1178,16 @@ class Product implements EntityInterface
 
         return (new ProductCrossSellProduct)
             ->setProduct($this)
-            ->setCrossSellProduct($crossSellProduct);
+            ->setLinkedProduct($crossSellProduct);
     }
 
-    protected function arrayToProductUpSellProduct(array $data): ProductUpSellProduct
+    protected function toProductUpSellProduct(array $data): ProductUpSellProduct
     {
-        $id = null;
-        $title = $data['title'];
-        $pattern = '/.*\/[a-zA-Z]+=(?\'product_id\'[\d]+);[a-zA-Z]+=(?\'up_sell_product_id\'[\d]+)/';
-
-        if (false !== preg_match($pattern, $data['@id'], $matches)) {
-            if (isset($matches['up_sell_product_id'])) {
-                $id = (int)$matches['up_sell_product_id'];
-            }
-        }
-
-        if (null === $id) {
-            throw new LogicException('Could not determine up-sell product id!');
-        }
-
-        $upSellProduct = (new Product)->setProductId($id)->setTitle($title);
+        $linkedProduct = $this->getLinkedProduct($data);
 
         return (new ProductUpSellProduct)
             ->setProduct($this)
-            ->setUpSellProduct($upSellProduct);
+            ->setLinkedProduct($linkedProduct);
     }
 
     protected function iriToProductUpSellProduct(string $iri): ProductUpSellProduct
@@ -1245,30 +1218,16 @@ class Product implements EntityInterface
 
         return (new ProductUpSellProduct)
             ->setProduct($this)
-            ->setUpSellProduct($upSellProduct);
+            ->setLinkedProduct($upSellProduct);
     }
 
-    protected function arrayToProductVolumeSellProduct(array $data): ProductVolumeSellProduct
+    protected function toProductVolumeSellProduct(array $data): ProductVolumeSellProduct
     {
-        $id = null;
-        $title = $data['title'];
-        $pattern = '/.*\/[a-zA-Z]+=(?\'product_id\'[\d]+);[a-zA-Z]+=(?\'volume_sell_product_id\'[\d]+)/';
-
-        if (false !== preg_match($pattern, $data['@id'], $matches)) {
-            if (isset($matches['volume_sell_product_id'])) {
-                $id = (int)$matches['volume_sell_product_id'];
-            }
-        }
-
-        if (null === $id) {
-            throw new LogicException('Could not determine volume-sell product id!');
-        }
-
-        $volumeSellProduct = (new Product)->setProductId($id)->setTitle($title);
+        $linkedProduct = $this->getLinkedProduct($data);
 
         return (new ProductVolumeSellProduct)
             ->setProduct($this)
-            ->setVolumeSellProduct($volumeSellProduct);
+            ->setLinkedProduct($linkedProduct);
     }
 
     protected function iriToProductVolumeSellProduct(string $iri): ProductVolumeSellProduct
@@ -1299,10 +1258,10 @@ class Product implements EntityInterface
 
         return (new ProductVolumeSellProduct)
             ->setProduct($this)
-            ->setVolumeSellProduct($volumeSellProduct);
+            ->setLinkedProduct($volumeSellProduct);
     }
 
-    protected function arrayToProductReview(array $data): ProductReview
+    protected function toProductReview(array $data): ProductReview
     {
         $id = null;
         $score = $data['score'];
@@ -1327,9 +1286,74 @@ class Product implements EntityInterface
             ->setCustomer($customer);
     }
 
+    protected function iriToProductReview(string $iri): ?ProductReview
+    {
+        $pattern = '/\/product_reviews\/(?\'id\'[\d]+)/';
+
+        if (false !== preg_match($pattern, $iri, $matches) && isset($matches['id'])) {
+            return (new ProductReview)->setProductReviewId((int)$matches['id']);
+        }
+
+        return null;
+    }
+
     protected function iriToCustomer(string $iri): Customer
     {
         $id = (int)str_replace('/customers/', '', $iri);
         return (new Customer)->setCustomerId($id);
+    }
+
+    /**
+     * Converts raw data to a linked product entity.
+     * The raw data can be an array, IRI or just an ID.
+     *
+     * @param mixed $data
+     * @return Product
+     */
+    protected function getLinkedProduct($data): Product
+    {
+        $linkedProduct = new Product;
+
+        if (isset($data['linked_product'])) {
+            $data = $data['linked_product'];
+        }
+
+        if (is_int($data)) {
+            $linkedProduct->setProductId($data);
+        } else if (is_string($data)) {
+            $pattern = '/\/[a-z\_]+\/(?\'id\'[\d]+)/';
+
+            if (false !== preg_match($pattern, $data, $matches)
+                && isset($matches['id'])) {
+                $linkedProduct->setProductId((int)$matches['id']);
+            }
+        } else if (is_array($data)) {
+            $id = isset($data['product_id']) ? (int)$data['product_id'] : null;
+            $isVisible = $data['is_visible'] ?? null;
+            $url = $data['url'] ?? null;
+            $title = $data['title'] ?? null;
+            $brand = $data['brand'] ?? null;
+            $image = $data['image'] ?? null;
+            $articleCode = $data['article_code'] ?? null;
+            $ean = $data['ean'] ?? null;
+            $sku = $data['sku'] ?? null;
+
+            $linkedProduct
+                ->setProductId($id)
+                ->setIsVisible($isVisible)
+                ->setUrl($url)
+                ->setTitle($title)
+                ->setBrand($brand)
+                ->setImage($image)
+                ->setArticleCode($articleCode)
+                ->setEan($ean)
+                ->setSku($sku);
+        }
+
+        if (null === $linkedProduct->getProductId()) {
+            throw new LogicException('Could not determine product id!');
+        }
+
+        return $linkedProduct;
     }
 }

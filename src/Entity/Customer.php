@@ -257,66 +257,6 @@ class Customer implements EntityInterface
     }
 
     /**
-     * @inheritDoc
-     */
-    public function toArray(?string $operation = null): array
-    {
-        return [
-            'customer_id' => $this->getCustomerId(),
-            'created_at' => $this->dtToString($this->getCreatedAt()),
-            'updated_at' => $this->dtToString($this->getUpdatedAt()),
-            'customer_ref' => $this->getCustomerRef(),
-            'origin' => $this->getOrigin(),
-            'is_subscribed' => $this->isSubscribed(),
-            'is_confirmed' => $this->isConfirmed(),
-            'gender' => $this->getGender(),
-            'birth_date' => $this->dtToString($this->getBirthDate()),
-            'email' => $this->getEmail(),
-            'first_name' => $this->getFirstName(),
-            'last_name' => $this->getLastName(),
-            'phone' => $this->getPhone(),
-            'mobile' => $this->getMobile(),
-            'company_name' => $this->getCompanyName(),
-            'company_coc_number' => $this->getCompanyCocNumber(),
-            'company_vat_number' => $this->getCompanyVatNumber(),
-            'address_billing_name' => $this->getAddressBillingName(),
-            'address_billing_street' => $this->getAddressBillingStreet(),
-            'address_billing_number' => $this->getAddressBillingNumber(),
-            'address_billing_extension' => $this->getAddressBillingExtension(),
-            'address_billing_zipcode' => $this->getAddressBillingZipcode(),
-            'address_billing_city' => $this->getAddressBillingCity(),
-            'address_billing_region' => $this->getAddressBillingRegion(),
-            'address_billing_country' => $this->getAddressBillingCountry(),
-            'address_shipping_company' => $this->getAddressShippingCompany(),
-            'address_shipping_name' => $this->getAddressShippingName(),
-            'address_shipping_street' => $this->getAddressShippingStreet(),
-            'address_shipping_number' => $this->getAddressShippingNumber(),
-            'address_shipping_extension' => $this->getAddressShippingExtension(),
-            'address_shipping_zipcode' => $this->getAddressShippingZipcode(),
-            'address_shipping_city' => $this->getAddressShippingCity(),
-            'address_shipping_region' => $this->getAddressShippingRegion(),
-            'address_shipping_country' => $this->getAddressShippingCountry(),
-            'language' => $this->getLanguage(),
-            'orders' => $this->getOrders()->toArray($operation),
-            'product_reviews' => $this->getProductReviews()->toArray($operation),
-            'favorites' => $this->getFavorites()->toArray($operation),
-            'quotes' => $this->getQuotes()->toArray($operation)
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function toIri(): string
-    {
-        if (null === $this->getCustomerId()) {
-            return '';
-        }
-
-        return '/customers/' . $this->getCustomerId();
-    }
-
-    /**
      * @return int
      */
     public function getCustomerId(): ?int
@@ -325,28 +265,28 @@ class Customer implements EntityInterface
     }
 
     /**
-     * @param int $customerId
+     * @param int|null $customerId
      * @return $this
      */
-    public function setCustomerId(int $customerId): self
+    public function setCustomerId(?int $customerId): self
     {
         $this->customerId = $customerId;
         return $this;
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
     /**
-     * @param DateTime $createdAt
+     * @param DateTime|null $createdAt
      * @return $this
      */
-    public function setCreatedAt(DateTime $createdAt): self
+    public function setCreatedAt(?DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -1085,7 +1025,7 @@ class Customer implements EntityInterface
             if ($favorite->getCustomer() !== $this) {
                 $favorite->setCustomer($this);
             }
-            dump($favorite);
+
             $this->favorites->add($favorite);
         }
 
@@ -1149,6 +1089,66 @@ class Customer implements EntityInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
+    {
+        return [
+            'customer_id' => $this->getCustomerId(),
+            'created_at' => $this->dtToString($this->getCreatedAt()),
+            'updated_at' => $this->dtToString($this->getUpdatedAt()),
+            'customer_ref' => $this->getCustomerRef(),
+            'origin' => $this->getOrigin(),
+            'is_subscribed' => $this->isSubscribed(),
+            'is_confirmed' => $this->isConfirmed(),
+            'gender' => $this->getGender(),
+            'birth_date' => $this->dtToString($this->getBirthDate()),
+            'email' => $this->getEmail(),
+            'first_name' => $this->getFirstName(),
+            'last_name' => $this->getLastName(),
+            'phone' => $this->getPhone(),
+            'mobile' => $this->getMobile(),
+            'company_name' => $this->getCompanyName(),
+            'company_coc_number' => $this->getCompanyCocNumber(),
+            'company_vat_number' => $this->getCompanyVatNumber(),
+            'address_billing_name' => $this->getAddressBillingName(),
+            'address_billing_street' => $this->getAddressBillingStreet(),
+            'address_billing_number' => $this->getAddressBillingNumber(),
+            'address_billing_extension' => $this->getAddressBillingExtension(),
+            'address_billing_zipcode' => $this->getAddressBillingZipcode(),
+            'address_billing_city' => $this->getAddressBillingCity(),
+            'address_billing_region' => $this->getAddressBillingRegion(),
+            'address_billing_country' => $this->getAddressBillingCountry(),
+            'address_shipping_company' => $this->getAddressShippingCompany(),
+            'address_shipping_name' => $this->getAddressShippingName(),
+            'address_shipping_street' => $this->getAddressShippingStreet(),
+            'address_shipping_number' => $this->getAddressShippingNumber(),
+            'address_shipping_extension' => $this->getAddressShippingExtension(),
+            'address_shipping_zipcode' => $this->getAddressShippingZipcode(),
+            'address_shipping_city' => $this->getAddressShippingCity(),
+            'address_shipping_region' => $this->getAddressShippingRegion(),
+            'address_shipping_country' => $this->getAddressShippingCountry(),
+            'language' => $this->getLanguage(),
+            'orders' => $this->getOrders()->toArray($operation),
+            'product_reviews' => $this->getProductReviews()->toArray($operation),
+            'favorites' => $this->getFavorites()->toArray($operation),
+            'quotes' => $this->getQuotes()->toArray($operation)
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toIri(): ?string
+    {
+        if (null === $this->getCustomerId()) {
+            return null;
+        }
+
+        return '/customers/' . $this->getCustomerId();
     }
 
     protected function iriToOrderEntity(string $iri): Order

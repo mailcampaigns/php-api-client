@@ -27,12 +27,13 @@ interface ApiInterface
 
     /**
      * Retrieves a resource by id.
+     * Note: Compound keys can be used i.e. like this: customer=1;favoriteProduct=2
      *
      * @api
-     * @param int $id
+     * @param int|string $id
      * @return EntityInterface
      */
-    function getById(int $id): EntityInterface;
+    function getById($id): EntityInterface;
 
     /**
      * Retrieves a collection of resources.
@@ -56,12 +57,13 @@ interface ApiInterface
 
     /**
      * Deletes a resource by id.
+     * Note: Compound keys can be used i.e. like this: customer=1;favoriteProduct=2
      *
      * @api
-     * @param int $id
+     * @param int|string $id
      * @return $this
      */
-    function deleteById(int $id): ApiInterface;
+    function deleteById($id): ApiInterface;
 
     /**
      * Converts an array of resource data to an entity (object).

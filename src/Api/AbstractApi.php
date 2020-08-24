@@ -38,6 +38,8 @@ abstract class AbstractApi implements ApiInterface
             if ((int)$res['hydra:totalItems'] > 0) {
                 return $res['hydra:member'][0];
             }
+        } else if (is_array($res) && count($res) > 0) {
+            return $res[0];
         }
 
         return null;
@@ -96,7 +98,7 @@ abstract class AbstractApi implements ApiInterface
     {
         $response = $this->client->getHttpClient()->request('POST', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
-            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_POST))
+            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_POST, true))
         ]);
 
         return ResponseMediator::getContent($response);
@@ -114,7 +116,7 @@ abstract class AbstractApi implements ApiInterface
     {
         $response = $this->client->getHttpClient()->request('PATCH', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
-            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PATCH))
+            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PATCH, true))
         ]);
 
         return ResponseMediator::getContent($response);
@@ -132,7 +134,7 @@ abstract class AbstractApi implements ApiInterface
     {
         $response = $this->client->getHttpClient()->request('PUT', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
-            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PUT))
+            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PUT, true))
         ]);
 
         return ResponseMediator::getContent($response);
@@ -183,7 +185,13 @@ abstract class AbstractApi implements ApiInterface
             return null;
         }
 
-        return DateTime::createFromFormat(DateTime::ISO8601, $time);
+        $dt = DateTime::createFromFormat(DateTime::ISO8601, $time);
+
+        if (false === $dt) {
+            return null;
+        }
+
+        return $dt;
     }
 
     /**

@@ -591,9 +591,9 @@ class OrderProduct implements EntityInterface
     /**
      * @inheritDoc
      */
-    public function toArray(?string $operation = null): array
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
-        $arr = [
+        return [
             'order_product_id' => $this->getOrderProductId(),
             'product_title' => $this->getProductTitle(),
             'quantity_ordered' => $this->getQuantityOrdered(),
@@ -618,15 +618,17 @@ class OrderProduct implements EntityInterface
             'discount_incl' => $this->getDiscountIncl(),
             'order' => $this->getOrder() instanceof Order ? $this->getOrder()->toIri() : null
         ];
-
-        return array_filter($arr);
     }
 
     /**
      * @inheritDoc
      */
-    public function toIri(): string
+    public function toIri(): ?string
     {
+        if (null === $this->getOrderProductId()) {
+            return null;
+        }
+
         return '/order_products/' . $this->getOrderProductId();
     }
 }

@@ -2,7 +2,6 @@
 
 namespace MailCampaigns\ApiClient\Api;
 
-use InvalidArgumentException;
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
@@ -10,11 +9,18 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
 use MailCampaigns\ApiClient\Entity\Quote;
 
-/**
- * @link https://docs.mailcampaigns.io/?version=latest#486611d7-bb98-4e95-8e08-564cdbed6b7f
- */
 class OrderApi extends AbstractApi
 {
+    const ORDERABLE_PARAMS = [
+        'order_id',
+        'created_at',
+        'updated_at'
+    ];
+
+    const DEFAULT_ORDER = [
+        'created_at' => 'desc'
+    ];
+
     /**
      * {@inheritDoc}
      * @param Order|EntityInterface $entity
@@ -32,7 +38,7 @@ class OrderApi extends AbstractApi
      * {@inheritDoc}
      * @return Order
      */
-    public function getById(int $id): EntityInterface
+    public function getById($id): EntityInterface
     {
         return $this->toEntity($this->get("orders/{$id}"));
     }
@@ -62,16 +68,25 @@ class OrderApi extends AbstractApi
      * {@inheritDoc}
      * @return OrderCollection
      */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
+    public function getCollection(?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
     {
         $collection = new OrderCollection;
 
         $data = $this->get('orders', [
             'page' => $page ?? 1,
-            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
         ]);
 
-        foreach ($data['hydra:member'] as $orderData) {
+        if (isset($data['hydra:member'])) {
+            $arr = $data['hydra:member'];
+        } else if (isset($data) && is_array($data)) {
+            $arr = $data;
+        } else {
+            $arr = [];
+        }
+
+        foreach ($arr as $orderData) {
             $order = $this->toEntity($orderData);
             $collection->add($order);
         }
@@ -80,17 +95,13 @@ class OrderApi extends AbstractApi
     }
 
     /**
-     * Updates an order.
-     *
-     * @param EntityInterface $entity
+     * {@inheritDoc}
+     * @param Order|EntityInterface $entity
      * @return Order
      */
     public function update(EntityInterface $entity): EntityInterface
     {
-        if (!$entity instanceof Order) {
-            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
-                Order::class));
-        }
+        $this->validateEntityType($entity, Order::class);
 
         $res = $this->put("orders/{$entity->getOrderId()}", $entity);
 
@@ -98,12 +109,9 @@ class OrderApi extends AbstractApi
     }
 
     /**
-     * Deletes an order by id.
-     *
-     * @param int $id
-     * @return $this
+     * @inheritDoc
      */
-    public function deleteById(int $id): ApiInterface
+    public function deleteById($id): ApiInterface
     {
         $this->delete("orders/{$id}");
         return $this;
@@ -111,18 +119,23 @@ class OrderApi extends AbstractApi
 
     /**
      * @inheritDoc
+     @return Order
      */
-    function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): EntityInterface
     {
         $customer = $quote = null;
 
-        // Convert customer IRI to an entity.
-        if (isset($data['customer']) && is_string($data['customer'])) {
-            if (false !== preg_match('/\/customers\/(\d+)/', $data['customer'], $matches)) {
-                if (isset($matches[1])) {
-                    $customerId = (int)$matches[1];
-                    $customer = (new Customer)->setCustomerId($customerId);
+        // Convert customer IRI or array to an entity.
+        if (isset($data['customer'])) {
+            if (is_string($data['customer'])) {
+                if (false !== preg_match('/\/customers\/(\d+)/', $data['customer'], $matches)) {
+                    if (isset($matches[1])) {
+                        $customerId = (int)$matches[1];
+                        $customer = (new Customer)->setCustomerId($customerId);
+                    }
                 }
+            } else if (is_array($data['customer'])) {
+                $customer = $this->client->getCustomerApi()->toEntity($data['customer']);
             }
         }
 
@@ -138,8 +151,8 @@ class OrderApi extends AbstractApi
 
         return (new Order)
             ->setOrderId($data['order_id'] ?? null)
-            ->setCreatedAt($this->toDtObject($data['created_at']))
-            ->setUpdatedAt($this->toDtObject($data['updated_at']))
+            ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
+            ->setUpdatedAt($this->toDtObject($data['updated_at'] ?? null))
             ->setNumber($data['number'])
             ->setStatus($data['status'])
             ->setPriceCost($data['price_cost'])
@@ -168,6 +181,7 @@ class OrderApi extends AbstractApi
             ->setAddressBillingCity($data['address_billing_city'])
             ->setAddressBillingRegion($data['address_billing_region'])
             ->setAddressBillingCountry($data['address_billing_country'])
+            ->setAddressShippingCompany($data['address_shipping_company'])
             ->setAddressShippingName($data['address_shipping_name'])
             ->setAddressShippingStreet($data['address_shipping_street'])
             ->setAddressShippingNumber($data['address_shipping_number'])

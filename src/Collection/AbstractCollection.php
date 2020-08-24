@@ -57,9 +57,10 @@ abstract class AbstractCollection implements CollectionInterface
     /**
      * {@inheritDoc}
      */
-    public function toArray(?string $operation = null): array
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         $arr = [];
+        $operation = $operation ?? ApiInterface::OPERATION_GET;
         $toType = $this->toArrayTypeMapping[$operation] ?? null;
 
         /** @var EntityInterface $element */
@@ -70,7 +71,7 @@ abstract class AbstractCollection implements CollectionInterface
                         $arr[] = $element->toIri();
                         break;
                     case 'array':
-                        $arr[] = $element->toArray($operation);
+                        $arr[] = $element->toArray($operation, $isRoot);
                         break;
                     default:
                         throw new LogicException('Invalid or missing type mapping!');

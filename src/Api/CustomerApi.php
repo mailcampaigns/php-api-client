@@ -11,11 +11,18 @@ use MailCampaigns\ApiClient\Collection\QuoteCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 
-/**
- * @link https://docs.mailcampaigns.io/?version=latest#56216160-9758-47bc-a2cd-aebb6296fdb0
- */
 class CustomerApi extends AbstractApi
 {
+    const ORDERABLE_PARAMS = [
+        'customer_id',
+        'created_at',
+        'updated_at'
+    ];
+
+    const DEFAULT_ORDER = [
+        'created_at' => 'desc'
+    ];
+
     /**
      * {@inheritDoc}
      * @param Customer|EntityInterface $entity
@@ -33,7 +40,7 @@ class CustomerApi extends AbstractApi
      * {@inheritDoc}
      * @return Customer
      */
-    public function getById(int $id): EntityInterface
+    public function getById($id): EntityInterface
     {
         return $this->toEntity($this->get("customers/{$id}"));
     }
@@ -84,16 +91,25 @@ class CustomerApi extends AbstractApi
      * {@inheritDoc}
      * @return CustomerCollection
      */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
+    public function getCollection(?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
     {
         $collection = new CustomerCollection;
 
         $data = $this->get('customers', [
             'page' => $page ?? 1,
-            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
         ]);
 
-        foreach ($data['hydra:member'] as $customerData) {
+        if (isset($data['hydra:member'])) {
+            $arr = $data['hydra:member'];
+        } else if (isset($data) && is_array($data)) {
+            $arr = $data;
+        } else {
+            $arr = [];
+        }
+
+        foreach ($arr as $customerData) {
             $customer = $this->toEntity($customerData);
             $collection->add($customer);
         }
@@ -118,29 +134,25 @@ class CustomerApi extends AbstractApi
     /**
      * @inheritDoc
      */
-    public function deleteById(int $id): ApiInterface
+    public function deleteById($id): ApiInterface
     {
         $this->delete("customers/{$id}");
         return $this;
     }
 
     /**
-     * @param array $data
+     * @inheritDoc
      * @return Customer
      */
-    public function toEntity($data): EntityInterface
+    public function toEntity(array $data): EntityInterface
     {
-        if (is_string($data)) {
-            print $data;exit;
-        }
-
-        $orders = new OrderCollection($data['orders']);
-        $productReviews = new ProductReviewCollection($data['product_reviews']);
-        $favorites = new CustomerFavoriteProductCollection($data['favorites']);
-        $quotes = new QuoteCollection($data['quotes']);
+        $orders = new OrderCollection($data['orders'] ?? []);
+        $productReviews = new ProductReviewCollection($data['product_reviews'] ?? []);
+        $favorites = new CustomerFavoriteProductCollection($data['favorites'] ?? []);
+        $quotes = new QuoteCollection($data['quotes'] ?? []);
 
         return (new Customer)
-            ->setCustomerId($data['customer_id'])
+            ->setCustomerId($data['customer_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
             ->setCustomerRef($data['customer_ref'])

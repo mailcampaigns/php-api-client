@@ -3,12 +3,12 @@
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
-use MailCampaigns\ApiClient\Api\ApiInterface;
-use MailCampaigns\ApiClient\Collection\ProductCollection;
+use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
 
 class ProductCategory implements EntityInterface
 {
     use DateTrait;
+    use DateTimeHelperTrait;
 
     /**
      * The unique numeric identifier for the product category.
@@ -53,31 +53,29 @@ class ProductCategory implements EntityInterface
     protected $categoryRef;
 
     /**
-     * Products that fall under this category.
-     *
-     * @var ProductCollection
+     * @var ProductProductCategoryCollection
      */
-    protected $products;
+    protected $productProductCategories;
 
     public function __construct()
     {
         $this->createdAt = new DateTime;
-        $this->products = new ProductCollection;
+        $this->productProductCategories = new ProductProductCategoryCollection;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getProductCategoryId(): int
+    public function getProductCategoryId(): ?int
     {
         return $this->productCategoryId;
     }
 
     /**
-     * @param int $productCategoryId
+     * @param int|null $productCategoryId
      * @return ProductCategory
      */
-    public function setProductCategoryId(int $productCategoryId): self
+    public function setProductCategoryId(?int $productCategoryId): self
     {
         $this->productCategoryId = $productCategoryId;
         return $this;
@@ -102,18 +100,18 @@ class ProductCategory implements EntityInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTitle(): string
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
     /**
-     * @param string $title
+     * @param string|null $title
      * @return ProductCategory
      */
-    public function setTitle(string $title): self
+    public function setTitle(?string $title): self
     {
         $this->title = $title;
         return $this;
@@ -137,53 +135,79 @@ class ProductCategory implements EntityInterface
         return $this;
     }
 
-    public function getProducts(): ProductCollection
+    public function getProductProductCategories(): ProductProductCategoryCollection
     {
-        return $this->products;
+        return $this->productProductCategories;
     }
 
-    public function setProducts(ProductCollection $products): self
+    public function setProductProductCategories($productProductCategories): self
     {
-        $this->products = $products;
+        $this->productProductCategories = new ProductProductCategoryCollection;
+
+        foreach ($productProductCategories as $productProductCategory) {
+            $this->addProductProductCategory($productProductCategory);
+        }
+
         return $this;
     }
 
+    public function addProductProductCategory($productProductCategory): self
+    {
+        $entity = null;
 
-    function toArray2(?string $operation = null): array
+        if (is_array($productProductCategory) && is_string($productProductCategory['product'])) {
+            $pattern = '/\/products\/(?\'id\'[\d]+)/';
+
+            if (false !== preg_match($pattern, $productProductCategory['product'], $matches)
+                && isset($matches['id'])) {
+                $id = (int)$matches['id'];
+
+                $entity = (new ProductProductCategory)
+                    ->setProductCategory($this)
+                    ->setProduct(
+                        (new Product)->setProductId($id)
+                    );
+            }
+        }
+
+        if ($entity instanceof ProductProductCategory) {
+            if (!$this->productProductCategories->contains($entity)) {
+                if (!$entity->getProductCategory()) {
+                    $entity->setProductCategory($this);
+                }
+
+                $this->productProductCategories->add($entity);
+            }
+        }
+        
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
             'product_category_id' => $this->getProductCategoryId(),
-            'products' => $this->getProducts()->toArray($operation)
+            'created_at' => $this->dtToString($this->getCreatedAt()),
+            'updated_at' => $this->dtToString($this->getUpdatedAt()),
+            'is_visible' => $this->getIsVisible(),
+            'title' => $this->getTitle(),
+            'category_ref' => $this->getCategoryRef(),
+            'products' => $this->getProductProductCategories()->toArray($operation)
         ];
     }
 
     /**
      * @inheritDoc
      */
-    function toArray(?string $operation = null): array
-    {
-        if ($operation !== ApiInterface::OPERATION_PUT) {
-            return [
-                'product_category_id' => $this->getProductCategoryId(),
-                'title' => $this->getTitle()
-            ];
-        } else {
-            return [
-                'product_category_id' => $this->getProductCategoryId(),
-                'products' => $this->getProducts()->toArray($operation)
-            ];
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    function toIri(): string
+    function toIri(): ?string
     {
         if (null === $this->getProductCategoryId()) {
-            return '';
+            return null;
         }
 
-        return $this->iri ?? '/product_categories/' . $this->getProductCategoryId();
+        return '/product_categories/' . $this->getProductCategoryId();
     }
 }
