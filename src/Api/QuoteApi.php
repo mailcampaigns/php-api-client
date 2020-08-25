@@ -59,19 +59,12 @@ class QuoteApi extends AbstractApi
      */
     public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
-        $collection = new QuoteCollection;
-
         $data = $this->get('quotes', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        foreach ($data['hydra:member'] as $quoteData) {
-            $quote = $this->toEntity($quoteData);
-            $collection->add($quote);
-        }
-
-        return $collection;
+        return $this->toCollection($data, QuoteCollection::class);
     }
 
     /**

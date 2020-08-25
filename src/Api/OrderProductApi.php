@@ -43,19 +43,12 @@ class OrderProductApi extends AbstractApi
      */
     public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
-        $collection = new OrderProductCollection;
-
         $data = $this->get('order_products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        foreach ($data['hydra:member'] as $orderProductData) {
-            $orderProduct = $this->toEntity($orderProductData);
-            $collection->add($orderProduct);
-        }
-
-        return $collection;
+        return $this->toCollection($data, OrderProductCollection::class);
     }
 
     /**

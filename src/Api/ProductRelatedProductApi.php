@@ -39,27 +39,12 @@ class ProductRelatedProductApi extends AbstractApi
      */
     public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
-        $collection = new ProductRelatedProductCollection;
-
         $data = $this->get('product_related_products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        if (isset($data['hydra:member'])) {
-            $arr = $data['hydra:member'];
-        } else if (isset($data) && is_array($data)) {
-            $arr = $data;
-        } else {
-            $arr = [];
-        }
-
-        foreach ($arr as $relatedData) {
-            $related = $this->toEntity($relatedData);
-            $collection->add($related);
-        }
-
-        return $collection;
+        return $this->toCollection($data, ProductRelatedProductCollection::class);
     }
 
     /**

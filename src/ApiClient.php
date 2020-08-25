@@ -3,12 +3,15 @@
 namespace MailCampaigns\ApiClient;
 
 use MailCampaigns\ApiClient\Api\CustomerApi;
+use MailCampaigns\ApiClient\Api\CustomerCustomFieldApi;
 use MailCampaigns\ApiClient\Api\CustomerFavoriteProductApi;
 use MailCampaigns\ApiClient\Api\OrderApi;
+use MailCampaigns\ApiClient\Api\OrderCustomFieldApi;
 use MailCampaigns\ApiClient\Api\OrderProductApi;
 use MailCampaigns\ApiClient\Api\ProductApi;
 use MailCampaigns\ApiClient\Api\ProductCategoryApi;
 use MailCampaigns\ApiClient\Api\ProductCrossSellProductApi;
+use MailCampaigns\ApiClient\Api\ProductCustomFieldApi;
 use MailCampaigns\ApiClient\Api\ProductProductCategoryApi;
 use MailCampaigns\ApiClient\Api\ProductRelatedProductApi;
 use MailCampaigns\ApiClient\Api\ProductReviewApi;
@@ -102,6 +105,21 @@ final class ApiClient
      */
     private $productVolumeSellProductApi;
 
+    /**
+     * @var ProductCustomFieldApi
+     */
+    private $productCustomFieldApi;
+
+    /**
+     * @var CustomerCustomFieldApi
+     */
+    private $customerCustomFieldApi;
+
+    /**
+     * @var OrderCustomFieldApi
+     */
+    private $orderCustomFieldApi;
+
     private function __construct(string $baseUri, string $key, string $secret)
     {
         // Get version from Composer configuration.
@@ -119,7 +137,7 @@ final class ApiClient
             'base_uri' => $baseUri
         ]);
 
-        // Create API objects. todo: use lazy loading
+        // Create API objects.
         $this->customerApi = new CustomerApi($this);
         $this->orderApi = new OrderApi($this);
         $this->orderProductApi = new OrderProductApi($this);
@@ -134,6 +152,9 @@ final class ApiClient
         $this->productCrossSellProductApi = new ProductCrossSellProductApi($this);
         $this->productUpSellProductApi = new ProductUpSellProductApi($this);
         $this->productVolumeSellProductApi = new ProductVolumeSellProductApi($this);
+        $this->productCustomFieldApi = new ProductCustomFieldApi($this);
+        $this->customerCustomFieldApi = new CustomerCustomFieldApi($this);
+        $this->orderCustomFieldApi = new OrderCustomFieldApi($this);
     }
 
     public function getCustomerApi(): CustomerApi
@@ -204,6 +225,21 @@ final class ApiClient
     public function getProductVolumeSellProductApi(): ProductVolumeSellProductApi
     {
         return $this->productVolumeSellProductApi;
+    }
+
+    public function getProductCustomFieldApi(): ProductCustomFieldApi
+    {
+        return $this->productCustomFieldApi;
+    }
+
+    public function getCustomerCustomFieldApi(): CustomerCustomFieldApi
+    {
+        return $this->customerCustomFieldApi;
+    }
+
+    public function getOrderCustomFieldApi(): OrderCustomFieldApi
+    {
+        return $this->orderCustomFieldApi;
     }
 
     public static function create(string $baseUri, string $key, string $secret): self

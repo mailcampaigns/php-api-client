@@ -39,27 +39,12 @@ class ProductCrossSellProductApi extends AbstractApi
      */
     public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
-        $collection = new ProductCrossSellProductCollection;
-
         $data = $this->get('product_cross_sell_products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        if (isset($data['hydra:member'])) {
-            $arr = $data['hydra:member'];
-        } else if (isset($data) && is_array($data)) {
-            $arr = $data;
-        } else {
-            $arr = [];
-        }
-
-        foreach ($arr as $crossSellData) {
-            $crossSell = $this->toEntity($crossSellData);
-            $collection->add($crossSell);
-        }
-
-        return $collection;
+        return $this->toCollection($data, ProductCrossSellProductCollection::class);
     }
 
     /**

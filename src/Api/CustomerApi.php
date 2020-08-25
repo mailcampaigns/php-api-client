@@ -93,28 +93,13 @@ class CustomerApi extends AbstractApi
      */
     public function getCollection(?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
     {
-        $collection = new CustomerCollection;
-
         $data = $this->get('customers', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
             'order' => $order ?? self::DEFAULT_ORDER
         ]);
 
-        if (isset($data['hydra:member'])) {
-            $arr = $data['hydra:member'];
-        } else if (isset($data) && is_array($data)) {
-            $arr = $data;
-        } else {
-            $arr = [];
-        }
-
-        foreach ($arr as $customerData) {
-            $customer = $this->toEntity($customerData);
-            $collection->add($customer);
-        }
-
-        return $collection;
+        return $this->toCollection($data, CustomerCollection::class);
     }
 
     /**

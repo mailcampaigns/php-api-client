@@ -39,27 +39,12 @@ class ProductVolumeSellProductApi extends AbstractApi
      */
     public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
-        $collection = new ProductVolumeSellProductCollection;
-
         $data = $this->get('product_volume_sell_products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        if (isset($data['hydra:member'])) {
-            $arr = $data['hydra:member'];
-        } else if (isset($data) && is_array($data)) {
-            $arr = $data;
-        } else {
-            $arr = [];
-        }
-
-        foreach ($arr as $volumeSellData) {
-            $volumeSell = $this->toEntity($volumeSellData);
-            $collection->add($volumeSell);
-        }
-
-        return $collection;
+        return $this->toCollection($data, ProductVolumeSellProductCollection::class);
     }
 
     /**

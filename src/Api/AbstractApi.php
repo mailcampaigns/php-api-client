@@ -4,7 +4,9 @@ namespace MailCampaigns\ApiClient\Api;
 
 use DateTime;
 use InvalidArgumentException;
+use LogicException;
 use MailCampaigns\ApiClient\ApiClient;
+use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\ResponseMediator;
 
@@ -209,5 +211,42 @@ abstract class AbstractApi implements ApiInterface
         }
 
         return $this;
+    }
+
+    /**
+     * Transforms data array (containing raw items as elements) to a collection of the
+     * supplied type containing entities.
+     *
+     * @param array $data
+     * @param string $fqcn
+     * @return CollectionInterface
+     */
+    protected function toCollection(array $data, string $fqcn): CollectionInterface
+    {
+        $invalidFqcnMsg = 'Expected fully qualified class name (FQCN) of collection.';
+
+        if (!class_exists($fqcn)) {
+            throw new LogicException($invalidFqcnMsg);
+        }
+
+        $collection = new $fqcn;
+
+        if (!$collection instanceof CollectionInterface) {
+            throw new LogicException($invalidFqcnMsg);
+        }
+
+        if (isset($data['hydra:member'])) {
+            $arr = $data['hydra:member'];
+        } else if (isset($data) && is_array($data)) {
+            $arr = $data;
+        } else {
+            $arr = [];
+        }
+
+        foreach ($arr as $data) {
+            $collection->add($this->toEntity($data));
+        }
+
+        return $collection;
     }
 }

@@ -116,28 +116,13 @@ class ProductApi extends AbstractApi
      */
     public function getCollection(?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
     {
-        $collection = new ProductCollection;
-
         $data = $this->get('products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
             'order' => $order ?? self::DEFAULT_ORDER
         ]);
 
-        if (isset($data['hydra:member'])) {
-            $arr = $data['hydra:member'];
-        } else if (isset($data) && is_array($data)) {
-            $arr = $data;
-        } else {
-            $arr = [];
-        }
-
-        foreach ($arr as $productData) {
-            $product = $this->toEntity($productData);
-            $collection->add($product);
-        }
-
-        return $collection;
+        return $this->toCollection($data, ProductCollection::class);
     }
 
     /**

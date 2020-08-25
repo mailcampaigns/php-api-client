@@ -40,27 +40,12 @@ class CustomerFavoriteProductApi extends AbstractApi
      */
     public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
-        $collection = new CustomerFavoriteProductCollection;
-
         $data = $this->get('customer_favorite_products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        if (isset($data['hydra:member'])) {
-            $arr = $data['hydra:member'];
-        } else if (isset($data) && is_array($data)) {
-            $arr = $data;
-        } else {
-            $arr = [];
-        }
-
-        foreach ($arr as $favoriteData) {
-            $favorite = $this->toEntity($favoriteData);
-            $collection->add($favorite);
-        }
-
-        return $collection;
+        return $this->toCollection($data, CustomerFavoriteProductCollection::class);
     }
 
     /**
