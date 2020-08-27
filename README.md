@@ -8,8 +8,6 @@ MailCampaigns PHP API client
 
 The MailCampaigns PHP Api client provides an easy way to communicate with the MailCampaigns RESTful API (v3).
 
-###### **Please note: This API client is still WIP and only covers the `customers` endpoint without any relations other than URIs!**
-
 Installation
 ------------
 Install with Composer:
@@ -21,6 +19,8 @@ composer require mailcampaigns/api-client
 Usage
 -----
 You'll need the Api url, client key and secret which can be obtained by logging in to your MailCampaigns account (on the Custom Connector page).
+
+*Note: This section will be updated soon!*
 
 ```PHP
 use MailCampaigns\ApiClient\ApiClient;

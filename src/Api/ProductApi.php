@@ -164,7 +164,7 @@ class ProductApi extends AbstractApi
         return (new Product)
             ->setProductId($data['product_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at']))
-            ->setUpdatedAt($this->toDtObject($data['updated_at']))
+            ->setUpdatedAt($this->toDtObject($data['updated_at'] ?? null))
             ->setIsVisible($data['is_visible'])
             ->setVisibility($data['visibility'])
             ->setUrl($data['url'])

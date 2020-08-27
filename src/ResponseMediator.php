@@ -19,7 +19,7 @@ class ResponseMediator
         try {
             $body = $response->getContent();
         } catch (ClientException $e) {
-            throw new ApiException('API request failed!', 0, $e);
+            throw new ApiException('API request failed! ' . $e->getMessage(), 0, $e);
         }
 
         $content = json_decode($body, true);

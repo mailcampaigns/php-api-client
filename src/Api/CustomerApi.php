@@ -138,9 +138,9 @@ class CustomerApi extends AbstractApi
 
         return (new Customer)
             ->setCustomerId($data['customer_id'] ?? null)
-            ->setCreatedAt($this->toDtObject($data['created_at']))
+            ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
-            ->setCustomerRef($data['customer_ref'])
+            ->setCustomerRef($data['customer_ref'] ?? null)
             ->setOrigin($data['origin'])
             ->setIsSubscribed($data['is_subscribed'])
             ->setIsConfirmed($data['is_confirmed'])
