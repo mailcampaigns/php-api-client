@@ -2,7 +2,6 @@
 
 namespace MailCampaigns\ApiClient\Api;
 
-use InvalidArgumentException;
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\CustomerCollection;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
@@ -14,132 +13,134 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 
 class CustomerApi extends AbstractApi
 {
+    const ORDERABLE_PARAMS = [
+        'customer_id',
+        'created_at',
+        'updated_at'
+    ];
+
+    const DEFAULT_ORDER = [
+        'created_at' => 'desc'
+    ];
+
     /**
-     * @param EntityInterface $entity
+     * {@inheritDoc}
+     * @param Customer|EntityInterface $entity
      * @return Customer
      */
-    public function create(EntityInterface $entity): Customer
+    public function create(EntityInterface $entity): EntityInterface
     {
-        // Send request.
-        $res = $this->post('customers', $entity, ['content-type: application/json']);
+        $this->validateEntityType($entity, Customer::class);
+        $res = $this->post('customers', $entity);
 
         return $this->toEntity($res);
     }
 
     /**
-     * @param int $id
+     * {@inheritDoc}
      * @return Customer
      */
-    public function getById(int $id): EntityInterface
+    public function getById($id): EntityInterface
     {
         return $this->toEntity($this->get("customers/{$id}"));
     }
 
     /**
+     * Tries to find a customer by reference, returns null when no customer was
+     * found with the given customer reference.
+     *
      * @param string $customerRef
      * @return Customer|null
      */
     public function getByCustomerRef(string $customerRef): ?EntityInterface
     {
         $data = $this->handleSingleItemResponse(
-            $this->get("customers", ['customer_ref' => $customerRef])
+            $this->get('customers', ['customer_ref' => $customerRef])
         );
 
         if (null !== $data) {
             return $this->toEntity($data);
         }
 
+        // Customer was not found.
         return null;
     }
 
     /**
+     * Tries to find a customer by email address, returns null if no customer was
+     * found with the given email address.
+     *
      * @param string $email
      * @return Customer|null
      */
     public function getByEmail(string $email): ?EntityInterface
     {
         $data = $this->handleSingleItemResponse(
-            $this->get("customers", ['email' => $email])
+            $this->get('customers', ['email' => $email])
         );
 
         if (null !== $data) {
             return $this->toEntity($data);
         }
 
+        // Customer was not found.
         return null;
     }
 
     /**
-     * @param int|null $page
-     * @param int|null $perPage
+     * {@inheritDoc}
      * @return CustomerCollection
      */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
+    public function getCollection(?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
     {
-        $collection = new CustomerCollection;
+        $data = $this->get('customers', [
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
 
-        $parameters = [
-            'page' => $page ?? $this->page,
-            'itemsPerPage' => $perPage ?? $this->perPage
-        ];
-
-        $data = $this->get('customers', $parameters);
-
-        foreach ($data['hydra:member'] as $customerData) {
-            $customer = $this->toEntity($customerData);
-            $collection->add($customer);
-        }
-
-        return $collection;
+        return $this->toCollection($data, CustomerCollection::class);
     }
 
     /**
-     * Updates a customer.
-     *
-     * @param EntityInterface $entity
+     * {@inheritDoc}
+     * @param Customer|EntityInterface $entity
      * @return Customer
      */
-    public function update(EntityInterface $entity): Customer
+    public function update(EntityInterface $entity): EntityInterface
     {
-        if (!$entity instanceof Customer) {
-            throw new InvalidArgumentException('Expected customer entity!');
-        }
+        $this->validateEntityType($entity, Customer::class);
 
-        $res = $this->put("customers/{$entity->getCustomerId()}", $entity, [
-            'content-type: application/json'
-        ]);
+        $res = $this->put("customers/{$entity->getCustomerId()}", $entity);
 
         return $this->toEntity($res);
     }
 
     /**
-     * Deletes a customer by id.
-     *
-     * @param int $id
-     * @return $this
+     * @inheritDoc
      */
-    public function deleteById(int $id): self
+    public function deleteById($id): ApiInterface
     {
         $this->delete("customers/{$id}");
         return $this;
     }
 
     /**
-     * @param array $data
+     * @inheritDoc
      * @return Customer
      */
     public function toEntity(array $data): EntityInterface
     {
-        $orders = new OrderCollection($data['orders']);
-        $productReviews = new ProductReviewCollection($data['product_reviews']);
-        $favorites = new CustomerFavoriteProductCollection($data['favorites']);
-        $quotes = new QuoteCollection($data['quotes']);
+        $orders = new OrderCollection($data['orders'] ?? []);
+        $productReviews = new ProductReviewCollection($data['product_reviews'] ?? []);
+        $favorites = new CustomerFavoriteProductCollection($data['favorites'] ?? []);
+        $quotes = new QuoteCollection($data['quotes'] ?? []);
 
         return (new Customer)
-            ->setCustomerId($data['customer_id'])
-            ->setCreatedAt($this->toDtObject($data['created_at']))
+            ->setCustomerId($data['customer_id'] ?? null)
+            ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
-            ->setCustomerRef($data['customer_ref'])
+            ->setCustomerRef($data['customer_ref'] ?? null)
             ->setOrigin($data['origin'])
             ->setIsSubscribed($data['is_subscribed'])
             ->setIsConfirmed($data['is_confirmed'])

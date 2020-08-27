@@ -742,7 +742,7 @@ class Quote implements EntityInterface
     /**
      * @inheritDoc
      */
-    public function toArray(?string $operation = null): array
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
             'quote_id' => $this->getQuoteId(),
@@ -776,8 +776,12 @@ class Quote implements EntityInterface
     /**
      * @inheritDoc
      */
-    function toIri(): string
+    function toIri(): ?string
     {
+        if (null === $this->getQuoteId()) {
+            return null;
+        }
+
         return '/quotes/' . $this->getQuoteId();
     }
 }

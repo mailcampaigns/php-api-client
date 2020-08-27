@@ -4,6 +4,7 @@ namespace MailCampaigns\ApiClient\Collection;
 
 use ArrayIterator;
 use LogicException;
+use MailCampaigns\ApiClient\Api\ApiInterface;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 
 abstract class AbstractCollection implements CollectionInterface
@@ -13,7 +14,12 @@ abstract class AbstractCollection implements CollectionInterface
      *
      * @var array
      */
-    private $elements;
+    protected $elements;
+
+    /**
+     * @var array
+     */
+    protected $toArrayTypeMapping;
 
     /**
      * @param array $elements
@@ -30,6 +36,14 @@ abstract class AbstractCollection implements CollectionInterface
         }
 
         $this->elements = $elements;
+
+        // Set the default mapping for 'hydration' of a collection.
+        $this->toArrayTypeMapping = [
+            ApiInterface::OPERATION_GET => 'array',
+            ApiInterface::OPERATION_PUT => 'iri',
+            ApiInterface::OPERATION_POST => 'array',
+            ApiInterface::OPERATION_PATCH => 'array'
+        ];
     }
 
     /**
@@ -43,19 +57,24 @@ abstract class AbstractCollection implements CollectionInterface
     /**
      * {@inheritDoc}
      */
-    public function toArray(?string $operation = null): array
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         $arr = [];
+        $operation = $operation ?? ApiInterface::OPERATION_GET;
+        $toType = $this->toArrayTypeMapping[$operation] ?? null;
 
         /** @var EntityInterface $element */
         foreach ($this->elements as $element) {
             if ($element instanceof EntityInterface) {
-                switch ($operation) {
-                    case EntityInterface::OPERATION_PUT:
+                switch ($toType) {
+                    case 'iri':
                         $arr[] = $element->toIri();
                         break;
+                    case 'array':
+                        $arr[] = $element->toArray($operation, $isRoot);
+                        break;
                     default:
-                        $arr[] = $element->toArray($operation);
+                        throw new LogicException('Invalid or missing type mapping!');
                 }
             } else {
                 $arr[] = $element;

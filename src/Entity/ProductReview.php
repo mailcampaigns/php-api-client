@@ -93,6 +93,11 @@ class ProductReview implements EntityInterface
      */
     protected $product;
 
+    public function __construct()
+    {
+        $this->createdAt = new DateTime;
+    }
+
     /**
      * @return int
      */
@@ -273,7 +278,7 @@ class ProductReview implements EntityInterface
         return $this;
     }
 
-    public function toArray(?string $operation = null): array
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
             'product_review_id' => $this->productReviewId,
@@ -287,7 +292,7 @@ class ProductReview implements EntityInterface
             'content' => $this->content,
             'language' => $this->language,
             'customer' => $this->getCustomerIri(),
-            'product' => $this->getProduct()->toIri()
+            'product' => $this->getProduct() ? $this->getProduct()->toIri() : null
         ];
     }
 
@@ -300,8 +305,12 @@ class ProductReview implements EntityInterface
         return $this->getCustomer()->toIri();
     }
 
-    public function toIri(): string
+    public function toIri(): ?string
     {
+        if (null === $this->getProductReviewId()) {
+            return null;
+        }
+
         return '/product_reviews/' . $this->getProductReviewId();
     }
 }

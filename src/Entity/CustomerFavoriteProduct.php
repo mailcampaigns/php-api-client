@@ -15,9 +15,9 @@ class CustomerFavoriteProduct implements EntityInterface
     protected $product;
 
     /**
-     * @return Customer
+     * @return Customer|null
      */
-    public function getCustomer(): Customer
+    public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
@@ -53,24 +53,40 @@ class CustomerFavoriteProduct implements EntityInterface
     /**
      * @inheritDoc
      */
-    function toArray(?string $operation = null): array
+    function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
-        return [
-            'customer' => $this->customer->toIri(),
-            'product' => $this->product->toIri()
+        $arr = [
+            'customer' => $this->customer->toIri()
         ];
+
+        if ($this->product instanceof Product && $this->product->getProductId()) {
+            $arr['favorite_product'] = $this->product->toIri();
+        }
+
+        return $arr;
     }
 
     /**
      * @inheritDoc
      */
-    function toIri(): string
+    function toIri(): ?string
     {
-        if (!$this->getCustomer() || !$this->getProduct()) {
-            return '';
+        $customer = $this->getCustomer();
+        $product = $this->getProduct();
+
+        if (!$customer || !$product) {
+            return null;
+        }
+
+        if (null === $customer->getCustomerId()) {
+            return null;
+        }
+
+        if (null === $product->getProductId()) {
+            return null;
         }
 
         return sprintf('/customer_favorite_products/customer=%d;favoriteProduct=%d',
-            $this->getCustomer()->getCustomerId(), $this->getProduct()->getProductId());
+            $customer->getCustomerId(), $product->getProductId());
     }
 }

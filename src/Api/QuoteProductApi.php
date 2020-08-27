@@ -23,7 +23,7 @@ class QuoteProductApi extends AbstractApi
         }
 
         // Send request.
-        $res = $this->post('quote_products', $entity, ['content-type: application/json']);
+        $res = $this->post('quote_products', $entity);
 
         return $this->toEntity($res);
     }
@@ -32,7 +32,7 @@ class QuoteProductApi extends AbstractApi
      * {@inheritDoc}
      * @return QuoteProduct
      */
-    public function getById(int $id): EntityInterface
+    public function getById($id): EntityInterface
     {
         return $this->toEntity($this->get("quote_products/{$id}"));
     }
@@ -43,25 +43,16 @@ class QuoteProductApi extends AbstractApi
      */
     public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
-        $collection = new QuoteProductCollection;
+        $data = $this->get('quote_products', [
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+        ]);
 
-        $parameters = [
-            'page' => $page ?? $this->page,
-            'itemsPerPage' => $perPage ?? $this->perPage
-        ];
-
-        $data = $this->get('quote_products', $parameters);
-
-        foreach ($data['hydra:member'] as $quoteProductData) {
-            $quoteProduct = $this->toEntity($quoteProductData);
-            $collection->add($quoteProduct);
-        }
-
-        return $collection;
+        return $this->toCollection($data, QuoteProductCollection::class);
     }
 
     /**
-     * Updates an quote product.
+     * Updates a quote product.
      *
      * @param EntityInterface $entity
      * @return QuoteProduct
@@ -69,23 +60,22 @@ class QuoteProductApi extends AbstractApi
     public function update(EntityInterface $entity): EntityInterface
     {
         if (!$entity instanceof QuoteProduct) {
-            throw new InvalidArgumentException('Expected quote product entity!');
+            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
+                QuoteProduct::class));
         }
 
-        $res = $this->put("quote_products/{$entity->getQuoteProductId()}", $entity, [
-            'content-type: application/json'
-        ]);
+        $res = $this->put("quote_products/{$entity->getQuoteProductId()}", $entity);
 
         return $this->toEntity($res);
     }
 
     /**
-     * Deletes an quote product by id.
+     * Deletes a quote product by id.
      *
      * @param int $id
      * @return $this
      */
-    public function deleteById(int $id): self
+    public function deleteById($id): ApiInterface
     {
         $this->delete("quote_products/{$id}");
         return $this;
@@ -94,7 +84,7 @@ class QuoteProductApi extends AbstractApi
     /**
      * @inheritDoc
      */
-    function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): EntityInterface
     {
         $quoteProduct = (new QuoteProduct)
             ->setQuoteProductId($data['quote_product_id'])

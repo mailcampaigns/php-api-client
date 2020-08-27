@@ -2,27 +2,34 @@
 
 namespace MailCampaigns\ApiClient\Api;
 
-use InvalidArgumentException;
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
+use MailCampaigns\ApiClient\Entity\Quote;
 
 class OrderApi extends AbstractApi
 {
+    const ORDERABLE_PARAMS = [
+        'order_id',
+        'created_at',
+        'updated_at'
+    ];
+
+    const DEFAULT_ORDER = [
+        'created_at' => 'desc'
+    ];
+
     /**
-     * @param EntityInterface|Order $entity
+     * {@inheritDoc}
+     * @param Order|EntityInterface $entity
      * @return Order
      */
     public function create(EntityInterface $entity): EntityInterface
     {
-        if (!$entity instanceof Order) {
-            throw new InvalidArgumentException('Expected order entity!');
-        }
-
-        // Send request.
-        $res = $this->post('orders', $entity, ['content-type: application/json']);
+        $this->validateEntityType($entity, Order::class);
+        $res = $this->post('orders', $entity);
 
         return $this->toEntity($res);
     }
@@ -31,25 +38,29 @@ class OrderApi extends AbstractApi
      * {@inheritDoc}
      * @return Order
      */
-    public function getById(int $id): EntityInterface
+    public function getById($id): EntityInterface
     {
         return $this->toEntity($this->get("orders/{$id}"));
     }
 
     /**
+     * Tries to find a order by number, returns null when no order was found with
+     * the given order number.
+     *
      * @param string $number
      * @return Order|null
      */
     public function getByNumber(string $number): ?EntityInterface
     {
         $data = $this->handleSingleItemResponse(
-            $this->get("orders", ['number' => $number])
+            $this->get('orders', ['number' => $number])
         );
 
         if (null !== $data) {
             return $this->toEntity($data);
         }
 
+        // Order was not found.
         return null;
     }
 
@@ -57,51 +68,35 @@ class OrderApi extends AbstractApi
      * {@inheritDoc}
      * @return OrderCollection
      */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
+    public function getCollection(?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
     {
-        $collection = new OrderCollection;
+        $data = $this->get('orders', [
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
 
-        $parameters = [
-            'page' => $page ?? $this->page,
-            'itemsPerPage' => $perPage ?? $this->perPage
-        ];
-
-        $data = $this->get('orders', $parameters);
-
-        foreach ($data['hydra:member'] as $orderData) {
-            $order = $this->toEntity($orderData);
-            $collection->add($order);
-        }
-
-        return $collection;
+        return $this->toCollection($data, OrderCollection::class);
     }
 
     /**
-     * Updates an order.
-     *
-     * @param EntityInterface $entity
+     * {@inheritDoc}
+     * @param Order|EntityInterface $entity
      * @return Order
      */
     public function update(EntityInterface $entity): EntityInterface
     {
-        if (!$entity instanceof Order) {
-            throw new InvalidArgumentException('Expected order entity!');
-        }
+        $this->validateEntityType($entity, Order::class);
 
-        $res = $this->put("orders/{$entity->getOrderId()}", $entity, [
-            'content-type: application/json'
-        ]);
+        $res = $this->put("orders/{$entity->getOrderId()}", $entity);
 
         return $this->toEntity($res);
     }
 
     /**
-     * Deletes an order by id.
-     *
-     * @param int $id
-     * @return $this
+     * @inheritDoc
      */
-    public function deleteById(int $id): self
+    public function deleteById($id): ApiInterface
     {
         $this->delete("orders/{$id}");
         return $this;
@@ -109,24 +104,40 @@ class OrderApi extends AbstractApi
 
     /**
      * @inheritDoc
+     @return Order
      */
-    function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): EntityInterface
     {
-        $customer = null;
+        $customer = $quote = null;
 
-        if (isset($data['customer']) && is_string($data['customer'])) {
-            if (false !== preg_match('/\/customers\/(\d+)/', $data['customer'], $matches)) {
+        // Convert customer IRI or array to an entity.
+        if (isset($data['customer'])) {
+            if (is_string($data['customer'])) {
+                if (false !== preg_match('/\/customers\/(\d+)/', $data['customer'], $matches)) {
+                    if (isset($matches[1])) {
+                        $customerId = (int)$matches[1];
+                        $customer = (new Customer)->setCustomerId($customerId);
+                    }
+                }
+            } else if (is_array($data['customer'])) {
+                $customer = $this->client->getCustomerApi()->toEntity($data['customer']);
+            }
+        }
+
+        // Convert quote IRI to an entity.
+        if (isset($data['quote']) && is_string($data['quote'])) {
+            if (false !== preg_match('/\/quotes\/(\d+)/', $data['quote'], $matches)) {
                 if (isset($matches[1])) {
-                    $customerId = (int)$matches[1];
-                    $customer = (new Customer)->setCustomerId($customerId);
+                    $quoteId = (int)$matches[1];
+                    $quote = (new Quote)->setQuoteId($quoteId);
                 }
             }
         }
 
         return (new Order)
-            ->setOrderId($data['order_id'])
-            ->setCreatedAt($this->toDtObject($data['created_at']))
-            ->setUpdatedAt($this->toDtObject($data['updated_at']))
+            ->setOrderId($data['order_id'] ?? null)
+            ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
+            ->setUpdatedAt($this->toDtObject($data['updated_at'] ?? null))
             ->setNumber($data['number'])
             ->setStatus($data['status'])
             ->setPriceCost($data['price_cost'])
@@ -155,6 +166,7 @@ class OrderApi extends AbstractApi
             ->setAddressBillingCity($data['address_billing_city'])
             ->setAddressBillingRegion($data['address_billing_region'])
             ->setAddressBillingCountry($data['address_billing_country'])
+            ->setAddressShippingCompany($data['address_shipping_company'])
             ->setAddressShippingName($data['address_shipping_name'])
             ->setAddressShippingStreet($data['address_shipping_street'])
             ->setAddressShippingNumber($data['address_shipping_number'])
@@ -172,6 +184,6 @@ class OrderApi extends AbstractApi
             ->setCustomerRef($data['customer_ref'])
             ->setCustomer($customer)
             ->setOrderProducts($data['order_products'])
-            ->setQuote($data['quote']);
+            ->setQuote($quote);
     }
 }

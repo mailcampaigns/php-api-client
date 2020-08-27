@@ -365,94 +365,6 @@ class Order implements EntityInterface
     }
 
     /**
-     * @inheritDoc
-     */
-    public function toArray(?string $operation = null): array
-    {
-        return [
-            'order_id' => $this->getOrderId(),
-            'created_at' => $this->dtToString($this->getCreatedAt()),
-            'updated_at' => $this->dtToString($this->getUpdatedAt()),
-            'number' => $this->getNumber(),
-            'status' => $this->getStatus(),
-            'price_cost' => $this->getPriceCost(),
-            'price_excl' => $this->getPriceExcl(),
-            'price_incl' => $this->getPriceIncl(),
-            'shipment_price_excl' => $this->getShipmentPriceExcl(),
-            'shipment_price_incl' => $this->getShipmentPriceIncl(),
-            'weight' => $this->getWeight(),
-            'volume' => $this->getVolume(),
-            'gender' => $this->getGender(),
-            'birth_date' => $this->dtToString($this->getBirthDate()),
-            'email' => $this->getEmail(),
-            'first_name' => $this->getFirstName(),
-            'middle_name' => $this->getMiddleName(),
-            'last_name' => $this->getLastName(),
-            'phone' => $this->getPhone(),
-            'mobile' => $this->getMobile(),
-            'company_name' => $this->getCompanyName(),
-            'company_coc_number' => $this->getCompanyCocNumber(),
-            'company_vat_number' => $this->getCompanyVatNumber(),
-            'address_billing_name' => $this->getAddressBillingName(),
-            'address_billing_street' => $this->getAddressBillingStreet(),
-            'address_billing_number' => $this->getAddressBillingNumber(),
-            'address_billing_extension' => $this->getAddressBillingExtension(),
-            'address_billing_zipcode' => $this->getAddressBillingZipcode(),
-            'address_billing_city' => $this->getAddressBillingCity(),
-            'address_billing_region' => $this->getAddressBillingRegion(),
-            'address_billing_country' => $this->getAddressBillingCountry(),
-            'address_shipping_name' => $this->getAddressShippingName(),
-            'address_shipping_street' => $this->getAddressShippingStreet(),
-            'address_shipping_number' => $this->getAddressShippingNumber(),
-            'address_shipping_extension' => $this->getAddressShippingExtension(),
-            'address_shipping_zipcode' => $this->getAddressShippingZipcode(),
-            'address_shipping_city' => $this->getAddressShippingCity(),
-            'address_shipping_region' => $this->getAddressShippingRegion(),
-            'address_shipping_country' => $this->getAddressShippingCountry(),
-            'is_discounted' => $this->getIsDiscounted(),
-            'discount_type' => $this->getDiscountType(),
-            'discount_amount' => $this->getDiscountAmount(),
-            'discount_percentage' => $this->getDiscountPercentage(),
-            'discount_coupon_code' => $this->getDiscountCouponCode(),
-            'language' => $this->getLanguage(),
-            'customer_ref' => $this->getCustomerRef(),
-            'customer' => $this->getCustomerIri(),
-            'order_products' => $this->getOrderProducts()->toArray($operation),
-            'quote' => $this->getQuoteIri()
-        ];
-    }
-
-    public function getCustomerIri(): ?string
-    {
-        if (!$this->getCustomer() instanceof Customer) {
-            return null;
-        }
-
-        return $this->getCustomer()->toIri();
-    }
-
-    public function getQuoteIri()
-    {
-        if (!$this->getQuote() instanceof Quote) {
-            return null;
-        }
-
-        return $this->getQuote()->toIri();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function toIri(): ?string
-    {
-        if (null === $this->getOrderId()) {
-            return null;
-        }
-
-        return '/orders/' . $this->getOrderId();
-    }
-
-    /**
      * @return int
      */
     public function getOrderId(): ?int
@@ -461,10 +373,10 @@ class Order implements EntityInterface
     }
 
     /**
-     * @param int $orderId
+     * @param int|null $orderId
      * @return Order
      */
-    public function setOrderId(int $orderId): Order
+    public function setOrderId(?int $orderId): Order
     {
         $this->orderId = $orderId;
         return $this;
@@ -479,10 +391,10 @@ class Order implements EntityInterface
     }
 
     /**
-     * @param string $number
+     * @param string|null $number
      * @return Order
      */
-    public function setNumber(string $number): Order
+    public function setNumber(?string $number): Order
     {
         $this->number = $number;
         return $this;
@@ -1300,28 +1212,48 @@ class Order implements EntityInterface
                 if ($data instanceof OrderProduct) {
                     $orderProduct = $data;
                 } else if (is_array($data)) {
-                    if (isset($data['@id']) && is_string($data['@id'])) {
-                        $orderProduct = new OrderProduct;
+                    $orderProductId = null;
+                    $orderProduct = new OrderProduct;
 
+                    if (isset($data['@id']) && is_string($data['@id'])) {
                         if (false !== preg_match('/\/order_products\/(\d+)/', $data['@id'], $matches)) {
                             if (isset($matches[1])) {
                                 $orderProductId = (int)$matches[1];
-                                $orderProduct->setOrderProductId($orderProductId);
                             }
                         }
+                    } else if (isset($data['order_id'])) {
+                        $orderProductId = (int)$data['order_product_id'];
+                    }
 
-                        $orderProduct
-                            ->setProductTitle($data['product_title'])
-                            ->setQuantityOrdered($data['quantity_ordered'])
-                            ->setArticleCode($data['article_code']);
+                    $orderProduct
+                        ->setOrderProductId($orderProductId)
+                        ->setSupplierTitle($data['supplier_title'])
+                        ->setBrandTitle($data['brand_title'])
+                        ->setProductTitle($data['product_title'])
+                        ->setTaxRate($data['tax_rate'])
+                        ->setQuantityOrdered($data['quantity_ordered'])
+                        ->setQuantityInvoiced($data['quantity_invoiced'])
+                        ->setQuantityShipped($data['quantity_shipped'])
+                        ->setQuantityRefunded($data['quantity_refunded'])
+                        ->setQuantityReturned($data['quantity_returned'])
+                        ->setArticleCode($data['article_code'])
+                        ->setEan($data['ean'])
+                        ->setSku($data['sku'])
+                        ->setQuantity($data['quantity'])
+                        ->setPriceCost($data['price_cost'])
+                        ->setBasePriceExcl($data['base_price_excl'])
+                        ->setBasePriceIncl($data['base_price_incl'])
+                        ->setPriceExcl($data['price_excl'])
+                        ->setPriceIncl($data['price_incl'])
+                        ->setDiscountExcl($data['discount_excl'])
+                        ->setDiscountIncl($data['discount_incl']);
 
-                        // If a product is linked to this order row (order product) add
-                        // product entity based on the product IRI.
-                        if ($data['product']) {
-                            $orderProduct->setProduct(
-                                $this->productIriToEntity($data['product'])
-                            );
-                        }
+                    // If a product is linked to this order row (order product) add
+                    // product entity based on the product IRI.
+                    if ($data['product']) {
+                        $orderProduct->setProduct(
+                            $this->productIriToEntity($data['product'])
+                        );
                     }
                 } else {
                     throw new LogicException('Order product is neither an array nor an entity!');
@@ -1392,5 +1324,94 @@ class Order implements EntityInterface
     {
         $this->quote = $quote;
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toIri(): ?string
+    {
+        if (null === $this->getOrderId()) {
+            return null;
+        }
+
+        return '/orders/' . $this->getOrderId();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
+    {
+        return [
+            'order_id' => $this->getOrderId(),
+            'created_at' => $this->dtToString($this->getCreatedAt()),
+            'updated_at' => $this->dtToString($this->getUpdatedAt()),
+            'number' => $this->getNumber(),
+            'status' => $this->getStatus(),
+            'price_cost' => $this->getPriceCost(),
+            'price_excl' => $this->getPriceExcl(),
+            'price_incl' => $this->getPriceIncl(),
+            'shipment_price_excl' => $this->getShipmentPriceExcl(),
+            'shipment_price_incl' => $this->getShipmentPriceIncl(),
+            'weight' => $this->getWeight(),
+            'volume' => $this->getVolume(),
+            'gender' => $this->getGender(),
+            'birth_date' => $this->dtToString($this->getBirthDate()),
+            'email' => $this->getEmail(),
+            'first_name' => $this->getFirstName(),
+            'middle_name' => $this->getMiddleName(),
+            'last_name' => $this->getLastName(),
+            'phone' => $this->getPhone(),
+            'mobile' => $this->getMobile(),
+            'company_name' => $this->getCompanyName(),
+            'company_coc_number' => $this->getCompanyCocNumber(),
+            'company_vat_number' => $this->getCompanyVatNumber(),
+            'address_billing_name' => $this->getAddressBillingName(),
+            'address_billing_street' => $this->getAddressBillingStreet(),
+            'address_billing_number' => $this->getAddressBillingNumber(),
+            'address_billing_extension' => $this->getAddressBillingExtension(),
+            'address_billing_zipcode' => $this->getAddressBillingZipcode(),
+            'address_billing_city' => $this->getAddressBillingCity(),
+            'address_billing_region' => $this->getAddressBillingRegion(),
+            'address_billing_country' => $this->getAddressBillingCountry(),
+            'address_shipping_company' => $this->getAddressShippingCompany(),
+            'address_shipping_name' => $this->getAddressShippingName(),
+            'address_shipping_street' => $this->getAddressShippingStreet(),
+            'address_shipping_number' => $this->getAddressShippingNumber(),
+            'address_shipping_extension' => $this->getAddressShippingExtension(),
+            'address_shipping_zipcode' => $this->getAddressShippingZipcode(),
+            'address_shipping_city' => $this->getAddressShippingCity(),
+            'address_shipping_region' => $this->getAddressShippingRegion(),
+            'address_shipping_country' => $this->getAddressShippingCountry(),
+            'is_discounted' => $this->getIsDiscounted(),
+            'discount_type' => $this->getDiscountType(),
+            'discount_amount' => $this->getDiscountAmount(),
+            'discount_percentage' => $this->getDiscountPercentage(),
+            'discount_coupon_code' => $this->getDiscountCouponCode(),
+            'language' => $this->getLanguage(),
+            'customer_ref' => $this->getCustomerRef(),
+            'customer' => $this->getCustomerIri(),
+            'order_products' => $this->getOrderProducts()->toArray($operation),
+            'quote' => $this->getQuoteIri()
+        ];
+    }
+
+    public function getCustomerIri(): ?string
+    {
+        if (!$this->getCustomer() instanceof Customer) {
+            return null;
+        }
+
+        return $this->getCustomer()->toIri();
+    }
+
+    public function getQuoteIri(): ?string
+    {
+        if (!$this->getQuote() instanceof Quote) {
+            return null;
+        }
+
+        return $this->getQuote()->toIri();
     }
 }

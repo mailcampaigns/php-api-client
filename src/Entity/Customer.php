@@ -4,8 +4,9 @@ namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
 use LogicException;
-use MailCampaigns\ApiClient\Collection;
+use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
+use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Collection\QuoteCollection;
 
 class Customer implements EntityInterface
@@ -227,92 +228,32 @@ class Customer implements EntityInterface
     protected $language;
 
     /**
-     * @var Collection\OrderCollection
+     * @var OrderCollection
      */
     protected $orders;
 
     /**
-     * @var Collection\ProductReviewCollection
+     * @var ProductReviewCollection
      */
     protected $productReviews;
 
     /**
-     * @var Collection\CustomerFavoriteProductCollection
+     * @var CustomerFavoriteProductCollection
      */
     protected $favorites;
 
     /**
-     * @var Collection\QuoteCollection
+     * @var QuoteCollection
      */
     protected $quotes;
 
     public function __construct()
     {
         $this->createdAt = new DateTime;
-        $this->orders = new Collection\OrderCollection;
-        $this->productReviews = new Collection\ProductReviewCollection;
-        $this->favorites = new Collection\CustomerFavoriteProductCollection();
-        $this->quotes = new Collection\QuoteCollection();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function toArray(?string $operation = null): array
-    {
-        return [
-            'customer_id' => $this->getCustomerId(),
-            'created_at' => $this->dtToString($this->getCreatedAt()),
-            'updated_at' => $this->dtToString($this->getUpdatedAt()),
-            'customer_ref' => $this->getCustomerRef(),
-            'origin' => $this->getOrigin(),
-            'is_subscribed' => $this->isSubscribed(),
-            'is_confirmed' => $this->isConfirmed(),
-            'gender' => $this->getGender(),
-            'birth_date' => $this->dtToString($this->getBirthDate()),
-            'email' => $this->getEmail(),
-            'first_name' => $this->getFirstName(),
-            'last_name' => $this->getLastName(),
-            'phone' => $this->getPhone(),
-            'mobile' => $this->getMobile(),
-            'company_name' => $this->getCompanyName(),
-            'company_coc_number' => $this->getCompanyCocNumber(),
-            'company_vat_number' => $this->getCompanyVatNumber(),
-            'address_billing_name' => $this->getAddressBillingName(),
-            'address_billing_street' => $this->getAddressBillingStreet(),
-            'address_billing_number' => $this->getAddressBillingNumber(),
-            'address_billing_extension' => $this->getAddressBillingExtension(),
-            'address_billing_zipcode' => $this->getAddressBillingZipcode(),
-            'address_billing_city' => $this->getAddressBillingCity(),
-            'address_billing_region' => $this->getAddressBillingRegion(),
-            'address_billing_country' => $this->getAddressBillingCountry(),
-            'address_shipping_company' => $this->getAddressShippingCompany(),
-            'address_shipping_name' => $this->getAddressShippingName(),
-            'address_shipping_street' => $this->getAddressShippingStreet(),
-            'address_shipping_number' => $this->getAddressShippingNumber(),
-            'address_shipping_extension' => $this->getAddressShippingExtension(),
-            'address_shipping_zipcode' => $this->getAddressShippingZipcode(),
-            'address_shipping_city' => $this->getAddressShippingCity(),
-            'address_shipping_region' => $this->getAddressShippingRegion(),
-            'address_shipping_country' => $this->getAddressShippingCountry(),
-            'language' => $this->getLanguage(),
-            'orders' => $this->getOrders()->toArray($operation),
-            'product_reviews' => $this->getProductReviews()->toArray($operation),
-            'favorites' => $this->getFavorites()->toArray($operation),
-            'quotes' => $this->getQuotes()->toArray($operation)
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function toIri(): string
-    {
-        if (null === $this->getCustomerId()) {
-            return '';
-        }
-
-        return '/customers/' . $this->getCustomerId();
+        $this->orders = new OrderCollection;
+        $this->productReviews = new ProductReviewCollection;
+        $this->favorites = new CustomerFavoriteProductCollection;
+        $this->quotes = new QuoteCollection;
     }
 
     /**
@@ -324,28 +265,28 @@ class Customer implements EntityInterface
     }
 
     /**
-     * @param int $customerId
+     * @param int|null $customerId
      * @return $this
      */
-    public function setCustomerId(int $customerId): self
+    public function setCustomerId(?int $customerId): self
     {
         $this->customerId = $customerId;
         return $this;
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
     /**
-     * @param DateTime $createdAt
+     * @param DateTime|null $createdAt
      * @return $this
      */
-    public function setCreatedAt(DateTime $createdAt): self
+    public function setCreatedAt(?DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -1023,38 +964,71 @@ class Customer implements EntityInterface
     }
 
     /**
-     * @return Collection\ProductReviewCollection
+     * @return ProductReviewCollection
      */
-    public function getProductReviews(): Collection\ProductReviewCollection
+    public function getProductReviews(): ProductReviewCollection
     {
         return $this->productReviews;
     }
 
     /**
-     * @param Collection\ProductReviewCollection $productReviews
+     * @param ProductReviewCollection $productReviews
      * @return $this
      */
-    public function setProductReviews(Collection\ProductReviewCollection $productReviews): self
+    public function setProductReviews(ProductReviewCollection $productReviews): self
     {
         $this->productReviews = $productReviews;
         return $this;
     }
 
     /**
-     * @return Collection\CustomerFavoriteProductCollection
+     * @return CustomerFavoriteProductCollection
      */
-    public function getFavorites(): Collection\CustomerFavoriteProductCollection
+    public function getFavorites(): CustomerFavoriteProductCollection
     {
         return $this->favorites;
     }
 
     /**
-     * @param Collection\CustomerFavoriteProductCollection $favorites
+     * @param iterable|CustomerFavoriteProductCollection|null $favorites
      * @return $this
      */
-    public function setFavorites(Collection\CustomerFavoriteProductCollection $favorites): self
+    public function setFavorites(?iterable $favorites): self
     {
-        $this->favorites = $favorites;
+        $this->favorites = new CustomerFavoriteProductCollection;
+
+        if ($favorites) {
+            foreach ($favorites as $data) {
+                $favorite = null;
+
+                if ($data instanceof CustomerFavoriteProduct) {
+                    $favorite = $data;
+                } else if (is_string($data)) {
+                    // Convert favorite IRI to a favorite entity.
+                    $favorite = $this->iriToFavoriteEntity($data);
+                } else if (is_array($data)) {
+                    $favorite = $this->arrayToFavorite($data);
+                } else {
+                    throw new LogicException('Favorite is neither an array nor an IRI!');
+                }
+
+                $this->addFavorite($favorite);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addFavorite(CustomerFavoriteProduct $favorite): self
+    {
+        if (!$this->favorites->contains($favorite)) {
+            if ($favorite->getCustomer() !== $this) {
+                $favorite->setCustomer($this);
+            }
+
+            $this->favorites->add($favorite);
+        }
+
         return $this;
     }
 
@@ -1081,7 +1055,7 @@ class Customer implements EntityInterface
                 if ($data instanceof Quote) {
                     $quote = $data;
                 } else if (is_string($data)) {
-                    // Convert quote IRI (string) to an Quote entity.
+                    // Convert quote IRI to a quote entity.
                     $quote = $this->iriToQuoteEntity($data);
                 } else {
                     throw new LogicException('Quote is neither an array nor an IRI!');
@@ -1117,6 +1091,66 @@ class Customer implements EntityInterface
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
+    {
+        return [
+            'customer_id' => $this->getCustomerId(),
+            'created_at' => $this->dtToString($this->getCreatedAt()),
+            'updated_at' => $this->dtToString($this->getUpdatedAt()),
+            'customer_ref' => $this->getCustomerRef(),
+            'origin' => $this->getOrigin(),
+            'is_subscribed' => $this->isSubscribed(),
+            'is_confirmed' => $this->isConfirmed(),
+            'gender' => $this->getGender(),
+            'birth_date' => $this->dtToString($this->getBirthDate()),
+            'email' => $this->getEmail(),
+            'first_name' => $this->getFirstName(),
+            'last_name' => $this->getLastName(),
+            'phone' => $this->getPhone(),
+            'mobile' => $this->getMobile(),
+            'company_name' => $this->getCompanyName(),
+            'company_coc_number' => $this->getCompanyCocNumber(),
+            'company_vat_number' => $this->getCompanyVatNumber(),
+            'address_billing_name' => $this->getAddressBillingName(),
+            'address_billing_street' => $this->getAddressBillingStreet(),
+            'address_billing_number' => $this->getAddressBillingNumber(),
+            'address_billing_extension' => $this->getAddressBillingExtension(),
+            'address_billing_zipcode' => $this->getAddressBillingZipcode(),
+            'address_billing_city' => $this->getAddressBillingCity(),
+            'address_billing_region' => $this->getAddressBillingRegion(),
+            'address_billing_country' => $this->getAddressBillingCountry(),
+            'address_shipping_company' => $this->getAddressShippingCompany(),
+            'address_shipping_name' => $this->getAddressShippingName(),
+            'address_shipping_street' => $this->getAddressShippingStreet(),
+            'address_shipping_number' => $this->getAddressShippingNumber(),
+            'address_shipping_extension' => $this->getAddressShippingExtension(),
+            'address_shipping_zipcode' => $this->getAddressShippingZipcode(),
+            'address_shipping_city' => $this->getAddressShippingCity(),
+            'address_shipping_region' => $this->getAddressShippingRegion(),
+            'address_shipping_country' => $this->getAddressShippingCountry(),
+            'language' => $this->getLanguage(),
+            'orders' => $this->getOrders()->toArray($operation),
+            'product_reviews' => $this->getProductReviews()->toArray($operation),
+            'favorites' => $this->getFavorites()->toArray($operation),
+            'quotes' => $this->getQuotes()->toArray($operation)
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toIri(): ?string
+    {
+        if (null === $this->getCustomerId()) {
+            return null;
+        }
+
+        return '/customers/' . $this->getCustomerId();
+    }
+
     protected function iriToOrderEntity(string $iri): Order
     {
         $id = (int)str_replace('/orders/', '', $iri);
@@ -1127,5 +1161,37 @@ class Customer implements EntityInterface
     {
         $id = (int)str_replace('/quotes/', '', $iri);
         return (new Quote)->setQuoteId($id);
+    }
+
+    protected function iriToFavoriteEntity(string $iri): CustomerFavoriteProduct
+    {
+        //"/customer_favorite_products/customer=4;favoriteProduct=1"
+        $id = (int)str_replace('/customer_favorite_products/', '', $iri);
+
+        return (new CustomerFavoriteProduct)
+            ->setCustomer($this)
+            ->setProduct((new Product)->setProductId($id));
+    }
+
+    protected function arrayToFavorite(array $data): CustomerFavoriteProduct
+    {
+        $productId = null;
+        $pattern = '/\/products\/(?\'product_id\'[\d]+)/';
+
+        if (false !== preg_match($pattern, $data['favorite_product'], $matches)) {
+            if (isset($matches['product_id'])) {
+                $productId = (int)$matches['product_id'];
+            }
+        }
+
+        if (null === $productId) {
+            throw new LogicException('Could not determine product id!');
+        }
+
+        $product = (new Product)->setProductId($productId);
+
+        return (new CustomerFavoriteProduct)
+            ->setCustomer($this)
+            ->setProduct($product);
     }
 }

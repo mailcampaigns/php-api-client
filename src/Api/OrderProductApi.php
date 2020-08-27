@@ -23,7 +23,7 @@ class OrderProductApi extends AbstractApi
         }
 
         // Send request.
-        $res = $this->post('order_products', $entity, ['content-type: application/json']);
+        $res = $this->post('order_products', $entity);
 
         return $this->toEntity($res);
     }
@@ -32,7 +32,7 @@ class OrderProductApi extends AbstractApi
      * {@inheritDoc}
      * @return OrderProduct
      */
-    public function getById(int $id): EntityInterface
+    public function getById($id): EntityInterface
     {
         return $this->toEntity($this->get("order_products/{$id}"));
     }
@@ -43,21 +43,12 @@ class OrderProductApi extends AbstractApi
      */
     public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
     {
-        $collection = new OrderProductCollection;
+        $data = $this->get('order_products', [
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+        ]);
 
-        $parameters = [
-            'page' => $page ?? $this->page,
-            'itemsPerPage' => $perPage ?? $this->perPage
-        ];
-
-        $data = $this->get('order_products', $parameters);
-
-        foreach ($data['hydra:member'] as $orderProductData) {
-            $orderProduct = $this->toEntity($orderProductData);
-            $collection->add($orderProduct);
-        }
-
-        return $collection;
+        return $this->toCollection($data, OrderProductCollection::class);
     }
 
     /**
@@ -69,12 +60,11 @@ class OrderProductApi extends AbstractApi
     public function update(EntityInterface $entity): EntityInterface
     {
         if (!$entity instanceof OrderProduct) {
-            throw new InvalidArgumentException('Expected order product entity!');
+            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
+                OrderProduct::class));
         }
 
-        $res = $this->put("order_products/{$entity->getOrderProductId()}", $entity, [
-            'content-type: application/json'
-        ]);
+        $res = $this->put("order_products/{$entity->getOrderProductId()}", $entity);
 
         return $this->toEntity($res);
     }
@@ -85,7 +75,7 @@ class OrderProductApi extends AbstractApi
      * @param int $id
      * @return $this
      */
-    public function deleteById(int $id): self
+    public function deleteById($id): ApiInterface
     {
         $this->delete("order_products/{$id}");
         return $this;
@@ -94,7 +84,7 @@ class OrderProductApi extends AbstractApi
     /**
      * @inheritDoc
      */
-    function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): EntityInterface
     {
         $orderProduct = (new OrderProduct)
             ->setOrderProductId($data['order_product_id'])

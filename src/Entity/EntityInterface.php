@@ -4,12 +4,6 @@ namespace MailCampaigns\ApiClient\Entity;
 
 interface EntityInterface
 {
-    const OPERATION_GET = 'GET';
-    const OPERATION_PUT = 'PUT';
-    const OPERATION_POST = 'POST';
-    const OPERATION_PATCH = 'PATCH';
-    const OPERATION_DELETE = 'DELETE';
-
     /**
      * Converts the entity to an array.
      *
@@ -17,12 +11,14 @@ interface EntityInterface
      * this class) to hydrate this entity for. Defaults to OPERATION_GET.
      *
      * @param string|null $operation The operation name.
+     * @param bool|null $isRoot
      * @return array
      */
-    function toArray(?string $operation = null): array;
+    function toArray(?string $operation = null, ?bool $isRoot = false): array;
 
     /**
-     * Returns the IRI for this API resource.
+     * Returns the IRI for this API resource, will return null in case id is not
+     * set.
      *
      * @return string|null
      */

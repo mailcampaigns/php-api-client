@@ -24,9 +24,10 @@ interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
      * Gets a native PHP array representation of the collection.
      *
      * @param string|null $operation
+     * @param bool|null $isRoot
      * @return array
      */
-    public function toArray(?string $operation = null): array;
+    public function toArray(?string $operation = null, ?bool $isRoot): array;
 
     /**
      * Adds an element at the end of the collection.

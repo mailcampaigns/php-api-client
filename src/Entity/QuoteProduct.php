@@ -505,9 +505,9 @@ class QuoteProduct implements EntityInterface
     /**
      * @inheritDoc
      */
-    public function toArray(?string $operation = null): array
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
-        $arr = [
+        return [
             'quote_product_id' => $this->getQuoteProductId(),
             'base_colli' => $this->getBaseColli(),
             'base_price_cost' => $this->getBasePriceCost(),
@@ -529,15 +529,17 @@ class QuoteProduct implements EntityInterface
             'product' => $this->getProduct() ? $this->getProduct()->toIri() : null,
             'quote' => $this->getQuote() ? $this->getQuote()->toIri() : null
         ];
-
-        return array_filter($arr);
     }
 
     /**
      * @inheritDoc
      */
-    public function toIri(): string
+    public function toIri(): ?string
     {
+        if (null === $this->getQuoteProductId()) {
+            return null;
+        }
+
         return '/quote_products/' . $this->getQuoteProductId();
     }
 }
