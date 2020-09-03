@@ -4,6 +4,7 @@ namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
 use LogicException;
+use MailCampaigns\ApiClient\Collection\CustomerCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
@@ -247,6 +248,11 @@ class Customer implements EntityInterface
      */
     protected $quotes;
 
+    /**
+     * @var CustomerCustomFieldCollection
+     */
+    protected $customFields;
+
     public function __construct()
     {
         $this->createdAt = new DateTime;
@@ -254,6 +260,7 @@ class Customer implements EntityInterface
         $this->productReviews = new ProductReviewCollection;
         $this->favorites = new CustomerFavoriteProductCollection;
         $this->quotes = new QuoteCollection;
+        $this->customFields = new CustomerCustomFieldCollection;
     }
 
     /**
@@ -1092,6 +1099,71 @@ class Customer implements EntityInterface
     }
 
     /**
+     * @return CustomerCustomFieldCollection
+     */
+    public function getCustomFields(): CustomerCustomFieldCollection
+    {
+        return $this->customFields;
+    }
+
+    /**
+     * @param iterable|CustomerCustomFieldCollection|null $customFields
+     * @return $this
+     */
+    public function setCustomFields(?iterable $customFields): self
+    {
+        $this->customFields = new CustomerCustomFieldCollection;
+
+        if ($customFields) {
+            foreach ($customFields as $data) {
+                $customField = null;
+
+                if ($data instanceof CustomerCustomField) {
+                    $customField = $data;
+                } else if (is_array($data)) {
+                    $customField = (new CustomerCustomField)
+                        ->setCustomFieldId($data['custom_field_id'])
+                        ->setCustomer($this)
+                        ->setName($data['name'])
+                        ->setValue($data['value']);
+                } else if (is_string($data)) {
+                    // Convert customField IRI to a customField entity.
+                    $customField = $this->iriToCustomerCustomFieldEntity($data);
+                } else {
+                    throw new LogicException('Custom field is of an unexpected type!');
+                }
+
+                $this->addCustomField($customField);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addCustomField(CustomerCustomField $customField): self
+    {
+        if (!$this->customFields->contains($customField)) {
+            if ($customField->getCustomer() !== $this) {
+                $customField->setCustomer($this);
+            }
+
+            $this->customFields->add($customField);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomField(CustomerCustomField $customField): self
+    {
+        if ($this->customFields->contains($customField)) {
+            $customField->setCustomer(null);
+            $this->customFields->removeElement($customField);
+        }
+
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
@@ -1135,7 +1207,8 @@ class Customer implements EntityInterface
             'orders' => $this->getOrders()->toArray($operation),
             'product_reviews' => $this->getProductReviews()->toArray($operation),
             'favorites' => $this->getFavorites()->toArray($operation),
-            'quotes' => $this->getQuotes()->toArray($operation)
+            'quotes' => $this->getQuotes()->toArray($operation),
+            'custom_fields' => $this->getCustomFields()->toArray($operation)
         ];
     }
 
@@ -1193,5 +1266,11 @@ class Customer implements EntityInterface
         return (new CustomerFavoriteProduct)
             ->setCustomer($this)
             ->setProduct($product);
+    }
+
+    protected function iriToCustomerCustomFieldEntity(string $iri): CustomerCustomField
+    {
+        $id = (int)str_replace('/customer_custom_fields/', '', $iri);
+        return (new CustomerCustomField())->setCustomFieldId($id);
     }
 }

@@ -4,6 +4,7 @@ namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\CustomerCollection;
+use MailCampaigns\ApiClient\Collection\CustomerCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
@@ -135,6 +136,7 @@ class CustomerApi extends AbstractApi
         $productReviews = new ProductReviewCollection($data['product_reviews'] ?? []);
         $favorites = new CustomerFavoriteProductCollection($data['favorites'] ?? []);
         $quotes = new QuoteCollection($data['quotes'] ?? []);
+        $customFields = new CustomerCustomFieldCollection($data['custom_fields'] ?? []);
 
         return (new Customer)
             ->setCustomerId($data['customer_id'] ?? null)
@@ -175,6 +177,7 @@ class CustomerApi extends AbstractApi
             ->setOrders($orders)
             ->setProductReviews($productReviews)
             ->setFavorites($favorites)
-            ->setQuotes($quotes);
+            ->setQuotes($quotes)
+            ->setCustomFields($customFields);
     }
 }
