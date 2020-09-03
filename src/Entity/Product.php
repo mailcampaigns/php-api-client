@@ -1116,7 +1116,7 @@ class Product implements EntityInterface
             'volume_sell_products' => $this->getVolumeSellProducts()->toArray($operation),
             'reviews' => $this->getReviews()->toArray($operation),
             'children' => $this->getChildren()->toArray($operation),
-            'parent' => $this->getParent()->toIri()
+            'parent' => $this->getParent() ? $this->getParent()->toIri() : null
         ];
     }
 
