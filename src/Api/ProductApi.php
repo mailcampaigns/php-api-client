@@ -154,12 +154,24 @@ class ProductApi extends AbstractApi
      */
     public function toEntity(array $data): EntityInterface
     {
+        $parent = null;
+
         $categories = new ProductProductCategoryCollection($data['categories'] ?? []);
         $relatedProducts = new ProductRelatedProductCollection($data['related_products'] ?? []);
         $crossSellProducts = new ProductCrossSellProductCollection($data['cross_sell_products'] ?? []);
         $upSellProducts = new ProductUpSellProductCollection($data['up_sell_products'] ?? []);
         $volumeSellProducts = new ProductVolumeSellProductCollection($data['volume_sell_products'] ?? []);
         $reviews = new ProductReviewCollection($data['reviews'] ?? []);
+        $children = new ProductCollection($data['children'] ?? []);
+
+        // Set parent product.
+        if (isset($data['parent']) && is_string($data['parent'])) {
+            if (false !== preg_match('/\/products\/(\d+)/', $data['parent'], $matches)) {
+                if (isset($matches[1])) {
+                    $parent = (new Product)->setProductId((int)$matches[1]);
+                }
+            }
+        }
 
         return (new Product)
             ->setProductId($data['product_id'] ?? null)
@@ -192,6 +204,8 @@ class ProductApi extends AbstractApi
             ->setCrossSellProducts($crossSellProducts)
             ->setUpSellProducts($upSellProducts)
             ->setVolumeSellProducts($volumeSellProducts)
-            ->setReviews($reviews);
+            ->setReviews($reviews)
+            ->setChildren($children)
+            ->setParent($parent);
     }
 }

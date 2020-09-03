@@ -5,6 +5,7 @@ namespace MailCampaigns\ApiClient\Entity;
 use DateTime;
 use LogicException;
 use MailCampaigns\ApiClient\Collection\ProductCategoryCollection;
+use MailCampaigns\ApiClient\Collection\ProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductRelatedProductCollection;
@@ -243,6 +244,20 @@ class Product implements EntityInterface
      */
     protected $reviews;
 
+    /**
+     * Products nested under this product.
+     *
+     * @var ProductCollection
+     */
+    protected $children;
+
+    /**
+     * The parent product.
+     *
+     * @var Product|null
+     */
+    protected $parent;
+
     public function __construct()
     {
         $this->createdAt = new DateTime;
@@ -253,6 +268,7 @@ class Product implements EntityInterface
         $this->crossSellProducts = new ProductCrossSellProductCollection;
         $this->upSellProducts = new ProductUpSellProductCollection;
         $this->volumeSellProducts = new ProductVolumeSellProductCollection;
+        $this->children = new ProductCollection;
     }
 
     /**
@@ -687,7 +703,7 @@ class Product implements EntityInterface
         return $this;
     }
 
-        public function getCategories(): ProductProductCategoryCollection
+    public function getCategories(): ProductProductCategoryCollection
     {
         return $this->categories;
     }
@@ -982,6 +998,86 @@ class Product implements EntityInterface
     }
 
     /**
+     * @return ProductCollection
+     */
+    public function getChildren(): ProductCollection
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param ProductCollection $collection
+     * @return $this
+     */
+    public function setChildren(ProductCollection $collection): self
+    {
+        $this->children = new ProductCollection;
+
+        foreach ($collection as $element) {
+            // Convert to entity if raw data (array) or IRI for the item is supplied.
+            if ($element instanceof Product) {
+                $entity = $element;
+            } else if (is_array($element)) {
+                $entity = $this->toProduct($element);
+            } else if (is_string($element)) {
+                $entity = $this->iriToProduct($element);
+            } else {
+                throw new LogicException('Unexpected element type in collection!');
+            }
+
+            $this->addChild($entity);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Product $child
+     * @return $this
+     */
+    public function addChild(Product $child): self
+    {
+        if (!$this->children->contains($child)) {
+            $child->setParent($this);
+            $this->children->add($child);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Product $child
+     * @return $this
+     */
+    public function removeChild(Product $child): self
+    {
+        if ($this->children->contains($child)) {
+            $child->setParent(null);
+            $this->children->removeElement($child);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Product|null
+     */
+    public function getParent(): ?Product
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param Product|null $parent
+     * @return Product
+     */
+    public function setParent(?Product $parent): Product
+    {
+        $this->parent = $parent;
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
@@ -1018,7 +1114,9 @@ class Product implements EntityInterface
             'cross_sell_products' => $this->getCrossSellProducts()->toArray($operation),
             'up_sell_products' => $this->getUpSellProducts()->toArray($operation),
             'volume_sell_products' => $this->getVolumeSellProducts()->toArray($operation),
-            'reviews' => $this->getReviews()->toArray($operation)
+            'reviews' => $this->getReviews()->toArray($operation),
+            'children' => $this->getChildren()->toArray($operation),
+            'parent' => $this->getParent()->toIri()
         ];
     }
 
@@ -1259,6 +1357,35 @@ class Product implements EntityInterface
         return (new ProductVolumeSellProduct)
             ->setProduct($this)
             ->setLinkedProduct($volumeSellProduct);
+    }
+
+    protected function toProduct(array $data): Product
+    {
+        $id = null;
+        $pattern = '/\/products\/(?\'id\'[\d]+)/';
+
+        if (false !== preg_match($pattern, $data['@id'], $matches)) {
+            if (isset($matches['id'])) {
+                $id = (int)$matches['id'];
+            }
+        }
+
+        if (null === $id) {
+            throw new LogicException('Could not determine product id!');
+        }
+
+        return (new Product)->setProductId($id);
+    }
+
+    protected function iriToProduct(?string $iri): ?Product
+    {
+        if (!$iri) {
+            return null;
+        }
+
+        $id = (int)str_replace('/products/', '', $iri);
+
+        return (new Product)->setProductId($id);
     }
 
     protected function toProductReview(array $data): ProductReview
