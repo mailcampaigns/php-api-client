@@ -4,6 +4,7 @@ namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
+use MailCampaigns\ApiClient\Collection\OrderCustomFieldCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
@@ -134,6 +135,8 @@ class OrderApi extends AbstractApi
             }
         }
 
+        $customFields = new OrderCustomFieldCollection($data['custom_fields'] ?? []);
+
         return (new Order)
             ->setOrderId($data['order_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
@@ -184,6 +187,7 @@ class OrderApi extends AbstractApi
             ->setCustomerRef($data['customer_ref'])
             ->setCustomer($customer)
             ->setOrderProducts($data['order_products'])
-            ->setQuote($quote);
+            ->setQuote($quote)
+            ->setCustomFields($customFields);
     }
 }

@@ -4,6 +4,7 @@ namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
 use LogicException;
+use MailCampaigns\ApiClient\Collection\OrderCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\OrderProductCollection;
 
 class Order implements EntityInterface
@@ -357,11 +358,17 @@ class Order implements EntityInterface
      */
     protected $quote;
 
+    /**
+     * @var OrderCustomFieldCollection
+     */
+    protected $customFields;
+
     public function __construct()
     {
         $this->createdAt = new DateTime;
         $this->orderProducts = new OrderProductCollection;
         $this->isDiscounted = false;
+        $this->customFields = new OrderCustomFieldCollection;
     }
 
     /**
@@ -1327,6 +1334,71 @@ class Order implements EntityInterface
     }
 
     /**
+     * @return OrderCustomFieldCollection
+     */
+    public function getCustomFields(): OrderCustomFieldCollection
+    {
+        return $this->customFields;
+    }
+
+    /**
+     * @param iterable|OrderCustomFieldCollection|null $customFields
+     * @return $this
+     */
+    public function setCustomFields(?iterable $customFields): self
+    {
+        $this->customFields = new OrderCustomFieldCollection;
+
+        if ($customFields) {
+            foreach ($customFields as $data) {
+                $customField = null;
+
+                if ($data instanceof OrderCustomField) {
+                    $customField = $data;
+                } else if (is_array($data)) {
+                    $customField = (new OrderCustomField)
+                        ->setCustomFieldId($data['custom_field_id'])
+                        ->setOrder($this)
+                        ->setName($data['name'])
+                        ->setValue($data['value']);
+                } else if (is_string($data)) {
+                    // Convert customField IRI to a customField entity.
+                    $customField = $this->iriToOrderCustomFieldEntity($data);
+                } else {
+                    throw new LogicException('Custom field is of an unexpected type!');
+                }
+
+                $this->addCustomField($customField);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addCustomField(OrderCustomField $customField): self
+    {
+        if (!$this->customFields->contains($customField)) {
+            if ($customField->getOrder() !== $this) {
+                $customField->setOrder($this);
+            }
+
+            $this->customFields->add($customField);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomField(OrderCustomField $customField): self
+    {
+        if ($this->customFields->contains($customField)) {
+            $customField->setOrder(null);
+            $this->customFields->removeElement($customField);
+        }
+
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function toIri(): ?string
@@ -1393,7 +1465,8 @@ class Order implements EntityInterface
             'customer_ref' => $this->getCustomerRef(),
             'customer' => $this->getCustomerIri(),
             'order_products' => $this->getOrderProducts()->toArray($operation),
-            'quote' => $this->getQuoteIri()
+            'quote' => $this->getQuoteIri(),
+            'custom_fields' => $this->getCustomFields()->toArray($operation)
         ];
     }
 
@@ -1413,5 +1486,11 @@ class Order implements EntityInterface
         }
 
         return $this->getQuote()->toIri();
+    }
+
+    protected function iriToOrderCustomFieldEntity(string $iri): OrderCustomField
+    {
+        $id = (int)str_replace('/order_custom_fields/', '', $iri);
+        return (new OrderCustomField())->setCustomFieldId($id);
     }
 }

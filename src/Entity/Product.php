@@ -6,6 +6,7 @@ use DateTime;
 use LogicException;
 use MailCampaigns\ApiClient\Collection\ProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductCollection;
+use MailCampaigns\ApiClient\Collection\ProductCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductRelatedProductCollection;
@@ -245,6 +246,11 @@ class Product implements EntityInterface
     protected $reviews;
 
     /**
+     * @var ProductCustomFieldCollection
+     */
+    protected $customFields;
+
+    /**
      * Products nested under this product.
      *
      * @var ProductCollection
@@ -268,6 +274,7 @@ class Product implements EntityInterface
         $this->crossSellProducts = new ProductCrossSellProductCollection;
         $this->upSellProducts = new ProductUpSellProductCollection;
         $this->volumeSellProducts = new ProductVolumeSellProductCollection;
+        $this->customFields = new ProductCustomFieldCollection;
         $this->children = new ProductCollection;
     }
 
@@ -998,6 +1005,71 @@ class Product implements EntityInterface
     }
 
     /**
+     * @return ProductCustomFieldCollection
+     */
+    public function getCustomFields(): ProductCustomFieldCollection
+    {
+        return $this->customFields;
+    }
+
+    /**
+     * @param iterable|ProductCustomFieldCollection|null $customFields
+     * @return $this
+     */
+    public function setCustomFields(?iterable $customFields): self
+    {
+        $this->customFields = new ProductCustomFieldCollection;
+
+        if ($customFields) {
+            foreach ($customFields as $data) {
+                $customField = null;
+
+                if ($data instanceof ProductCustomField) {
+                    $customField = $data;
+                } else if (is_array($data)) {
+                    $customField = (new ProductCustomField)
+                        ->setCustomFieldId($data['custom_field_id'])
+                        ->setProduct($this)
+                        ->setName($data['name'])
+                        ->setValue($data['value']);
+                } else if (is_string($data)) {
+                    // Convert customField IRI to a customField entity.
+                    $customField = $this->iriToProductCustomFieldEntity($data);
+                } else {
+                    throw new LogicException('Custom field is of an unexpected type!');
+                }
+
+                $this->addCustomField($customField);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addCustomField(ProductCustomField $customField): self
+    {
+        if (!$this->customFields->contains($customField)) {
+            if ($customField->getProduct() !== $this) {
+                $customField->setProduct($this);
+            }
+
+            $this->customFields->add($customField);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomField(ProductCustomField $customField): self
+    {
+        if ($this->customFields->contains($customField)) {
+            $customField->setProduct(null);
+            $this->customFields->removeElement($customField);
+        }
+
+        return $this;
+    }
+
+    /**
      * @return ProductCollection
      */
     public function getChildren(): ProductCollection
@@ -1115,6 +1187,7 @@ class Product implements EntityInterface
             'up_sell_products' => $this->getUpSellProducts()->toArray($operation),
             'volume_sell_products' => $this->getVolumeSellProducts()->toArray($operation),
             'reviews' => $this->getReviews()->toArray($operation),
+            'custom_fields' => $this->getCustomFields()->toArray($operation),
             'children' => $this->getChildren()->toArray($operation),
             'parent' => $this->getParent() ? $this->getParent()->toIri() : null
         ];
@@ -1422,6 +1495,12 @@ class Product implements EntityInterface
         }
 
         return null;
+    }
+
+    protected function iriToProductCustomFieldEntity(string $iri): ProductCustomField
+    {
+        $id = (int)str_replace('/product_custom_fields/', '', $iri);
+        return (new ProductCustomField())->setCustomFieldId($id);
     }
 
     protected function iriToCustomer(string $iri): Customer

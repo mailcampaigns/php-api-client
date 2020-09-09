@@ -3,6 +3,7 @@
 namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
+use MailCampaigns\ApiClient\Collection\ProductCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
@@ -162,6 +163,7 @@ class ProductApi extends AbstractApi
         $upSellProducts = new ProductUpSellProductCollection($data['up_sell_products'] ?? []);
         $volumeSellProducts = new ProductVolumeSellProductCollection($data['volume_sell_products'] ?? []);
         $reviews = new ProductReviewCollection($data['reviews'] ?? []);
+        $customFields = new ProductCustomFieldCollection($data['custom_fields'] ?? []);
         $children = new ProductCollection($data['children'] ?? []);
 
         // Set parent product.
@@ -205,6 +207,7 @@ class ProductApi extends AbstractApi
             ->setUpSellProducts($upSellProducts)
             ->setVolumeSellProducts($volumeSellProducts)
             ->setReviews($reviews)
+            ->setCustomFields($customFields)
             ->setChildren($children)
             ->setParent($parent);
     }
