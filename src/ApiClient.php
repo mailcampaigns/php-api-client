@@ -2,6 +2,9 @@
 
 namespace MailCampaigns\ApiClient;
 
+use DateInterval;
+use DateTime;
+use Exception;
 use MailCampaigns\ApiClient\Api\CustomerApi;
 use MailCampaigns\ApiClient\Api\CustomerCustomFieldApi;
 use MailCampaigns\ApiClient\Api\CustomerFavoriteProductApi;
@@ -28,114 +31,130 @@ final class ApiClient
     /**
      * @var self
      */
-    private static $instance;
+    protected static $instance;
 
     /**
      * @var HttpClientInterface
      */
-    private $httpClient;
+    protected $httpClient;
 
     /**
      * @var CustomerApi
      */
-    private $customerApi;
+    protected $customerApi;
 
     /**
      * @var QuoteApi
      */
-    private $quoteApi;
+    protected $quoteApi;
 
     /**
      * @var QuoteProductApi
      */
-    private $quoteProductApi;
+    protected $quoteProductApi;
 
     /**
      * @var OrderApi
      */
-    private $orderApi;
+    protected $orderApi;
 
     /**
      * @var OrderApi
      */
-    private $orderProductApi;
+    protected $orderProductApi;
 
     /**
      * @var ProductApi
      */
-    private $productApi;
+    protected $productApi;
 
     /**
      * @var ProductCategoryApi
      */
-    private $productCategoryApi;
+    protected $productCategoryApi;
 
     /**
      * @var ProductProductCategoryApi
      */
-    private $productProductCategoryApi;
+    protected $productProductCategoryApi;
 
     /**
      * @var ProductReviewApi
      */
-    private $productReviewApi;
+    protected $productReviewApi;
 
     /**
      * @var CustomerFavoriteProductApi
      */
-    private $customerFavoriteProductApi;
+    protected $customerFavoriteProductApi;
 
     /**
      * @var ProductRelatedProductApi
      */
-    private $productRelatedProductApi;
+    protected $productRelatedProductApi;
 
     /**
      * @var ProductCrossSellProductApi
      */
-    private $productCrossSellProductApi;
+    protected $productCrossSellProductApi;
 
     /**
      * @var ProductUpSellProductApi
      */
-    private $productUpSellProductApi;
+    protected $productUpSellProductApi;
 
     /**
      * @var ProductVolumeSellProductApi
      */
-    private $productVolumeSellProductApi;
+    protected $productVolumeSellProductApi;
 
     /**
      * @var ProductCustomFieldApi
      */
-    private $productCustomFieldApi;
+    protected $productCustomFieldApi;
 
     /**
      * @var CustomerCustomFieldApi
      */
-    private $customerCustomFieldApi;
+    protected $customerCustomFieldApi;
 
     /**
      * @var OrderCustomFieldApi
      */
-    private $orderCustomFieldApi;
+    protected $orderCustomFieldApi;
 
-    private function __construct(string $baseUri, string $key, string $secret)
+    /**
+     * @var string
+     */
+    protected $baseUri;
+
+    /**
+     * @var string
+     */
+    protected $key;
+
+    /**
+     * @var string
+     */
+    protected $secret;
+
+    /**
+     * Token expiration.
+     * @var DateTime
+     */
+    protected $tokenExpirationDt;
+
+    protected function __construct(string $baseUri, string $key, string $secret)
     {
-        // Get version from Composer configuration.
-        $composerConfig = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
+        $this->baseUri = $baseUri;
+        $this->key = $key;
+        $this->secret = $secret;
 
         // Request an access token.
-        $bearerToken = $this->getBearerToken($baseUri, $key, $secret);
+        $bearerToken = $this->getBearerToken();
 
         // Create an instance of the HTTP client.
-        $this->httpClient = HttpClient::create([
-            'headers' => [
-                'User-Agent' => 'MailCampaigns PHP API client ' . $composerConfig->version
-            ],
-            'auth_bearer' => $bearerToken,
-            'base_uri' => $baseUri
-        ]);
+        $this->createHttpClient($bearerToken);
 
         // Create API objects.
         $this->customerApi = new CustomerApi($this);
@@ -263,20 +282,34 @@ final class ApiClient
     }
 
     /**
+     * Checks if bearer token has expired.
+     *
+     * @return bool
+     */
+    public function hasTokenExpired(): bool
+    {
+        $secondsLeft = $this->tokenExpirationDt->getTimestamp() - (new DateTime)->getTimestamp();
+        return $secondsLeft <= 0;
+    }
+
+    public function refreshToken(): self
+    {
+        $this->createHttpClient($this->getBearerToken());
+        return $this;
+    }
+
+    /**
      * Retrieves access (bearer) token.
      *
-     * @param string $baseUri
-     * @param string $key
-     * @param string $secret
      * @return string The access (bearer) token.
      */
-    private function getBearerToken(string $baseUri, string $key, string $secret): string
+    protected function getBearerToken(): string
     {
         $curl = curl_init();
 
         // Set Curl options.
         curl_setopt_array($curl, [
-            CURLOPT_URL => $baseUri . '/oauth/v2/token',
+            CURLOPT_URL => $this->baseUri . '/oauth/v2/token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => [
@@ -284,7 +317,7 @@ final class ApiClient
                 'grant_type' => 'client_credentials'
             ],
             CURLOPT_HTTPHEADER => [
-                'Authorization: Basic ' . base64_encode($key . ':' . $secret)
+                'Authorization: Basic ' . base64_encode($this->key . ':' . $this->secret)
             ]
         ]);
 
@@ -301,6 +334,11 @@ final class ApiClient
 
         if ($decodedResponse) {
             if (isset($decodedResponse->access_token)) {
+                // Remember the moment the token will expirate to check on requests later.
+                if (isset($decodedResponse->expires_in)) {
+                    $this->setTokenExpiration($decodedResponse->expires_in);
+                }
+
                 return $decodedResponse->access_token;
             }
 
@@ -315,5 +353,48 @@ final class ApiClient
 
         throw new ApiAuthenticationException('Could not retrieve access token! '
             . 'Received an unexpected response from the authentication server.');
+    }
+
+    /**
+     * Sets the moment the bearer token will expire.
+     *
+     * @param int|string $expInSeconds
+     * @return $this
+     * @throws Exception
+     */
+    protected function setTokenExpiration($expInSeconds): self
+    {
+        if (!is_numeric($expInSeconds)) {
+            throw new ApiAuthenticationException('Invalid token expiration format!');
+        }
+
+        $interval = (new DateInterval(sprintf('PT%dS', (int)$expInSeconds)));
+        $this->tokenExpirationDt = (new DateTime())->add($interval);
+
+        return $this;
+    }
+
+    protected function createHttpClient(string $bearerToken): self
+    {
+        $this->httpClient = HttpClient::create([
+            'headers' => [
+                'User-Agent' => 'MailCampaigns PHP API client ' . $this->getComposerPackageVersion()
+            ],
+            'auth_bearer' => $bearerToken,
+            'base_uri' => $this->baseUri
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Get version of this package from Composer configuration.
+     *
+     * @return string
+     */
+    protected function getComposerPackageVersion(): string
+    {
+        $composerConfig = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
+        return $composerConfig->version;
     }
 }
