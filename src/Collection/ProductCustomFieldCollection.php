@@ -2,6 +2,7 @@
 
 namespace MailCampaigns\ApiClient\Collection;
 
+use MailCampaigns\ApiClient\Api\ApiInterface;
 use MailCampaigns\ApiClient\Entity\ProductCustomField;
 
 class ProductCustomFieldCollection extends AbstractCollection
@@ -17,7 +18,11 @@ class ProductCustomFieldCollection extends AbstractCollection
 
         foreach ($this->elements as $element) {
             if ($element instanceof ProductCustomField) {
-                $arr[$element->getName()] = $element->getValue();
+                if ($operation === ApiInterface::OPERATION_POST) {
+                    $arr[] = $element->toArray($operation);
+                } else {
+                    $arr[$element->getName()] = $element->getValue();
+                }
             } else {
                 $arr[] = $element;
             }
