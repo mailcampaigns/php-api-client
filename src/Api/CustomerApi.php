@@ -67,6 +67,18 @@ class CustomerApi extends AbstractApi
         return null;
     }
 
+    public function getByCustomerRefs(array $refs, ?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
+    {
+        $data = $this->get('customers', [
+            'customer_ref' => $refs,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        return $this->toCollection($data, CustomerCollection::class);
+    }
+
     /**
      * Tries to find a customer by email address, returns null if no customer was
      * found with the given email address.
