@@ -20,6 +20,10 @@ class OrderCustomFieldCollection extends AbstractCollection
             if ($element instanceof OrderCustomField) {
                 if ($operation === ApiInterface::OPERATION_POST) {
                     $arr[] = $element->toArray($operation);
+                } else if ($operation === ApiInterface::OPERATION_PUT) {
+                    if ($element->getCustomFieldId()) {
+                        $arr[] = $element->toIri();
+                    }
                 } else {
                     $arr[$element->getName()] = $element->getValue();
                 }
