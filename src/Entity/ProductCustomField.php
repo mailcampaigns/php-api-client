@@ -14,7 +14,7 @@ class ProductCustomField implements EntityInterface, CustomFieldInterface
     /**
      * @return Product
      */
-    public function getProduct(): Product
+    public function getProduct(): ?Product
     {
         return $this->product;
     }

@@ -14,7 +14,7 @@ class CustomerCustomField implements EntityInterface, CustomFieldInterface
     /**
      * @return Customer
      */
-    public function getCustomer(): Customer
+    public function getCustomer(): ?Customer
     {
         return $this->customer;
     }

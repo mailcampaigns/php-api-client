@@ -55,8 +55,12 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request Headers.
      * @return array|string
      */
-    protected function get($path, array $parameters = [], array $requestHeaders = [])
+    protected function get(string $path, array $parameters = [], array $requestHeaders = [])
     {
+        if ($this->client->hasTokenExpired()) {
+            $this->client->refreshToken();
+        }
+        
         if (count($parameters) > 0) {
             $path .= '?' . http_build_query($parameters);
         }
@@ -76,8 +80,12 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request headers.
      * @return array|string
      */
-    protected function head($path, array $parameters = [], array $requestHeaders = [])
+    protected function head(string $path, array $parameters = [], array $requestHeaders = [])
     {
+        if ($this->client->hasTokenExpired()) {
+            $this->client->refreshToken();
+        }
+
         if (count($parameters) > 0) {
             $path .= '?' . http_build_query($parameters);
         }
@@ -96,8 +104,12 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request headers.
      * @return array|string
      */
-    protected function post($path, EntityInterface $entity, array $requestHeaders = [])
+    protected function post(string $path, EntityInterface $entity, array $requestHeaders = [])
     {
+        if ($this->client->hasTokenExpired()) {
+            $this->client->refreshToken();
+        }
+
         $response = $this->client->getHttpClient()->request('POST', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
             'body' => $this->createJsonBody($entity->toArray(self::OPERATION_POST, true))
@@ -114,8 +126,12 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request headers.
      * @return array|string
      */
-    protected function patch($path, EntityInterface $entity, array $requestHeaders = [])
+    protected function patch(string $path, EntityInterface $entity, array $requestHeaders = [])
     {
+        if ($this->client->hasTokenExpired()) {
+            $this->client->refreshToken();
+        }
+
         $response = $this->client->getHttpClient()->request('PATCH', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
             'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PATCH, true))
@@ -132,8 +148,12 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request headers.
      * @return array|string
      */
-    protected function put($path, EntityInterface $entity, array $requestHeaders = [])
+    protected function put(string $path, EntityInterface $entity, array $requestHeaders = [])
     {
+        if ($this->client->hasTokenExpired()) {
+            $this->client->refreshToken();
+        }
+
         $response = $this->client->getHttpClient()->request('PUT', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
             'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PUT, true))
@@ -150,8 +170,12 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request headers.
      * @return array|string
      */
-    protected function delete($path, array $parameters = [], array $requestHeaders = [])
+    protected function delete(string $path, array $parameters = [], array $requestHeaders = [])
     {
+        if ($this->client->hasTokenExpired()) {
+            $this->client->refreshToken();
+        }
+
         $response = $this->client->getHttpClient()->request('DELETE', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
             'body' => $this->createJsonBody($parameters)

@@ -66,6 +66,25 @@ class OrderApi extends AbstractApi
     }
 
     /**
+     * @param array $numbers
+     * @param int|null $page
+     * @param int|null $perPage
+     * @param array|null $order
+     * @return OrderCollection
+     */
+    public function getByNumbers(array $numbers, ?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
+    {
+        $data = $this->get('orders', [
+            'number' => $numbers,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        return $this->toCollection($data, OrderCollection::class);
+    }
+
+    /**
      * {@inheritDoc}
      * @return OrderCollection
      */

@@ -90,6 +90,18 @@ class ProductApi extends AbstractApi
         return null;
     }
 
+    public function getByEans(array $eans, ?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
+    {
+        $data = $this->get('products', [
+            'ean' => $eans,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        return $this->toCollection($data, ProductCollection::class);
+    }
+
     /**
      * Tries to find a product by SKU (Stock Keeping Unit), returns null when no
      * product was found with the given product SKU.
