@@ -54,6 +54,20 @@ class QuoteApi extends AbstractApi
     }
 
     /**
+     * @return QuoteCollection
+     */
+    public function getByQuoteRefs(array $refs, ?int $page = null, ?int $perPage = null): CollectionInterface
+    {
+        $data = $this->get('quotes', [
+            'quote_ref' => $refs,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+        ]);
+
+        return $this->toCollection($data, QuoteCollection::class);
+    }
+
+    /**
      * {@inheritDoc}
      * @return QuoteCollection
      */
