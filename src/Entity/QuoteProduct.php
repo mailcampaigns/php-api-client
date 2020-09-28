@@ -131,6 +131,13 @@ class QuoteProduct implements EntityInterface
     protected $baseAdditionalCostIncl;
 
     /**
+     * External reference to quote line.
+     *
+     * @var string
+     */
+    protected $lineRef;
+
+    /**
      * Link to Product resource.
      *
      * @var Product|null
@@ -463,6 +470,24 @@ class QuoteProduct implements EntityInterface
     public function setBaseAdditionalCostIncl(?float $baseAdditionalCostIncl): QuoteProduct
     {
         $this->baseAdditionalCostIncl = $baseAdditionalCostIncl;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLineRef(): ?string
+    {
+        return $this->lineRef;
+    }
+
+    /**
+     * @param string|null $lineRef
+     * @return QuoteProduct
+     */
+    public function setLineRef(?string $lineRef): QuoteProduct
+    {
+        $this->lineRef = $lineRef;
         return $this;
     }
 
