@@ -616,7 +616,8 @@ class Quote implements EntityInterface
                             ->setAdditionalCostExcl($data['additional_cost_excl'])
                             ->setAdditionalCostIncl($data['additional_cost_incl'])
                             ->setBaseAdditionalCostExcl($data['additional_cost_excl'])
-                            ->setBaseAdditionalCostIncl($data['additional_cost_incl']);
+                            ->setBaseAdditionalCostIncl($data['additional_cost_incl'])
+                            ->setLineRef($data['line_ref']);
 
                         // If a product is linked to this quote row (quote product) add
                         // product entity based on the product IRI.
