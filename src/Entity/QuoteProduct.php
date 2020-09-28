@@ -551,6 +551,7 @@ class QuoteProduct implements EntityInterface
             'additional_cost_incl' => $this->getAdditionalCostIncl(),
             'base_additional_cost_excl' => $this->getBaseAdditionalCostExcl(),
             'base_additional_cost_incl' => $this->getBaseAdditionalCostIncl(),
+            'line_ref' => $this->getLineRef(),
             'product' => $this->getProduct() ? $this->getProduct()->toIri() : null,
             'quote' => $this->getQuote() ? $this->getQuote()->toIri() : null
         ];
