@@ -69,14 +69,23 @@ class QuoteApi extends AbstractApi
 
     /**
      * {@inheritDoc}
+     * @param array $filters Optional filters.
      * @return QuoteCollection
      */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
+    public function getCollection(?int $page = null, ?int $perPage = null, $filters = []): CollectionInterface
     {
-        $data = $this->get('quotes', [
+        $params = [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
-        ]);
+        ];
+
+        if (count($filters) > 0) {
+            foreach ($filters as $key => $value) {
+                $params[$key] = $value;
+            }
+        }
+
+        $data = $this->get('quotes', $params);
 
         return $this->toCollection($data, QuoteCollection::class);
     }
