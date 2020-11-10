@@ -22,6 +22,7 @@ use MailCampaigns\ApiClient\Api\ProductUpSellProductApi;
 use MailCampaigns\ApiClient\Api\ProductVolumeSellProductApi;
 use MailCampaigns\ApiClient\Api\QuoteApi;
 use MailCampaigns\ApiClient\Api\QuoteProductApi;
+use MailCampaigns\ApiClient\Api\SubscriberApi;
 use MailCampaigns\ApiClient\Exception\ApiAuthenticationException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -124,6 +125,11 @@ final class ApiClient
     protected $orderCustomFieldApi;
 
     /**
+     * @var SubscriberApi
+     */
+    protected $subscriberApi;
+
+    /**
      * @var string
      */
     protected $baseUri;
@@ -174,6 +180,7 @@ final class ApiClient
         $this->productCustomFieldApi = new ProductCustomFieldApi($this);
         $this->customerCustomFieldApi = new CustomerCustomFieldApi($this);
         $this->orderCustomFieldApi = new OrderCustomFieldApi($this);
+        $this->subscriberApi = new SubscriberApi($this);
     }
 
     public function getCustomerApi(): CustomerApi
@@ -259,6 +266,11 @@ final class ApiClient
     public function getOrderCustomFieldApi(): OrderCustomFieldApi
     {
         return $this->orderCustomFieldApi;
+    }
+
+    public function getSubscriberApi(): SubscriberApi
+    {
+        return $this->subscriberApi;
     }
 
     public static function create(string $baseUri, string $key, string $secret): self
