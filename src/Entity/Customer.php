@@ -1180,6 +1180,7 @@ class Customer implements EntityInterface
             'birth_date' => $this->dtToString($this->getBirthDate()),
             'email' => $this->getEmail(),
             'first_name' => $this->getFirstName(),
+            'middle_name' => $this->getMiddleName(),
             'last_name' => $this->getLastName(),
             'phone' => $this->getPhone(),
             'mobile' => $this->getMobile(),

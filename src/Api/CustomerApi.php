@@ -174,6 +174,7 @@ class CustomerApi extends AbstractApi
             ->setBirthDate($this->toDtObject($data['birth_date']))
             ->setEmail($data['email'])
             ->setFirstName($data['first_name'])
+            ->setMiddleName($data['middle_name'])
             ->setLastName($data['last_name'])
             ->setPhone($data['phone'])
             ->setMobile($data['mobile'])
