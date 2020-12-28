@@ -12,6 +12,20 @@ class QuoteProduct implements EntityInterface
     protected $quoteProductId;
 
     /**
+     * The title of the brand.
+     *
+     * @var string
+     */
+    protected $brandTitle;
+
+    /**
+     * The title of the product.
+     *
+     * @var string
+     */
+    protected $productTitle;
+
+    /**
      * The total colli of the quote product.
      *
      * @var int
@@ -164,6 +178,42 @@ class QuoteProduct implements EntityInterface
     public function setQuoteProductId(int $quoteProductId): QuoteProduct
     {
         $this->quoteProductId = $quoteProductId;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBrandTitle(): ?string
+    {
+        return $this->brandTitle;
+    }
+
+    /**
+     * @param string|null $brandTitle
+     * @return $this
+     */
+    public function setBrandTitle(?string $brandTitle): self
+    {
+        $this->brandTitle = $brandTitle;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProductTitle(): ?string
+    {
+        return $this->productTitle;
+    }
+
+    /**
+     * @param string $productTitle
+     * @return $this
+     */
+    public function setProductTitle(?string $productTitle): self
+    {
+        $this->productTitle = $productTitle;
         return $this;
     }
 
@@ -534,6 +584,8 @@ class QuoteProduct implements EntityInterface
     {
         return [
             'quote_product_id' => $this->getQuoteProductId(),
+            'brand_title' => $this->getBrandTitle(),
+            'product_title' => $this->getProductTitle(),
             'base_colli' => $this->getBaseColli(),
             'base_price_cost' => $this->getBasePriceCost(),
             'base_price_excl' => $this->getBasePriceExcl(),

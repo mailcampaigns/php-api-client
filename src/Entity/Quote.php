@@ -600,6 +600,8 @@ class Quote implements EntityInterface
                         }
 
                         $quoteProduct
+                            ->setBrandTitle($data['brand_title'])
+                            ->setProductTitle($data['product_title'])
                             ->setBaseColli($data['quantity'])
                             ->setBasePriceCost($data['base_price_cost'])
                             ->setBasePriceExcl($data['base_price_excl'])
