@@ -7,7 +7,7 @@ use MailCampaigns\ApiClient\Entity\CustomerCustomField;
 
 class CustomerCustomFieldCollection extends AbstractCollection
 {
-    const ENTITY_CLASS = CustomerCustomField::class;
+    public static $entityFqcn = CustomerCustomField::class;
 
     /**
      * {@inheritDoc}

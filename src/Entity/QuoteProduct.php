@@ -208,7 +208,7 @@ class QuoteProduct implements EntityInterface
     }
 
     /**
-     * @param string $productTitle
+     * @param string|null $productTitle
      * @return $this
      */
     public function setProductTitle(?string $productTitle): self

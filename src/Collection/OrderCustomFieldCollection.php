@@ -7,7 +7,7 @@ use MailCampaigns\ApiClient\Entity\OrderCustomField;
 
 class OrderCustomFieldCollection extends AbstractCollection
 {
-    const ENTITY_CLASS = OrderCustomField::class;
+    public static $entityFqcn = OrderCustomField::class;
 
     /**
      * {@inheritDoc}

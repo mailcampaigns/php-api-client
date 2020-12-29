@@ -10,7 +10,9 @@ use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Collection\QuoteCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
+use MailCampaigns\ApiClient\Entity\CustomerFavoriteProduct;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
+use MailCampaigns\ApiClient\Entity\Product;
 
 class CustomerApi extends AbstractApi
 {
@@ -156,9 +158,36 @@ class CustomerApi extends AbstractApi
      */
     public function toEntity(array $data): EntityInterface
     {
+        $favoriteProducts = new CustomerFavoriteProductCollection();
+
+        // Convert customer favorite product IRIs to entities.
+        if (isset($data['favorites']) && is_array($data['favorites'])) {
+            foreach ($data['favorites'] as $favorite) {
+                // Could be either a nested document (array) or a direct IRI (string).
+                if (is_array($favorite) && isset($favorite['@id'])) {
+                    $favoriteIri = $favorite['@id'];
+                } else {
+                    $favoriteIri = $favorite;
+                }
+
+                // Now that we've got the IRI, let's extract the customer and product ids.
+                if (false !== preg_match('/\/customer_favorite_products\/customer=(\d+);favoriteProduct=(\d+)/', $favoriteIri, $matches)) {
+                    if (isset($matches[1], $matches[2])) {
+                        $customer = (new Customer())->setCustomerId((int)$matches[1]);
+                        $product = (new Product())->setProductId((int)$matches[2]);
+
+                        $favoriteProduct = (new CustomerFavoriteProduct())
+                            ->setCustomer($customer)
+                            ->setProduct($product);
+
+                        $favoriteProducts->add($favoriteProduct);
+                    }
+                }
+            }
+        }
+
         $orders = new OrderCollection($data['orders'] ?? []);
         $productReviews = new ProductReviewCollection($data['product_reviews'] ?? []);
-        $favorites = new CustomerFavoriteProductCollection($data['favorites'] ?? []);
         $quotes = new QuoteCollection($data['quotes'] ?? []);
         $customFields = new CustomerCustomFieldCollection($data['custom_fields'] ?? []);
 
@@ -201,7 +230,7 @@ class CustomerApi extends AbstractApi
             ->setLanguage($data['language'])
             ->setOrders($orders)
             ->setProductReviews($productReviews)
-            ->setFavorites($favorites)
+            ->setFavorites($favoriteProducts)
             ->setQuotes($quotes)
             ->setCustomFields($customFields);
     }

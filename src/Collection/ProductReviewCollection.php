@@ -6,5 +6,5 @@ use MailCampaigns\ApiClient\Entity\ProductReview;
 
 class ProductReviewCollection extends AbstractCollection
 {
-    const ENTITY_CLASS = ProductReview::class;
+    public static $entityFqcn = ProductReview::class;
 }

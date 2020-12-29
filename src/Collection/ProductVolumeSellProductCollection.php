@@ -6,5 +6,5 @@ use MailCampaigns\ApiClient\Entity\ProductVolumeSellProduct;
 
 class ProductVolumeSellProductCollection extends AbstractCollection
 {
-    const ENTITY_CLASS = ProductVolumeSellProduct::class;
+    public static $entityFqcn = ProductVolumeSellProduct::class;
 }

@@ -6,5 +6,5 @@ use MailCampaigns\ApiClient\Entity\Subscriber;
 
 class SubscriberCollection extends AbstractCollection
 {
-    const ENTITY_CLASS = Subscriber::class;
+    public static $entityFqcn = Subscriber::class;
 }

@@ -16,11 +16,6 @@ use IteratorAggregate;
 interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
 {
     /**
-     * FQCN of the entity this collection holds.
-     */
-    const ENTITY_CLASS = null;
-
-    /**
      * Gets a native PHP array representation of the collection.
      *
      * @param string|null $operation

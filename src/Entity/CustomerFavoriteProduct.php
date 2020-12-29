@@ -55,9 +55,11 @@ class CustomerFavoriteProduct implements EntityInterface
      */
     function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
-        $arr = [
-            'customer' => $this->customer->toIri()
-        ];
+        $arr = [];
+
+        if ($this->customer instanceof Customer && $this->customer->getCustomerId()) {
+            $arr['customer'] = $this->customer->toIri();
+        }
 
         if ($this->product instanceof Product && $this->product->getProductId()) {
             $arr['favorite_product'] = $this->product->toIri();

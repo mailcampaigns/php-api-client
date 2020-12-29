@@ -10,6 +10,11 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 abstract class AbstractCollection implements CollectionInterface
 {
     /**
+     * FQCN of the entities this collection holds.
+     */
+    public static $entityFqcn;
+
+    /**
      * An array containing the entries of this collection.
      *
      * @var array
@@ -26,13 +31,14 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function __construct(array $elements = [])
     {
+        /** @var AbstractCollection $calledClass */
         $calledClass = get_called_class();
 
         // Check if the implementation of this abstract collection has correctly
-        // set the entity class.
-        if (!$calledClass::ENTITY_CLASS) {
-            throw new LogicException(sprintf('The entity class constant is not set for '
-                . 'this collection (`%s`)! Note: It should implement the entity interface.', $calledClass));
+        // set the entity's fqcn.
+        if (!$calledClass::$entityFqcn) {
+            throw new LogicException(sprintf('The entity class fqcn is not set for this '
+                . 'collection (`%s`)! Note: Entities should implement the entity interface.', $calledClass));
         }
 
         $this->elements = $elements;
@@ -159,7 +165,7 @@ abstract class AbstractCollection implements CollectionInterface
     /**
      * @inheritDoc
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->containsKey($offset);
     }
@@ -197,7 +203,7 @@ abstract class AbstractCollection implements CollectionInterface
     /**
      * @inheritDoc
      */
-    public function count()
+    public function count(): int
     {
         return count($this->elements);
     }

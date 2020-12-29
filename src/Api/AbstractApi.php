@@ -188,7 +188,7 @@ abstract class AbstractApi implements ApiInterface
      * Create a JSON encoded version of an array of parameters.
      *
      * @param array $parameters Request parameters
-     * @return null|string
+     * @return false|string
      */
     protected function createJsonBody(array $parameters)
     {

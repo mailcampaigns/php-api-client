@@ -6,5 +6,5 @@ use MailCampaigns\ApiClient\Entity\ProductCategory;
 
 class ProductCategoryCollection extends AbstractCollection
 {
-    const ENTITY_CLASS = ProductCategory::class;
+    public static $entityFqcn = ProductCategory::class;
 }

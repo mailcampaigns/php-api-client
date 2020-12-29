@@ -107,7 +107,7 @@ class QuoteProductApi extends AbstractApi
             ->setAdditionalCostIncl($data['additional_cost_incl'])
             ->setBaseAdditionalCostExcl($data['additional_cost_excl'])
             ->setBaseAdditionalCostIncl($data['additional_cost_incl'])
-            ->setLineRef($data['line_ref']);;
+            ->setLineRef($data['line_ref']);
 
         // Set linked quote.
         if (isset($data['quote']) && is_string($data['quote'])) {

@@ -54,6 +54,11 @@ class QuoteApi extends AbstractApi
     }
 
     /**
+     * Finds and returns quotes by their `quote_ref` values.
+     *
+     * @param array $refs
+     * @param int|null $page
+     * @param int|null $perPage
      * @return QuoteCollection
      */
     public function getByQuoteRefs(array $refs, ?int $page = null, ?int $perPage = null): CollectionInterface
