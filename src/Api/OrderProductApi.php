@@ -38,6 +38,19 @@ class OrderProductApi extends AbstractApi
     }
 
     /**
+     * Returns a collection by {@see Order::$orderId}.
+     *
+     * @param int $id
+     * @return OrderProductCollection
+     */
+    public function getByOrderId($id): CollectionInterface
+    {
+        $data = $this->get("orders/{$id}/order_products");
+
+        return $this->toCollection($data, OrderProductCollection::class);
+    }
+
+    /**
      * {@inheritDoc}
      * @return OrderProductCollection
      */
