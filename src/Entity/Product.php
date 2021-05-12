@@ -1207,7 +1207,7 @@ class Product implements EntityInterface
 
     protected function toProductProductCategory(array $data): ProductProductCategory
     {
-        $id = $title = $isVisible = $categoryRef =null;
+        $id = $title = $isVisible = $categoryRef = null;
 
         if (isset($data['product_category'])) {
             $data = $data['product_category'];
