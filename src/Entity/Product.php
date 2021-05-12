@@ -1207,7 +1207,7 @@ class Product implements EntityInterface
 
     protected function toProductProductCategory(array $data): ProductProductCategory
     {
-        $id = $title = $isVisible = null;
+        $id = $title = $isVisible = $categoryRef = null;
 
         if (isset($data['product_category'])) {
             $data = $data['product_category'];
@@ -1225,6 +1225,7 @@ class Product implements EntityInterface
             $id = isset($data['product_category_id']) ? (int)$data['product_category_id'] : null;
             $title = $data['title'] ?? null;
             $isVisible = $data['is_visible'] ?? null;
+            $categoryRef = $data['category_ref'] ?? null;
         }
 
         if (null === $id) {
@@ -1237,6 +1238,7 @@ class Product implements EntityInterface
                 (new ProductCategory)
                     ->setProductCategoryId($id)
                     ->setTitle($title)
+                    ->setCategoryRef($categoryRef)
                     ->setIsVisible($isVisible)
             );
     }
