@@ -1156,7 +1156,6 @@ class Customer implements EntityInterface
     public function removeCustomField(CustomerCustomField $customField): self
     {
         if ($this->customFields->contains($customField)) {
-            $customField->setCustomer(null);
             $this->customFields->removeElement($customField);
         }
 
