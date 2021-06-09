@@ -20,10 +20,10 @@ class CustomerCustomField implements EntityInterface, CustomFieldInterface
     }
 
     /**
-     * @param Customer $customer
+     * @param Customer|null $customer
      * @return CustomerCustomField
      */
-    public function setCustomer(Customer $customer): CustomerCustomField
+    public function setCustomer(?Customer $customer): CustomerCustomField
     {
         $this->customer = $customer;
         return $this;

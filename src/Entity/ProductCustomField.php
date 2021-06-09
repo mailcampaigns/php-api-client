@@ -20,10 +20,10 @@ class ProductCustomField implements EntityInterface, CustomFieldInterface
     }
 
     /**
-     * @param Product $product
+     * @param Product|null $product
      * @return ProductCustomField
      */
-    public function setProduct(Product $product): ProductCustomField
+    public function setProduct(?Product $product): ProductCustomField
     {
         $this->product = $product;
         return $this;

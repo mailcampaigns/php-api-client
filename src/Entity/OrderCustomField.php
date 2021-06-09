@@ -20,10 +20,10 @@ class OrderCustomField implements EntityInterface, CustomFieldInterface
     }
 
     /**
-     * @param Order $order
+     * @param Order|null $order
      * @return OrderCustomField
      */
-    public function setOrder(Order $order): OrderCustomField
+    public function setOrder(?Order $order): OrderCustomField
     {
         $this->order = $order;
         return $this;
