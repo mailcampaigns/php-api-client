@@ -69,6 +69,41 @@ $customer = $customerApi->getByEmail('bob@hotmail.com');
 $customerApi->deleteById(1234);
 ```
 
+Using custom fields:
+
+```PHP
+use MailCampaigns\ApiClient\ApiClient;
+use MailCampaigns\ApiClient\Entity\Customer;
+use MailCampaigns\ApiClient\Entity\CustomerCustomField;
+
+$apiClient = ApiClient::create('<url>', '<client_key>', '<client_secret>');
+
+$customerCustomFieldApi = $apiClient->getCustomerCustomFieldApi();
+
+// Example 1: Add a new custom field to an existing customer.
+$customer = (new Customer)->setCustomerId(6); // Or load an actual customer first.
+
+$customField = (new CustomerCustomField)
+    ->setName('een_extra_veld_2')
+    ->setValue('Waarde voor extra veld 2.')
+    ->setCustomer($customer);
+
+$createdCustomField = $customerCustomFieldApi->create($customField);
+
+// The created custom field will contain the generated id.
+print $createdCustomField->getCustomFieldId();
+
+// Example 2: Update an existing custom field.
+$customField
+    ->setUpdatedAt(new DateTime())
+    ->setValue('Een aangepaste waarde.');
+
+$updatedCustomField = $customerCustomFieldApi->update($customField);
+
+// Example 4: Delete a custom field by its id.
+$customerCustomFieldApi->deleteById(123);
+```
+
 Resources
 ---------
  * [API v3 Documentation](https://docs.mailcampaigns.io)
