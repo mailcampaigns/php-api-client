@@ -49,6 +49,22 @@ class CustomerFavoriteProductApi extends AbstractApi
     }
 
     /**
+     * @param int      $customerId
+     * @param int|null $page
+     * @param int|null $perPage
+     * @return CustomerFavoriteProductCollection
+     */
+    public function getCollectionByCustomerId(int $customerId, ?int $page = null, ?int $perPage = null): CollectionInterface
+    {
+        $data = $this->get("customers/$customerId/favorites", [
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+        ]);
+
+        return $this->toCollection($data, CustomerFavoriteProductCollection::class);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function update(EntityInterface $entity): EntityInterface
