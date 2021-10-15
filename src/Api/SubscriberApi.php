@@ -95,6 +95,7 @@ class SubscriberApi extends AbstractApi
             ->setSubscriberId($data['subscriber_id'] ?? null)
             ->setEmailAddress($data['email_address'])
             ->setIsSubscribed($data['is_subscribed'])
-            ->setIsConfirmed($data['is_confirmed']);
+            ->setIsConfirmed($data['is_confirmed'])
+            ->setData($data['data']);
     }
 }
