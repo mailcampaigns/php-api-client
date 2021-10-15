@@ -27,6 +27,11 @@ class Subscriber implements EntityInterface
     protected $isConfirmed;
 
     /**
+     * @var array
+     */
+    protected $data = [];
+
+    /**
      * @return int
      */
     public function getSubscriberId(): ?int
@@ -99,6 +104,24 @@ class Subscriber implements EntityInterface
     }
 
     /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param array $data
+     * @return $this
+     */
+    public function setData(array $data): self
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
@@ -108,6 +131,7 @@ class Subscriber implements EntityInterface
             'email_address' => $this->getEmailAddress(),
             'is_subscribed' => $this->isSubscribed(),
             'is_confirmed' => $this->isConfirmed(),
+            'data' => $this->getData(),
         ];
     }
 
