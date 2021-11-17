@@ -69,6 +69,18 @@ class ProductApi extends AbstractApi
         return null;
     }
 
+    public function getByArticleCodes(array $articleCodes, ?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
+    {
+        $data = $this->get('products', [
+            'article_code' => $articleCodes,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        return $this->toCollection($data, ProductCollection::class);
+    }
+
     /**
      * Tries to find a product by EAN (International Article Number), returns null
      * when no product was found with the given product EAN.
