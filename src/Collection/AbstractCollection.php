@@ -215,4 +215,11 @@ abstract class AbstractCollection implements CollectionInterface
     {
         $this->elements[$key] = $value;
     }
+
+    public function __destruct()
+    {
+        foreach ($this->elements as $el) {
+            unset($el);
+        }
+    }
 }

@@ -1274,4 +1274,14 @@ class Customer implements EntityInterface
         $id = (int)str_replace('/customer_custom_fields/', '', $iri);
         return (new CustomerCustomField())->setCustomFieldId($id);
     }
+
+    public function __destruct()
+    {
+        unset($this->createdAt);
+        unset($this->orders);
+        unset($this->productReviews);
+        unset($this->favorites);
+        unset($this->quotes);
+        unset($this->customFields);
+    }
 }

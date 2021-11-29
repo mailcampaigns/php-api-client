@@ -210,4 +210,10 @@ class ProductCategory implements EntityInterface
 
         return '/product_categories/' . $this->getProductCategoryId();
     }
+
+    public function __destruct()
+    {
+        unset($this->createdAt);
+        unset($this->productProductCategories);
+    }
 }

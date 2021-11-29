@@ -81,4 +81,10 @@ class ProductProductCategory implements EntityInterface
         return sprintf('/product_product_categories/product=%d;productCategory=%d',
             $product->getProductId(), $category->getProductCategoryId());
     }
+
+    public function __destruct()
+    {
+        unset($this->product);
+        unset($this->productCategory);
+    }
 }

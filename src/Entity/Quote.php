@@ -787,4 +787,11 @@ class Quote implements EntityInterface
 
         return '/quotes/' . $this->getQuoteId();
     }
+
+    public function __destruct()
+    {
+        unset($this->createdAt);
+        unset($this->quoteProducts);
+        unset($this->orders);
+    }
 }

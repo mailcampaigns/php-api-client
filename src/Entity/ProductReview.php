@@ -313,4 +313,11 @@ class ProductReview implements EntityInterface
 
         return '/product_reviews/' . $this->getProductReviewId();
     }
+
+    public function __destruct()
+    {
+        unset($this->product);
+        unset($this->createdAt);
+        unset($this->customer);
+    }
 }

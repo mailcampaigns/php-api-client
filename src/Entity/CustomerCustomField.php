@@ -45,4 +45,9 @@ class CustomerCustomField implements EntityInterface, CustomFieldInterface
     {
         return '/customer_custom_fields/' . $this->customFieldId;
     }
+
+    public function __destruct()
+    {
+        unset($this->customer);
+    }
 }

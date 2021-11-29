@@ -631,4 +631,10 @@ class OrderProduct implements EntityInterface
 
         return '/order_products/' . $this->getOrderProductId();
     }
+
+    public function __destruct()
+    {
+        unset($this->order);
+        unset($this->product);
+    }
 }

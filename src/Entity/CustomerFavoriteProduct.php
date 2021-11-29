@@ -91,4 +91,10 @@ class CustomerFavoriteProduct implements EntityInterface
         return sprintf('/customer_favorite_products/customer=%d;favoriteProduct=%d',
             $customer->getCustomerId(), $product->getProductId());
     }
+
+    public function __destruct()
+    {
+        unset($this->customer);
+        unset($this->product);
+    }
 }
