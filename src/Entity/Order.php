@@ -1493,4 +1493,11 @@ class Order implements EntityInterface
         $id = (int)str_replace('/order_custom_fields/', '', $iri);
         return (new OrderCustomField())->setCustomFieldId($id);
     }
+
+    public function __destruct()
+    {
+        unset($this->createdAt);
+        unset($this->orderProducts);
+        unset($this->customFields);
+    }
 }

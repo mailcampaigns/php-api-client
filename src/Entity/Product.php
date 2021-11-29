@@ -1564,4 +1564,17 @@ class Product implements EntityInterface
 
         return $linkedProduct;
     }
+
+    public function __destruct()
+    {
+        unset($this->createdAt);
+        unset($this->reviews);
+        unset($this->categories);
+        unset($this->relatedProducts);
+        unset($this->crossSellProducts);
+        unset($this->upSellProducts);
+        unset($this->volumeSellProducts);
+        unset($this->customFields);
+        unset($this->children);
+    }
 }

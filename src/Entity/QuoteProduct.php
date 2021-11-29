@@ -620,4 +620,10 @@ class QuoteProduct implements EntityInterface
 
         return '/quote_products/' . $this->getQuoteProductId();
     }
+
+    public function __destruct()
+    {
+        unset($this->product);
+        unset($this->quote);
+    }
 }

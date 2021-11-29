@@ -45,4 +45,9 @@ class OrderCustomField implements EntityInterface, CustomFieldInterface
     {
         return '/order_custom_fields/' . $this->customFieldId;
     }
+
+    public function __destruct()
+    {
+        unset($this->order);
+    }
 }
