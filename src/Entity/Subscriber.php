@@ -2,6 +2,8 @@
 
 namespace MailCampaigns\ApiClient\Entity;
 
+use DateTime;
+
 class Subscriber implements EntityInterface
 {
     use DateTimeHelperTrait;
@@ -12,9 +14,19 @@ class Subscriber implements EntityInterface
     protected $subscriberId;
 
     /**
+     * @var DateTime
+     */
+    protected $createdAt;
+
+    /**
+     * @var DateTime
+     */
+    protected $updatedAt;
+
+    /**
      * @var string
      */
-    private $emailAddress;
+    protected $emailAddress;
 
     /**
      * @var bool
@@ -46,6 +58,42 @@ class Subscriber implements EntityInterface
     public function setSubscriberId(?int $subscriberId): self
     {
         $this->subscriberId = $subscriberId;
+        return $this;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getCreatedAt(): ?DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param DateTime|null $createdAt
+     * @return $this
+     */
+    public function setCreatedAt(?DateTime $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getUpdatedAt(): ?DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param DateTime|null $updatedAt
+     * @return $this
+     */
+    public function setUpdatedAt(?DateTime $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 
@@ -128,6 +176,8 @@ class Subscriber implements EntityInterface
     {
         return [
             'subscriber_id' => $this->getSubscriberId(),
+            'created_at' => $this->dtToString($this->getCreatedAt()),
+            'updated_at' => $this->dtToString($this->getUpdatedAt()),
             'email_address' => $this->getEmailAddress(),
             'is_subscribed' => $this->isSubscribed(),
             'is_confirmed' => $this->isConfirmed(),

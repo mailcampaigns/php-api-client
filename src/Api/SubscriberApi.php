@@ -10,10 +10,15 @@ use MailCampaigns\ApiClient\Exception\ApiException;
 
 class SubscriberApi extends AbstractApi
 {
-    const ORDERABLE_PARAMS = [];
+    const ORDERABLE_PARAMS = [
+        'subscriber_id',
+        'created_at',
+        'updated_at'
+    ];
 
     const DEFAULT_ORDER = [
-        'subscriber_id' => 'desc'
+        'subscriber_id' => 'desc',
+        'updated_at' => 'desc'
     ];
 
     /**
@@ -58,13 +63,26 @@ class SubscriberApi extends AbstractApi
      * {@inheritDoc}
      * @return SubscriberCollection
      */
-    public function getCollection(?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null,
+        ?array $filters = null
+    ): CollectionInterface
     {
-        $data = $this->get('subscribers', [
+        $params = [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
             'order' => $order ?? self::DEFAULT_ORDER
-        ]);
+        ];
+
+        if ($filters !== null) {
+            foreach ($filters as $key => $value) {
+                $params[$key] = $value;
+            }
+        }
+
+        $data = $this->get('subscribers', $params);
 
         return $this->toCollection($data, SubscriberCollection::class);
     }
@@ -93,6 +111,8 @@ class SubscriberApi extends AbstractApi
     {
         return (new Subscriber())
             ->setSubscriberId($data['subscriber_id'] ?? null)
+            ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
+            ->setUpdatedAt($this->toDtObject($data['updated_at']))
             ->setEmailAddress($data['email_address'])
             ->setIsSubscribed($data['is_subscribed'])
             ->setIsConfirmed($data['is_confirmed'])
