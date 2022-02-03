@@ -106,5 +106,5 @@ $customerCustomFieldApi->deleteById(123);
 
 Resources
 ---------
- * [API v3 Documentation](https://docs.mailcampaigns.io)
+ * [API v3 Documentation](https://api-v3.docs.mailcampaigns.io)
  * [GitHub](https://github.com/mailcampaigns/php-api-client)
