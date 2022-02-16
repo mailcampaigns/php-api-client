@@ -34,6 +34,8 @@ class SubscriberApi extends AbstractApi
             }
         }
 
+        $data = $this->get('subscribers', $params);
+
         return $data['hydra:totalItems'] ?? 0;
     }
 
