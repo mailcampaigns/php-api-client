@@ -21,6 +21,22 @@ class SubscriberApi extends AbstractApi
         'updated_at' => 'desc'
     ];
 
+    public function count(?array $filters = null): int
+    {
+        $params = [
+            'page' => 1,
+            'itemsPerPage' => 1,
+        ];
+
+        if ($filters !== null) {
+            foreach ($filters as $key => $value) {
+                $params[$key] = $value;
+            }
+        }
+
+        return $data['hydra:totalItems'] ?? 0;
+    }
+
     /**
      * {@inheritDoc}
      */
