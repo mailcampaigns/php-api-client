@@ -1565,6 +1565,11 @@ class Product implements EntityInterface
         return $linkedProduct;
     }
 
+    public function __clone()
+    {
+        $this->customFields = clone $this->customFields;
+    }
+
     public function __destruct()
     {
         unset($this->createdAt);
