@@ -216,6 +216,13 @@ abstract class AbstractCollection implements CollectionInterface
         $this->elements[$key] = $value;
     }
 
+    public function __clone()
+    {
+        foreach ($this->elements as $key => $element) {
+            $this->elements[$key] = clone $element;
+        }
+    }
+
     public function __destruct()
     {
         foreach ($this->elements as $el) {
