@@ -165,6 +165,22 @@ class ProductApi extends AbstractApi
     }
 
     /**
+     * Updates the given product except the properties with NULL values.
+     *
+     * @param Product $entity
+     *
+     * @return Product
+     */
+    public function partialUpdate(EntityInterface $entity): EntityInterface
+    {
+        $this->validateEntityType($entity, Product::class);
+
+        $res = $this->patch("products/{$entity->getProductId()}", $entity);
+
+        return $this->toEntity($res);
+    }
+
+    /**
      * @inheritDoc
      */
     public function deleteById($id): ApiInterface
