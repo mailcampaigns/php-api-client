@@ -181,14 +181,29 @@ class ProductApi extends AbstractApi
     {
         $parent = null;
 
-        $categories = new ProductProductCategoryCollection($data['categories'] ?? []);
-        $relatedProducts = new ProductRelatedProductCollection($data['related_products'] ?? []);
-        $crossSellProducts = new ProductCrossSellProductCollection($data['cross_sell_products'] ?? []);
-        $upSellProducts = new ProductUpSellProductCollection($data['up_sell_products'] ?? []);
-        $volumeSellProducts = new ProductVolumeSellProductCollection($data['volume_sell_products'] ?? []);
-        $reviews = new ProductReviewCollection($data['reviews'] ?? []);
-        $customFields = new ProductCustomFieldCollection($data['custom_fields'] ?? []);
-        $children = new ProductCollection($data['children'] ?? []);
+        /** @var ProductProductCategoryCollection|null $categories */
+        $categories = $this->createCollection(ProductProductCategoryCollection::class, $data['categories'] ?? null);
+
+        /** @var ProductRelatedProductCollection|null $relatedProducts */
+        $relatedProducts = $this->createCollection(ProductRelatedProductCollection::class, $data['related_products'] ?? null);
+
+        /** @var ProductCrossSellProductCollection|null $crossSellProducts */
+        $crossSellProducts = $this->createCollection(ProductCrossSellProductCollection::class, $data['cross_sell_products'] ?? null);
+
+        /** @var ProductUpSellProductCollection|null $upSellProducts */
+        $upSellProducts = $this->createCollection(ProductUpSellProductCollection::class, $data['up_sell_products'] ?? null);
+
+        /** @var ProductVolumeSellProductCollection|null $volumeSellProducts */
+        $volumeSellProducts = $this->createCollection(ProductVolumeSellProductCollection::class, $data['volume_sell_products'] ?? null);
+
+        /** @var ProductReviewCollection|null $reviews */
+        $reviews = $this->createCollection(ProductReviewCollection::class, $data['reviews'] ?? null);
+
+        /** @var ProductCustomFieldCollection|null $customFields */
+        $customFields = $this->createCollection(ProductCustomFieldCollection::class, $data['custom_fields'] ?? null);
+
+        /** @var ProductCollection|null $children */
+        $children = $this->createCollection(ProductCollection::class, $data['children'] ?? null);
 
         // Set parent product.
         if (isset($data['parent']) && is_string($data['parent'])) {
@@ -234,5 +249,14 @@ class ProductApi extends AbstractApi
             ->setCustomFields($customFields)
             ->setChildren($children)
             ->setParent($parent);
+    }
+
+    private function createCollection(string $fqcn, ?array $data): ?CollectionInterface
+    {
+        if ($data !== null && true === class_exists($fqcn)) {
+            return new $fqcn($data);
+        }
+
+        return null;
     }
 }

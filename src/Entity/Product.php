@@ -206,54 +206,54 @@ class Product implements EntityInterface
     /**
      * The categories of the product.
      *
-     * @var ProductCategoryCollection
+     * @var ProductCategoryCollection|null
      */
     protected $categories;
 
     /**
      * Products related to this product.
      *
-     * @var ProductRelatedProductCollection
+     * @var ProductRelatedProductCollection|null
      */
     protected $relatedProducts;
 
     /**
      * Cross-sell products.
      *
-     * @var ProductCrossSellProductCollection
+     * @var ProductCrossSellProductCollection|null
      */
     protected $crossSellProducts;
 
     /**
      * Up-sell products.
      *
-     * @var ProductUpSellProductCollection
+     * @var ProductUpSellProductCollection|null
      */
     protected $upSellProducts;
 
     /**
      * Volume-sell products.
      *
-     * @var ProductVolumeSellProductCollection
+     * @var ProductVolumeSellProductCollection|null
      */
     protected $volumeSellProducts;
 
     /**
      * Product's reviews.
      *
-     * @var ProductReviewCollection
+     * @var ProductReviewCollection|null
      */
     protected $reviews;
 
     /**
-     * @var ProductCustomFieldCollection
+     * @var ProductCustomFieldCollection|null
      */
     protected $customFields;
 
     /**
      * Products nested under this product.
      *
-     * @var ProductCollection
+     * @var ProductCollection|null
      */
     protected $children;
 
@@ -710,28 +710,32 @@ class Product implements EntityInterface
         return $this;
     }
 
-    public function getCategories(): ProductProductCategoryCollection
+    public function getCategories(): ?ProductProductCategoryCollection
     {
         return $this->categories;
     }
 
-    public function setCategories(ProductProductCategoryCollection $collection): self
+    public function setCategories(?ProductProductCategoryCollection $collection): self
     {
-        $this->categories = new ProductProductCategoryCollection;
+        if ($collection === null) {
+            $this->categories = null;
+        } else {
+            $this->categories = new ProductProductCategoryCollection;
 
-        foreach ($collection as $element) {
-            // Convert to entity if raw data (array) or IRI for the item is supplied.
-            if ($element instanceof ProductProductCategory) {
-                $entity = $element;
-            } else if (is_array($element)) {
-                $entity = $this->toProductProductCategory($element);
-            } else if (is_string($element)) {
-                $entity = $this->iriToProductProductCategory($element);
-            } else {
-                throw new LogicException('Unexpected element type in collection!');
+            foreach ($collection as $element) {
+                // Convert to entity if raw data (array) or IRI for the item is supplied.
+                if ($element instanceof ProductProductCategory) {
+                    $entity = $element;
+                } else if (is_array($element)) {
+                    $entity = $this->toProductProductCategory($element);
+                } else if (is_string($element)) {
+                    $entity = $this->iriToProductProductCategory($element);
+                } else {
+                    throw new LogicException('Unexpected element type in collection!');
+                }
+
+                $this->addCategory($entity);
             }
-
-            $this->addCategory($entity);
         }
 
         return $this;
@@ -739,6 +743,10 @@ class Product implements EntityInterface
 
     public function addCategory(ProductProductCategory $ProductProductCategory): self
     {
+        if ($this->categories === null) {
+            $this->categories = new ProductCategoryCollection;
+        }
+
         if (!$this->categories->contains($ProductProductCategory)) {
             if ($ProductProductCategory->getProduct() !== $this) {
                 $ProductProductCategory->setProduct($this);
@@ -752,35 +760,39 @@ class Product implements EntityInterface
 
     public function removeCategory(ProductProductCategory $ProductProductCategory): self
     {
-        if ($this->categories->contains($ProductProductCategory)) {
+        if ($this->categories !== null && $this->categories->contains($ProductProductCategory)) {
             $this->categories->removeElement($ProductProductCategory);
         }
 
         return $this;
     }
 
-    public function getRelatedProducts(): ProductRelatedProductCollection
+    public function getRelatedProducts(): ?ProductRelatedProductCollection
     {
         return $this->relatedProducts;
     }
 
-    public function setRelatedProducts(ProductRelatedProductCollection $collection): self
+    public function setRelatedProducts(?ProductRelatedProductCollection $collection): self
     {
-        $this->relatedProducts = new ProductRelatedProductCollection;
+        if ($collection === null) {
+            $this->relatedProducts = null;
+        } else {
+            $this->relatedProducts = new ProductRelatedProductCollection;
 
-        foreach ($collection as $element) {
-            // Convert to entity if raw data (array) or IRI for the item is supplied.
-            if ($element instanceof ProductRelatedProduct) {
-                $entity = $element;
-            } else if (is_array($element)) {
-                $entity = $this->toProductRelatedProduct($element);
-            } else if (is_string($element)) {
-                $entity = $this->iriToProductRelatedProduct($element);
-            } else {
-                throw new LogicException('Unexpected element type in collection!');
+            foreach ($collection as $element) {
+                // Convert to entity if raw data (array) or IRI for the item is supplied.
+                if ($element instanceof ProductRelatedProduct) {
+                    $entity = $element;
+                } else if (is_array($element)) {
+                    $entity = $this->toProductRelatedProduct($element);
+                } else if (is_string($element)) {
+                    $entity = $this->iriToProductRelatedProduct($element);
+                } else {
+                    throw new LogicException('Unexpected element type in collection!');
+                }
+
+                $this->addRelatedProduct($entity);
             }
-
-            $this->addRelatedProduct($entity);
         }
 
         return $this;
@@ -788,6 +800,10 @@ class Product implements EntityInterface
 
     public function addRelatedProduct(ProductRelatedProduct $relatedProduct): self
     {
+        if ($this->relatedProducts === null) {
+            $this->relatedProducts = new ProductRelatedProductCollection;
+        }
+
         if (!$this->relatedProducts->contains($relatedProduct)) {
             if ($relatedProduct->getProduct() !== $this) {
                 $relatedProduct->setProduct($this);
@@ -801,35 +817,39 @@ class Product implements EntityInterface
 
     public function removeRelatedProduct(ProductRelatedProduct $relatedProduct): self
     {
-        if ($this->relatedProducts->contains($relatedProduct)) {
+        if ($this->relatedProducts !== null && $this->relatedProducts->contains($relatedProduct)) {
             $this->relatedProducts->removeElement($relatedProduct);
         }
 
         return $this;
     }
 
-    public function getReviews(): ProductReviewCollection
+    public function getReviews(): ?ProductReviewCollection
     {
         return $this->reviews;
     }
     
-    public function setReviews(ProductReviewCollection $collection): self
+    public function setReviews(?ProductReviewCollection $collection): self
     {
-        $this->reviews = new ProductReviewCollection;
-        
-        foreach ($collection as $element) {
-            // Convert to entity if raw data (array) or IRI for the item is supplied.
-            if ($element instanceof ProductReview) {
-                $entity = $element;
-            } else if (is_array($element)) {
-                $entity = $this->toProductReview($element);
-            } else if (is_string($element)) {
-                $entity = $this->iriToProductReview($element);
-            } else {
-                throw new LogicException('Unexpected element type in collection!');
-            }
+        if ($collection === null) {
+            $this->reviews = null;
+        } else {
+            $this->reviews = new ProductReviewCollection;
 
-            $this->addReview($entity);
+            foreach ($collection as $element) {
+                // Convert to entity if raw data (array) or IRI for the item is supplied.
+                if ($element instanceof ProductReview) {
+                    $entity = $element;
+                } else if (is_array($element)) {
+                    $entity = $this->toProductReview($element);
+                } else if (is_string($element)) {
+                    $entity = $this->iriToProductReview($element);
+                } else {
+                    throw new LogicException('Unexpected element type in collection!');
+                }
+
+                $this->addReview($entity);
+            }
         }
         
         return $this;
@@ -837,6 +857,10 @@ class Product implements EntityInterface
 
     public function addReview(ProductReview $review): self
     {
+        if ($this->reviews === null) {
+            $this->reviews = new ProductReviewCollection;
+        }
+
         if (!$this->reviews->contains($review)) {
             if ($review->getProduct() !== $this) {
                 $review->setProduct($this);
@@ -850,35 +874,39 @@ class Product implements EntityInterface
     
     public function removeReview(ProductReview $review): self
     {
-        if ($this->reviews->contains($review)) {
+        if ($this->reviews !== null && $this->reviews->contains($review)) {
             $this->reviews->removeElement($review);
         }
 
         return $this;
     }
 
-    public function getCrossSellProducts(): ProductCrossSellProductCollection
+    public function getCrossSellProducts(): ?ProductCrossSellProductCollection
     {
         return $this->crossSellProducts;
     }
 
-    public function setCrossSellProducts(ProductCrossSellProductCollection $collection): self
+    public function setCrossSellProducts(?ProductCrossSellProductCollection $collection): self
     {
-        $this->crossSellProducts = new ProductCrossSellProductCollection;
+        if ($collection === null) {
+            $this->crossSellProducts = null;
+        } else {
+            $this->crossSellProducts = new ProductCrossSellProductCollection;
 
-        foreach ($collection as $element) {
-            // Convert to entity if raw data (array) or IRI for the item is supplied.
-            if ($element instanceof ProductCrossSellProduct) {
-                $entity = $element;
-            } else if (is_array($element)) {
-                $entity = $this->toProductCrossSellProduct($element);
-            } else if (is_string($element)) {
-                $entity = $this->iriToProductCrossSellProduct($element);
-            } else {
-                throw new LogicException('Unexpected element type in collection!');
+            foreach ($collection as $element) {
+                // Convert to entity if raw data (array) or IRI for the item is supplied.
+                if ($element instanceof ProductCrossSellProduct) {
+                    $entity = $element;
+                } else if (is_array($element)) {
+                    $entity = $this->toProductCrossSellProduct($element);
+                } else if (is_string($element)) {
+                    $entity = $this->iriToProductCrossSellProduct($element);
+                } else {
+                    throw new LogicException('Unexpected element type in collection!');
+                }
+
+                $this->addCrossSellProduct($entity);
             }
-
-            $this->addCrossSellProduct($entity);
         }
 
         return $this;
@@ -886,6 +914,10 @@ class Product implements EntityInterface
 
     public function addCrossSellProduct(ProductCrossSellProduct $crossSellProduct): self
     {
+        if ($this->crossSellProducts === null) {
+            $this->crossSellProducts = new ProductCrossSellProductCollection;
+        }
+
         if (!$this->crossSellProducts->contains($crossSellProduct)) {
             if ($crossSellProduct->getProduct() !== $this) {
                 $crossSellProduct->setProduct($this);
@@ -899,35 +931,39 @@ class Product implements EntityInterface
 
     public function removeCrossSellProduct(ProductCrossSellProduct $crossSellProduct): self
     {
-        if ($this->crossSellProducts->contains($crossSellProduct)) {
+        if ($this->crossSellProducts !== null && $this->crossSellProducts->contains($crossSellProduct)) {
             $this->crossSellProducts->removeElement($crossSellProduct);
         }
 
         return $this;
     }
 
-    public function getUpSellProducts(): ProductUpSellProductCollection
+    public function getUpSellProducts(): ?ProductUpSellProductCollection
     {
         return $this->upSellProducts;
     }
 
-    public function setUpSellProducts(ProductUpSellProductCollection $collection): self
+    public function setUpSellProducts(?ProductUpSellProductCollection $collection): self
     {
-        $this->upSellProducts = new ProductUpSellProductCollection;
+        if ($collection === null) {
+            $this->upSellProducts = null;
+        } else {
+            $this->upSellProducts = new ProductUpSellProductCollection;
 
-        foreach ($collection as $element) {
-            // Convert to entity if raw data (array) or IRI for the item is supplied.
-            if ($element instanceof ProductUpSellProduct) {
-                $entity = $element;
-            } else if (is_array($element)) {
-                $entity = $this->toProductUpSellProduct($element);
-            } else if (is_string($element)) {
-                $entity = $this->iriToProductUpSellProduct($element);
-            } else {
-                throw new LogicException('Unexpected element type in collection!');
+            foreach ($collection as $element) {
+                // Convert to entity if raw data (array) or IRI for the item is supplied.
+                if ($element instanceof ProductUpSellProduct) {
+                    $entity = $element;
+                } else if (is_array($element)) {
+                    $entity = $this->toProductUpSellProduct($element);
+                } else if (is_string($element)) {
+                    $entity = $this->iriToProductUpSellProduct($element);
+                } else {
+                    throw new LogicException('Unexpected element type in collection!');
+                }
+
+                $this->addUpSellProduct($entity);
             }
-
-            $this->addUpSellProduct($entity);
         }
 
         return $this;
@@ -935,6 +971,10 @@ class Product implements EntityInterface
 
     public function addUpSellProduct(ProductUpSellProduct $upSellProduct): self
     {
+        if ($this->upSellProducts === null) {
+            $this->upSellProducts = new ProductUpSellProductCollection;
+        }
+
         if (!$this->upSellProducts->contains($upSellProduct)) {
             if ($upSellProduct->getProduct() !== $this) {
                 $upSellProduct->setProduct($this);
@@ -948,35 +988,39 @@ class Product implements EntityInterface
 
     public function removeUpSellProduct(ProductUpSellProduct $upSellProduct): self
     {
-        if ($this->upSellProducts->contains($upSellProduct)) {
+        if ($this->upSellProducts !== null && $this->upSellProducts->contains($upSellProduct)) {
             $this->upSellProducts->removeElement($upSellProduct);
         }
 
         return $this;
     }
 
-    public function getVolumeSellProducts(): ProductVolumeSellProductCollection
+    public function getVolumeSellProducts(): ?ProductVolumeSellProductCollection
     {
         return $this->volumeSellProducts;
     }
 
-    public function setVolumeSellProducts(ProductVolumeSellProductCollection $collection): self
+    public function setVolumeSellProducts(?ProductVolumeSellProductCollection $collection): self
     {
-        $this->volumeSellProducts = new ProductVolumeSellProductCollection;
+        if ($collection === null) {
+            $this->volumeSellProducts = null;
+        } else {
+            $this->volumeSellProducts = new ProductVolumeSellProductCollection;
 
-        foreach ($collection as $element) {
-            // Convert to entity if raw data (array) or IRI for the item is svolumeplied.
-            if ($element instanceof ProductVolumeSellProduct) {
-                $entity = $element;
-            } else if (is_array($element)) {
-                $entity = $this->toProductVolumeSellProduct($element);
-            } else if (is_string($element)) {
-                $entity = $this->iriToProductVolumeSellProduct($element);
-            } else {
-                throw new LogicException('Unexpected element type in collection!');
+            foreach ($collection as $element) {
+                // Convert to entity if raw data (array) or IRI for the item is svolumeplied.
+                if ($element instanceof ProductVolumeSellProduct) {
+                    $entity = $element;
+                } else if (is_array($element)) {
+                    $entity = $this->toProductVolumeSellProduct($element);
+                } else if (is_string($element)) {
+                    $entity = $this->iriToProductVolumeSellProduct($element);
+                } else {
+                    throw new LogicException('Unexpected element type in collection!');
+                }
+
+                $this->addVolumeSellProduct($entity);
             }
-
-            $this->addVolumeSellProduct($entity);
         }
 
         return $this;
@@ -984,6 +1028,10 @@ class Product implements EntityInterface
 
     public function addVolumeSellProduct(ProductVolumeSellProduct $volumeSellProduct): self
     {
+        if ($this->volumeSellProducts === null) {
+            $this->volumeSellProducts = new ProductVolumeSellProductCollection;
+        }
+
         if (!$this->volumeSellProducts->contains($volumeSellProduct)) {
             if ($volumeSellProduct->getProduct() !== $this) {
                 $volumeSellProduct->setProduct($this);
@@ -997,17 +1045,14 @@ class Product implements EntityInterface
 
     public function removeVolumeSellProduct(ProductVolumeSellProduct $volumeSellProduct): self
     {
-        if ($this->volumeSellProducts->contains($volumeSellProduct)) {
+        if ($this->volumeSellProducts !== null && $this->volumeSellProducts->contains($volumeSellProduct)) {
             $this->volumeSellProducts->removeElement($volumeSellProduct);
         }
 
         return $this;
     }
 
-    /**
-     * @return ProductCustomFieldCollection
-     */
-    public function getCustomFields(): ProductCustomFieldCollection
+    public function getCustomFields(): ?ProductCustomFieldCollection
     {
         return $this->customFields;
     }
@@ -1018,9 +1063,11 @@ class Product implements EntityInterface
      */
     public function setCustomFields(?iterable $customFields): self
     {
-        $this->customFields = new ProductCustomFieldCollection;
+        if ($customFields === null) {
+            $this->customFields = null;
+        } else {
+            $this->customFields = new ProductCustomFieldCollection;
 
-        if ($customFields) {
             foreach ($customFields as $data) {
                 $customField = null;
 
@@ -1048,6 +1095,10 @@ class Product implements EntityInterface
 
     public function addCustomField(ProductCustomField $customField): self
     {
+        if ($this->customFields === null) {
+            $this->customFields = new ProductCustomFieldCollection;
+        }
+
         if (!$this->customFields->contains($customField)) {
             if ($customField->getProduct() !== $this) {
                 $customField->setProduct($this);
@@ -1061,7 +1112,7 @@ class Product implements EntityInterface
 
     public function removeCustomField(ProductCustomField $customField): self
     {
-        if ($this->customFields->contains($customField)) {
+        if ($this->customFields !== null && $this->customFields->contains($customField)) {
             $customField->setProduct(null);
             $this->customFields->removeElement($customField);
         }
@@ -1069,46 +1120,43 @@ class Product implements EntityInterface
         return $this;
     }
 
-    /**
-     * @return ProductCollection
-     */
-    public function getChildren(): ProductCollection
+    public function getChildren(): ?ProductCollection
     {
         return $this->children;
     }
 
-    /**
-     * @param ProductCollection $collection
-     * @return $this
-     */
-    public function setChildren(ProductCollection $collection): self
+    public function setChildren(?ProductCollection $collection): self
     {
-        $this->children = new ProductCollection;
+        if ($collection === null) {
+            $this->children = null;
+        } else {
+            $this->children = new ProductCollection;
 
-        foreach ($collection as $element) {
-            // Convert to entity if raw data (array) or IRI for the item is supplied.
-            if ($element instanceof Product) {
-                $entity = $element;
-            } else if (is_array($element)) {
-                $entity = $this->toProduct($element);
-            } else if (is_string($element)) {
-                $entity = $this->iriToProduct($element);
-            } else {
-                throw new LogicException('Unexpected element type in collection!');
+            foreach ($collection as $element) {
+                // Convert to entity if raw data (array) or IRI for the item is supplied.
+                if ($element instanceof Product) {
+                    $entity = $element;
+                } else if (is_array($element)) {
+                    $entity = $this->toProduct($element);
+                } else if (is_string($element)) {
+                    $entity = $this->iriToProduct($element);
+                } else {
+                    throw new LogicException('Unexpected element type in collection!');
+                }
+
+                $this->addChild($entity);
             }
-
-            $this->addChild($entity);
         }
 
         return $this;
     }
 
-    /**
-     * @param Product $child
-     * @return $this
-     */
     public function addChild(Product $child): self
     {
+        if ($this->children === null) {
+            $this->children = new ProductCollection;
+        }
+
         if (!$this->children->contains($child)) {
             $child->setParent($this);
             $this->children->add($child);
@@ -1117,13 +1165,9 @@ class Product implements EntityInterface
         return $this;
     }
 
-    /**
-     * @param Product $child
-     * @return $this
-     */
     public function removeChild(Product $child): self
     {
-        if ($this->children->contains($child)) {
+        if ($this->children !== null && $this->children->contains($child)) {
             $child->setParent(null);
             $this->children->removeElement($child);
         }
@@ -1181,14 +1225,14 @@ class Product implements EntityInterface
             'stock_count' => $this->getStockCount(),
             'tax' => $this->getTax(),
             'tax_rate' => $this->getTaxRate(),
-            'categories' => $this->getCategories()->toArray($operation),
-            'related_products' => $this->getRelatedProducts()->toArray($operation),
-            'cross_sell_products' => $this->getCrossSellProducts()->toArray($operation),
-            'up_sell_products' => $this->getUpSellProducts()->toArray($operation),
-            'volume_sell_products' => $this->getVolumeSellProducts()->toArray($operation),
-            'reviews' => $this->getReviews()->toArray($operation),
-            'custom_fields' => $this->getCustomFields()->toArray($operation),
-            'children' => $this->getChildren()->toArray($operation),
+            'categories' => $this->getCategories() !== null ? $this->getCategories()->toArray($operation) : null,
+            'related_products' => $this->getRelatedProducts() !== null ? $this->getRelatedProducts()->toArray($operation) : null,
+            'cross_sell_products' => $this->getCrossSellProducts() !== null ? $this->getCrossSellProducts()->toArray($operation) : null,
+            'up_sell_products' => $this->getUpSellProducts() !== null ? $this->getUpSellProducts()->toArray($operation) : null,
+            'volume_sell_products' => $this->getVolumeSellProducts() !== null ? $this->getVolumeSellProducts()->toArray($operation) : null,
+            'reviews' => $this->getReviews() !== null ? $this->getReviews()->toArray($operation) : null,
+            'custom_fields' => $this->getCustomFields() !== null ? $this->getCustomFields()->toArray($operation) : null,
+            'children' => $this->getChildren() !== null ? $this->getChildren()->toArray($operation) : null,
             'parent' => $this->getParent() ? $this->getParent()->toIri() : null
         ];
     }
