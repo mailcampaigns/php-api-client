@@ -1568,6 +1568,7 @@ class Product implements EntityInterface
     public function __clone()
     {
         $this->customFields = clone $this->customFields;
+        $this->categories = clone $this->categories;
     }
 
     public function __destruct()
