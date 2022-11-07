@@ -24,6 +24,7 @@ use MailCampaigns\ApiClient\Api\QuoteApi;
 use MailCampaigns\ApiClient\Api\QuoteProductApi;
 use MailCampaigns\ApiClient\Api\SubscriberApi;
 use MailCampaigns\ApiClient\Exception\ApiAuthenticationException;
+use MailCampaigns\ApiClient\Exception\ApiException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -372,7 +373,6 @@ final class ApiClient
      *
      * @param int|string $expInSeconds
      * @return $this
-     * @throws Exception
      */
     protected function setTokenExpiration($expInSeconds): self
     {
@@ -380,7 +380,12 @@ final class ApiClient
             throw new ApiAuthenticationException('Invalid token expiration format!');
         }
 
-        $interval = (new DateInterval(sprintf('PT%dS', (int)$expInSeconds)));
+        try {
+            $interval = (new DateInterval(sprintf('PT%dS', (int)$expInSeconds)));
+        } catch (Exception $e) {
+            throw new ApiException('Failed to set token expiration: ' . $e->getMessage(), 0, $e);
+        }
+
         $this->tokenExpirationDt = (new DateTime())->add($interval);
 
         return $this;

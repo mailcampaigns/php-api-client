@@ -8,6 +8,7 @@ use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\ProductReview;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class ProductReviewApi extends AbstractApi
 {
@@ -49,6 +50,7 @@ class ProductReviewApi extends AbstractApi
      *
      * @param string $ref
      * @return ProductReview|null
+     * @throws HttpClientExceptionInterface
      */
     public function getByReviewRef(string $ref): ?ProductReview
     {

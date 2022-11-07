@@ -9,6 +9,7 @@ use MailCampaigns\ApiClient\Entity\CustomerFavoriteProduct;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Exception\ApiException;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class CustomerFavoriteProductApi extends AbstractApi
 {
@@ -53,6 +54,7 @@ class CustomerFavoriteProductApi extends AbstractApi
      * @param int|null $page
      * @param int|null $perPage
      * @return CustomerFavoriteProductCollection
+     * @throws HttpClientExceptionInterface
      */
     public function getCollectionByCustomerId(int $customerId, ?int $page = null, ?int $perPage = null): CollectionInterface
     {

@@ -13,6 +13,7 @@ use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\CustomerFavoriteProduct;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class CustomerApi extends AbstractApi
 {
@@ -54,6 +55,7 @@ class CustomerApi extends AbstractApi
      *
      * @param string $customerRef
      * @return Customer|null
+     * @throws HttpClientExceptionInterface
      */
     public function getByCustomerRef(string $customerRef): ?EntityInterface
     {
@@ -69,6 +71,9 @@ class CustomerApi extends AbstractApi
         return null;
     }
 
+    /**
+     * @throws HttpClientExceptionInterface
+     */
     public function getByCustomerRefs(array $refs, ?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
     {
         $data = $this->get('customers', [
@@ -87,6 +92,7 @@ class CustomerApi extends AbstractApi
      *
      * @param string $email
      * @return Customer|null
+     * @throws HttpClientExceptionInterface
      */
     public function getByEmail(string $email): ?EntityInterface
     {
@@ -102,6 +108,9 @@ class CustomerApi extends AbstractApi
         return null;
     }
 
+    /**
+     * @throws HttpClientExceptionInterface
+     */
     public function getByEmails(array $emails, ?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
     {
         $data = $this->get('customers', [

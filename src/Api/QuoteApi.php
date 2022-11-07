@@ -8,12 +8,14 @@ use MailCampaigns\ApiClient\Collection\QuoteCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Quote;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class QuoteApi extends AbstractApi
 {
     /**
      * @param EntityInterface|Quote $entity
      * @return Quote
+     * @throws HttpClientExceptionInterface
      */
     public function create(EntityInterface $entity): EntityInterface
     {
@@ -39,6 +41,7 @@ class QuoteApi extends AbstractApi
     /**
      * @param string $ref
      * @return Quote|null
+     * @throws HttpClientExceptionInterface
      */
     public function getByQuoteRef(string $ref): ?Quote
     {
@@ -60,6 +63,7 @@ class QuoteApi extends AbstractApi
      * @param int|null $page
      * @param int|null $perPage
      * @return QuoteCollection
+     * @throws HttpClientExceptionInterface
      */
     public function getByQuoteRefs(array $refs, ?int $page = null, ?int $perPage = null): CollectionInterface
     {
@@ -100,6 +104,7 @@ class QuoteApi extends AbstractApi
      *
      * @param EntityInterface $entity
      * @return Quote
+     * @throws HttpClientExceptionInterface
      */
     public function update(EntityInterface $entity): EntityInterface
     {
@@ -118,6 +123,7 @@ class QuoteApi extends AbstractApi
      *
      * @param int $id
      * @return $this
+     * @throws HttpClientExceptionInterface
      */
     public function deleteById($id): ApiInterface
     {

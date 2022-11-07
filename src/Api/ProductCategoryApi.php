@@ -7,6 +7,7 @@ use MailCampaigns\ApiClient\Collection\ProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\ProductCategory;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class ProductCategoryApi extends AbstractApi
 {
@@ -48,6 +49,7 @@ class ProductCategoryApi extends AbstractApi
      *
      * @param string $ref
      * @return ProductCategory|null
+     * @throws HttpClientExceptionInterface
      */
     public function getByCategoryRef(string $ref): ?ProductCategory
     {

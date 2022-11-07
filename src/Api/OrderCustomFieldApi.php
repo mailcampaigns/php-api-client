@@ -8,12 +8,14 @@ use MailCampaigns\ApiClient\Collection\OrderCustomFieldCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
 use MailCampaigns\ApiClient\Entity\OrderCustomField;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class OrderCustomFieldApi extends AbstractApi
 {
     /**
      * @param EntityInterface|OrderCustomField $entity
      * @return OrderCustomField
+     * @throws HttpClientExceptionInterface
      */
     public function create(EntityInterface $entity): EntityInterface
     {
@@ -55,6 +57,7 @@ class OrderCustomFieldApi extends AbstractApi
      *
      * @param EntityInterface $entity
      * @return OrderCustomField
+     * @throws HttpClientExceptionInterface
      */
     public function update(EntityInterface $entity): EntityInterface
     {
@@ -73,6 +76,7 @@ class OrderCustomFieldApi extends AbstractApi
      *
      * @param int $id
      * @return $this
+     * @throws HttpClientExceptionInterface
      */
     public function deleteById($id): ApiInterface
     {

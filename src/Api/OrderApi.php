@@ -9,6 +9,7 @@ use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
 use MailCampaigns\ApiClient\Entity\Quote;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class OrderApi extends AbstractApi
 {
@@ -45,11 +46,12 @@ class OrderApi extends AbstractApi
     }
 
     /**
-     * Tries to find a order by number, returns null when no order was found with
+     * Tries to find an order by number, returns null when no order was found with
      * the given order number.
      *
      * @param string $number
      * @return Order|null
+     * @throws HttpClientExceptionInterface
      */
     public function getByNumber(string $number): ?EntityInterface
     {
@@ -71,6 +73,7 @@ class OrderApi extends AbstractApi
      * @param int|null $perPage
      * @param array|null $order
      * @return OrderCollection
+     * @throws HttpClientExceptionInterface
      */
     public function getByNumbers(array $numbers, ?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
     {

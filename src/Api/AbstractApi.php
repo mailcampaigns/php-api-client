@@ -9,6 +9,7 @@ use MailCampaigns\ApiClient\ApiClient;
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\ResponseMediator;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 abstract class AbstractApi implements ApiInterface
 {
@@ -54,6 +55,7 @@ abstract class AbstractApi implements ApiInterface
      * @param array $parameters GET parameters.
      * @param array $requestHeaders Request Headers.
      * @return array|string
+     * @throws HttpClientExceptionInterface
      */
     protected function get(string $path, array $parameters = [], array $requestHeaders = [])
     {
@@ -79,6 +81,7 @@ abstract class AbstractApi implements ApiInterface
      * @param array $parameters HEAD parameters.
      * @param array $requestHeaders Request headers.
      * @return array|string
+     * @throws HttpClientExceptionInterface
      */
     protected function head(string $path, array $parameters = [], array $requestHeaders = [])
     {
@@ -103,6 +106,7 @@ abstract class AbstractApi implements ApiInterface
      * @param EntityInterface $entity The entity to be created.
      * @param array $requestHeaders Request headers.
      * @return array|string
+     * @throws HttpClientExceptionInterface
      */
     protected function post(string $path, EntityInterface $entity, array $requestHeaders = [])
     {
@@ -125,6 +129,7 @@ abstract class AbstractApi implements ApiInterface
      * @param EntityInterface $entity The entity to be patched.
      * @param array $requestHeaders Request headers.
      * @return array|string
+     * @throws HttpClientExceptionInterface
      */
     protected function patch(string $path, EntityInterface $entity, array $requestHeaders = [])
     {
@@ -147,6 +152,7 @@ abstract class AbstractApi implements ApiInterface
      * @param EntityInterface $entity The updated entity to be sent.
      * @param array $requestHeaders Request headers.
      * @return array|string
+     * @throws HttpClientExceptionInterface
      */
     protected function put(string $path, EntityInterface $entity, array $requestHeaders = [])
     {
@@ -169,6 +175,7 @@ abstract class AbstractApi implements ApiInterface
      * @param array $parameters POST parameters to be JSON encoded.
      * @param array $requestHeaders Request headers.
      * @return array|string
+     * @throws HttpClientExceptionInterface
      */
     protected function delete(string $path, array $parameters = [], array $requestHeaders = [])
     {
@@ -259,13 +266,7 @@ abstract class AbstractApi implements ApiInterface
             throw new LogicException($invalidFqcnMsg);
         }
 
-        if (isset($data['hydra:member'])) {
-            $arr = $data['hydra:member'];
-        } else if (isset($data) && is_array($data)) {
-            $arr = $data;
-        } else {
-            $arr = [];
-        }
+        $arr = $data['hydra:member'] ?? $data;
 
         foreach ($arr as $data) {
             $collection->add($this->toEntity($data));

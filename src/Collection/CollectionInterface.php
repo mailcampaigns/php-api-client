@@ -22,7 +22,7 @@ interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
      * @param bool|null $isRoot
      * @return array
      */
-    public function toArray(?string $operation = null, ?bool $isRoot): array;
+    public function toArray(?string $operation = null, ?bool $isRoot = null): array;
 
     /**
      * Adds an element at the end of the collection.

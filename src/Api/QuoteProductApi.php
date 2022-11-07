@@ -9,12 +9,14 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Quote;
 use MailCampaigns\ApiClient\Entity\QuoteProduct;
 use MailCampaigns\ApiClient\Entity\Product;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class QuoteProductApi extends AbstractApi
 {
     /**
      * @param EntityInterface|QuoteProduct $entity
      * @return QuoteProduct
+     * @throws HttpClientExceptionInterface
      */
     public function create(EntityInterface $entity): EntityInterface
     {
@@ -56,6 +58,7 @@ class QuoteProductApi extends AbstractApi
      *
      * @param EntityInterface $entity
      * @return QuoteProduct
+     * @throws HttpClientExceptionInterface
      */
     public function update(EntityInterface $entity): EntityInterface
     {
@@ -74,6 +77,7 @@ class QuoteProductApi extends AbstractApi
      *
      * @param int $id
      * @return $this
+     * @throws HttpClientExceptionInterface
      */
     public function deleteById($id): ApiInterface
     {

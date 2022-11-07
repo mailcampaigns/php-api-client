@@ -9,12 +9,14 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
 use MailCampaigns\ApiClient\Entity\OrderProduct;
 use MailCampaigns\ApiClient\Entity\Product;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class OrderProductApi extends AbstractApi
 {
     /**
      * @param EntityInterface|OrderProduct $entity
      * @return OrderProduct
+     * @throws HttpClientExceptionInterface
      */
     public function create(EntityInterface $entity): EntityInterface
     {
@@ -42,6 +44,7 @@ class OrderProductApi extends AbstractApi
      *
      * @param int $id
      * @return OrderProductCollection
+     * @throws HttpClientExceptionInterface
      */
     public function getByOrderId($id): CollectionInterface
     {
@@ -69,6 +72,7 @@ class OrderProductApi extends AbstractApi
      *
      * @param EntityInterface $entity
      * @return OrderProduct
+     * @throws HttpClientExceptionInterface
      */
     public function update(EntityInterface $entity): EntityInterface
     {
@@ -87,6 +91,7 @@ class OrderProductApi extends AbstractApi
      *
      * @param int $id
      * @return $this
+     * @throws HttpClientExceptionInterface
      */
     public function deleteById($id): ApiInterface
     {

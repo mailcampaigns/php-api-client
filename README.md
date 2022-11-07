@@ -12,7 +12,7 @@ Installation
 ------------
 Install with Composer:
 
-```json
+```shell
 composer require mailcampaigns/api-client
 ```
 

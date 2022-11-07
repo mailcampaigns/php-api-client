@@ -5,6 +5,7 @@ namespace MailCampaigns\ApiClient;
 use MailCampaigns\ApiClient\Exception\ApiException;
 use MailCampaigns\ApiClient\Exception\ApiLimitExceededException;
 use Symfony\Component\HttpClient\Exception\ClientException;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class ResponseMediator
@@ -13,6 +14,7 @@ class ResponseMediator
      * @param ResponseInterface $response
      *
      * @return array|string
+     * @throws HttpClientExceptionInterface
      */
     public static function getContent(ResponseInterface $response)
     {
@@ -35,6 +37,7 @@ class ResponseMediator
      * @param ResponseInterface $response
      *
      * @return array|void
+     * @throws HttpClientExceptionInterface
      */
     public static function getPagination(ResponseInterface $response)
     {
@@ -59,6 +62,7 @@ class ResponseMediator
      * Todo: Implement
      * @param ResponseInterface $response
      * @return null|string
+     * @throws HttpClientExceptionInterface
      */
     public static function getApiLimit(ResponseInterface $response)
     {
@@ -77,6 +81,7 @@ class ResponseMediator
      * @param ResponseInterface $response
      * @param string $name
      * @return string|null
+     * @throws HttpClientExceptionInterface
      */
     public static function getHeader(ResponseInterface $response, $name)
     {

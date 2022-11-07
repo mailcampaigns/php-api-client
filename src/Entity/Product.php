@@ -176,7 +176,7 @@ class Product implements EntityInterface
     protected $discountPercentage;
 
     /**
-     * The stock status of the product. <i>(Examples: ”on_stock”, “temp_out_of_stock”, “out_of_stock”)</i>
+     * The stock status of the product. <i>(Examples: 'on_stock', 'temp_out_of_stock', 'out_of_stock')</i>
      *
      * @var string|null
      */
@@ -1303,7 +1303,7 @@ class Product implements EntityInterface
             throw new LogicException('IRI error: Could not determine product and/or related product id!');
         }
 
-        if ((int)$productId !== $this->getProductId()) {
+        if ($productId !== $this->getProductId()) {
             throw new LogicException('IRI error: Product id does not match.');
         }
 
@@ -1343,7 +1343,7 @@ class Product implements EntityInterface
             throw new LogicException('IRI error: Could not determine product and/or cross-sell product id!');
         }
 
-        if ((int)$productId !== $this->getProductId()) {
+        if ($productId !== $this->getProductId()) {
             throw new LogicException('IRI error: Product id does not match.');
         }
 
@@ -1383,7 +1383,7 @@ class Product implements EntityInterface
             throw new LogicException('IRI error: Could not determine product and/or up-sell product id!');
         }
 
-        if ((int)$productId !== $this->getProductId()) {
+        if ($productId !== $this->getProductId()) {
             throw new LogicException('IRI error: Product id does not match.');
         }
 
@@ -1423,7 +1423,7 @@ class Product implements EntityInterface
             throw new LogicException('IRI error: Could not determine product and/or volume-sell product id!');
         }
 
-        if ((int)$productId !== $this->getProductId()) {
+        if ($productId !== $this->getProductId()) {
             throw new LogicException('IRI error: Product id does not match.');
         }
 
@@ -1529,7 +1529,7 @@ class Product implements EntityInterface
         if (is_int($data)) {
             $linkedProduct->setProductId($data);
         } else if (is_string($data)) {
-            $pattern = '/\/[a-z\_]+\/(?\'id\'[\d]+)/';
+            $pattern = '/\/[a-z_]+\/(?\'id\'[\d]+)/';
 
             if (false !== preg_match($pattern, $data, $matches)
                 && isset($matches['id'])) {

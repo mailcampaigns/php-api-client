@@ -4,6 +4,8 @@ namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
+use MailCampaigns\ApiClient\Exception\ApiException as McApiException;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 /**
  * Represents an API endpoint.
@@ -22,6 +24,7 @@ interface ApiInterface
      * @api
      * @param EntityInterface $entity
      * @return EntityInterface
+     * @throws McApiException|HttpClientExceptionInterface
      */
     function create(EntityInterface $entity): EntityInterface;
 
@@ -32,6 +35,7 @@ interface ApiInterface
      * @api
      * @param int|string $id
      * @return EntityInterface
+     * @throws McApiException|HttpClientExceptionInterface
      */
     function getById($id): EntityInterface;
 
@@ -43,6 +47,7 @@ interface ApiInterface
      * @param int|null $perPage Number of resources to retrieve. If not supplied, uses
      *  default number of resources per page.
      * @return CollectionInterface
+     * @throws McApiException|HttpClientExceptionInterface
      */
     function getCollection(?int $page, ?int $perPage): CollectionInterface;
 
@@ -52,6 +57,7 @@ interface ApiInterface
      * @api
      * @param EntityInterface $entity
      * @return EntityInterface
+     * @throws McApiException|HttpClientExceptionInterface
      */
     function update(EntityInterface $entity): EntityInterface;
 
@@ -62,6 +68,7 @@ interface ApiInterface
      * @api
      * @param int|string $id
      * @return $this
+     * @throws McApiException|HttpClientExceptionInterface
      */
     function deleteById($id): ApiInterface;
 

@@ -7,6 +7,7 @@ use MailCampaigns\ApiClient\Collection\SubscriberCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Subscriber;
 use MailCampaigns\ApiClient\Exception\ApiException;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class SubscriberApi extends AbstractApi
 {
@@ -21,6 +22,9 @@ class SubscriberApi extends AbstractApi
         'updated_at' => 'desc'
     ];
 
+    /**
+     * @throws HttpClientExceptionInterface
+     */
     public function count(?array $filters = null): int
     {
         $params = [
@@ -62,6 +66,7 @@ class SubscriberApi extends AbstractApi
      *
      * @param string $emailAddress
      * @return Subscriber|null
+     * @throws HttpClientExceptionInterface
      */
     public function getByEmailAddress(string $emailAddress): ?EntityInterface
     {

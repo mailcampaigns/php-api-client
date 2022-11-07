@@ -13,6 +13,7 @@ use MailCampaigns\ApiClient\Collection\ProductUpSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductVolumeSellProductCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class ProductApi extends AbstractApi
 {
@@ -72,6 +73,7 @@ class ProductApi extends AbstractApi
      * @param array|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
      * @return Product|null
+     * @throws HttpClientExceptionInterface
      */
     public function getByArticleCode(string $articleCode, ?array $propertyFilter = null): ?EntityInterface
     {
@@ -103,6 +105,7 @@ class ProductApi extends AbstractApi
      * @param array|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
      * @return CollectionInterface
+     * @throws HttpClientExceptionInterface
      */
     public function getByArticleCodes(
         array $articleCodes,
@@ -137,6 +140,7 @@ class ProductApi extends AbstractApi
      * @param array|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
      * @return Product|null
+     * @throws HttpClientExceptionInterface
      */
     public function getByEan(string $ean, ?array $propertyFilter = null): ?EntityInterface
     {
@@ -168,6 +172,7 @@ class ProductApi extends AbstractApi
      * @param array|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
      * @return CollectionInterface
+     * @throws HttpClientExceptionInterface
      */
     public function getByEans(
         array $eans,
@@ -202,6 +207,7 @@ class ProductApi extends AbstractApi
      * @param array|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
      * @return Product|null
+     * @throws HttpClientExceptionInterface
      */
     public function getBySku(string $sku, ?array $propertyFilter = null): ?EntityInterface
     {

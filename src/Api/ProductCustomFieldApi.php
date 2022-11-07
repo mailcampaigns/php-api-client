@@ -8,12 +8,14 @@ use MailCampaigns\ApiClient\Collection\ProductCustomFieldCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\ProductCustomField;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class ProductCustomFieldApi extends AbstractApi
 {
     /**
      * @param EntityInterface|ProductCustomField $entity
      * @return ProductCustomField
+     * @throws HttpClientExceptionInterface
      */
     public function create(EntityInterface $entity): EntityInterface
     {
@@ -55,6 +57,7 @@ class ProductCustomFieldApi extends AbstractApi
      *
      * @param EntityInterface $entity
      * @return ProductCustomField
+     * @throws HttpClientExceptionInterface
      */
     public function update(EntityInterface $entity): EntityInterface
     {
@@ -73,6 +76,7 @@ class ProductCustomFieldApi extends AbstractApi
      *
      * @param int $id
      * @return $this
+     * @throws HttpClientExceptionInterface
      */
     public function deleteById($id): ApiInterface
     {
