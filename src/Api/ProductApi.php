@@ -231,6 +231,42 @@ class ProductApi extends AbstractApi
     }
 
     /**
+     * @param array $skus A list of SKUs to retrieve products by.
+     * @param int|null $page Defaults to first page.
+     * @param int|null $perPage Number of resources to retrieve. If not supplied, uses
+     *  default number of resources per page.
+     * @param array|null $order Overrides default order to sort results on.
+     * @param array|null $propertyFilter Optionally set properties to return in response,
+     *  will return all if kept empty (null).
+     * @return CollectionInterface
+     * @throws HttpClientExceptionInterface
+     */
+    public function getBySkus(
+        array $skus,
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null,
+        ?array $propertyFilter = null
+    ): CollectionInterface
+    {
+        $parameters = [
+            'sku' => $skus,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ];
+
+        // If set, add property filter.
+        if (null !== $propertyFilter) {
+            $parameters['properties'] = $propertyFilter;
+        }
+
+        $data = $this->get('products', $parameters);
+
+        return $this->toCollection($data, ProductCollection::class);
+    }
+
+    /**
      * {@inheritDoc}
      * @param array|null $order Overrides default order to sort results on.
      * @param array|null $propertyFilter Optionally set properties to return in response,
