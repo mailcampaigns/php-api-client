@@ -104,7 +104,7 @@ class ProductApi extends AbstractApi
      * @param array|null $order Overrides default order to sort results on.
      * @param array|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return CollectionInterface
+     * @return ProductCollection
      * @throws HttpClientExceptionInterface
      */
     public function getByArticleCodes(
@@ -171,7 +171,7 @@ class ProductApi extends AbstractApi
      * @param array|null $order Overrides default order to sort results on.
      * @param array|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return CollectionInterface
+     * @return ProductCollection
      * @throws HttpClientExceptionInterface
      */
     public function getByEans(
@@ -238,7 +238,7 @@ class ProductApi extends AbstractApi
      * @param array|null $order Overrides default order to sort results on.
      * @param array|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return CollectionInterface
+     * @return ProductCollection
      * @throws HttpClientExceptionInterface
      */
     public function getBySkus(
