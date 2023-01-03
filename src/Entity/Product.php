@@ -6,15 +6,15 @@ use DateTime;
 use LogicException;
 use MailCampaigns\ApiClient\Collection\ProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductCollection;
+use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
-use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductRelatedProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Collection\ProductUpSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductVolumeSellProductCollection;
 
-class Product implements EntityInterface
+class Product implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
@@ -1046,8 +1046,14 @@ class Product implements EntityInterface
         return $this;
     }
 
-    public function addCustomField(ProductCustomField $customField): self
+    /**
+     * @param ProductCustomField $customField
+     * @return $this
+     */
+    public function addCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
     {
+        assert($customField instanceof ProductCustomField);
+
         if (!$this->customFields->contains($customField)) {
             if ($customField->getProduct() !== $this) {
                 $customField->setProduct($this);
@@ -1059,8 +1065,14 @@ class Product implements EntityInterface
         return $this;
     }
 
-    public function removeCustomField(ProductCustomField $customField): self
+    /**
+     * @param ProductCustomField $customField
+     * @return $this
+     */
+    public function removeCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
     {
+        assert($customField instanceof ProductCustomField);
+
         if ($this->customFields->contains($customField)) {
             $customField->setProduct(null);
             $this->customFields->removeElement($customField);
@@ -1216,7 +1228,7 @@ class Product implements EntityInterface
         if (is_int($data)) {
             $id = $data;
         } else if (is_string($data)) {
-            $pattern = '/\/product_categories\/(?\'id\'[\d]+)/';
+            $pattern = '/\/product_categories\/(?\'id\'\d+)/';
 
             if (false !== preg_match($pattern, $data, $matches) && isset($matches['id'])) {
                 $id = (int)$matches['id'];
@@ -1247,7 +1259,7 @@ class Product implements EntityInterface
     {
         $categoryId = $productId = null;
 
-        $pattern = '/^\/product_product_categories\/product=(?\'product_id\'[\d]+);productCategory=(?\'category_id\'[\d]+)$/';
+        $pattern = '/^\/product_product_categories\/product=(?\'product_id\'\d+);productCategory=(?\'category_id\'\d+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['category_id'])) {
@@ -1287,7 +1299,7 @@ class Product implements EntityInterface
     {
         $relatedProductId = $productId = null;
         // IRI example: "/product_related_products/product=4;relatedProduct=1"
-        $pattern = '/^\/product_related_products\/product=(?\'product_id\'[\d]+);relatedProduct=(?\'related_product_id\'[\d]+)$/';
+        $pattern = '/^\/product_related_products\/product=(?\'product_id\'\d+);relatedProduct=(?\'related_product_id\'\d+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['product_id'])) {
@@ -1327,7 +1339,7 @@ class Product implements EntityInterface
     {
         $crossSellProductId = $productId = null;
         // IRI example: "/product_cross_sell_products/product=4;crossSellProduct=1"
-        $pattern = '/^\/product_cross_sell_products\/product=(?\'product_id\'[\d]+);crossSellProduct=(?\'cross_sell_product_id\'[\d]+)$/';
+        $pattern = '/^\/product_cross_sell_products\/product=(?\'product_id\'\d+);crossSellProduct=(?\'cross_sell_product_id\'\d+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['product_id'])) {
@@ -1367,7 +1379,7 @@ class Product implements EntityInterface
     {
         $upSellProductId = $productId = null;
         // IRI example: "/product_up_sell_products/product=4;upSellProduct=1"
-        $pattern = '/^\/product_up_sell_products\/product=(?\'product_id\'[\d]+);upSellProduct=(?\'up_sell_product_id\'[\d]+)$/';
+        $pattern = '/^\/product_up_sell_products\/product=(?\'product_id\'\d+);upSellProduct=(?\'up_sell_product_id\'\d+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['product_id'])) {
@@ -1407,7 +1419,7 @@ class Product implements EntityInterface
     {
         $volumeSellProductId = $productId = null;
         // IRI example: "/product_volume_sell_products/product=4;volumeSellProduct=1"
-        $pattern = '/^\/product_volume_sell_products\/product=(?\'product_id\'[\d]+);volumeSellProduct=(?\'volume_sell_product_id\'[\d]+)$/';
+        $pattern = '/^\/product_volume_sell_products\/product=(?\'product_id\'\d+);volumeSellProduct=(?\'volume_sell_product_id\'\d+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['product_id'])) {
@@ -1437,7 +1449,7 @@ class Product implements EntityInterface
     protected function toProduct(array $data): Product
     {
         $id = null;
-        $pattern = '/\/products\/(?\'id\'[\d]+)/';
+        $pattern = '/\/products\/(?\'id\'\d+)/';
 
         if (false !== preg_match($pattern, $data['@id'], $matches)) {
             if (isset($matches['id'])) {
@@ -1469,7 +1481,7 @@ class Product implements EntityInterface
         $score = $data['score'];
         $title = $data['title'];
         $customer = $data['customer'] ? $this->iriToCustomer($data['customer']) : null; // IRI
-        $pattern = '/\/product_reviews\/(?\'review_id\'[\d]+)/';
+        $pattern = '/\/product_reviews\/(?\'review_id\'\d+)/';
 
         if (false !== preg_match($pattern, $data['@id'], $matches)) {
             if (isset($matches['review_id'])) {
@@ -1490,7 +1502,7 @@ class Product implements EntityInterface
 
     protected function iriToProductReview(string $iri): ?ProductReview
     {
-        $pattern = '/\/product_reviews\/(?\'id\'[\d]+)/';
+        $pattern = '/\/product_reviews\/(?\'id\'\d+)/';
 
         if (false !== preg_match($pattern, $iri, $matches) && isset($matches['id'])) {
             return (new ProductReview)->setProductReviewId((int)$matches['id']);
@@ -1529,7 +1541,7 @@ class Product implements EntityInterface
         if (is_int($data)) {
             $linkedProduct->setProductId($data);
         } else if (is_string($data)) {
-            $pattern = '/\/[a-z_]+\/(?\'id\'[\d]+)/';
+            $pattern = '/\/[a-z_]+\/(?\'id\'\d+)/';
 
             if (false !== preg_match($pattern, $data, $matches)
                 && isset($matches['id'])) {
@@ -1563,6 +1575,14 @@ class Product implements EntityInterface
         }
 
         return $linkedProduct;
+    }
+
+    /**
+     * @return ProductCustomField
+     */
+    public function getNewCustomField(): CustomFieldInterface
+    {
+        return new ProductCustomField();
     }
 
     public function __clone()

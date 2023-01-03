@@ -7,7 +7,7 @@ use LogicException;
 use MailCampaigns\ApiClient\Collection\OrderCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\OrderProductCollection;
 
-class Order implements EntityInterface
+class Order implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
@@ -1375,8 +1375,14 @@ class Order implements EntityInterface
         return $this;
     }
 
-    public function addCustomField(OrderCustomField $customField): self
+    /**
+     * @param OrderCustomField $customField
+     * @return $this
+     */
+    public function addCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
     {
+        assert($customField instanceof OrderCustomField);
+
         if (!$this->customFields->contains($customField)) {
             if ($customField->getOrder() !== $this) {
                 $customField->setOrder($this);
@@ -1388,8 +1394,14 @@ class Order implements EntityInterface
         return $this;
     }
 
-    public function removeCustomField(OrderCustomField $customField): self
+    /**
+     * @param OrderCustomField $customField
+     * @return $this
+     */
+    public function removeCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
     {
+        assert($customField instanceof OrderCustomField);
+
         if ($this->customFields->contains($customField)) {
             $customField->setOrder(null);
             $this->customFields->removeElement($customField);
@@ -1492,6 +1504,14 @@ class Order implements EntityInterface
     {
         $id = (int)str_replace('/order_custom_fields/', '', $iri);
         return (new OrderCustomField())->setCustomFieldId($id);
+    }
+
+    /**
+     * @return OrderCustomField
+     */
+    public function getNewCustomField(): CustomFieldInterface
+    {
+        return new OrderCustomField();
     }
 
     public function __clone()

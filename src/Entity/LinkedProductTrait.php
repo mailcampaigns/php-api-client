@@ -85,7 +85,7 @@ trait LinkedProductTrait
         $product = $this->getProduct();
         $linkedProduct = $this->getLinkedProduct();
 
-        if (!$product || !$linkedProduct) {
+        if (!$product) {
             return null;
         }
 
