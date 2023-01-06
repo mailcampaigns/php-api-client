@@ -15,7 +15,7 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class ProductApi extends AbstractApi implements CustomFieldApiInterface
+class ProductApi extends AbstractApi
 {
     const ORDERABLE_PARAMS = [
         'product_id',
