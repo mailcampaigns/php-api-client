@@ -6,7 +6,7 @@ namespace MailCampaigns\ApiClient\Entity;
  * Interface for entities implementing custom fields. Use in combination
  * with CustomFieldTrait.
  */
-interface CustomFieldInterface
+interface CustomFieldInterface extends EntityInterface
 {
     /**
      * @return int|null

@@ -10,7 +10,7 @@ use MailCampaigns\ApiClient\Entity\Order;
 use MailCampaigns\ApiClient\Entity\OrderCustomField;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class OrderCustomFieldApi extends AbstractApi
+class OrderCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
 {
     /**
      * @param EntityInterface|OrderCustomField $entity

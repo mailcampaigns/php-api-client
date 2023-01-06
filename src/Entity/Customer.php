@@ -10,7 +10,7 @@ use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Collection\QuoteCollection;
 
-class Customer implements EntityInterface
+class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTimeHelperTrait;
 
@@ -1140,8 +1140,14 @@ class Customer implements EntityInterface
         return $this;
     }
 
-    public function addCustomField(CustomerCustomField $customField): self
+    /**
+     * @param CustomerCustomField $customField
+     * @return $this
+     */
+    public function addCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
     {
+        assert($customField instanceof CustomerCustomField);
+
         if (!$this->customFields->contains($customField)) {
             if ($customField->getCustomer() !== $this) {
                 $customField->setCustomer($this);
@@ -1153,8 +1159,14 @@ class Customer implements EntityInterface
         return $this;
     }
 
-    public function removeCustomField(CustomerCustomField $customField): self
+    /**
+     * @param CustomerCustomField $customField
+     * @return $this
+     */
+    public function removeCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
     {
+        assert($customField instanceof CustomerCustomField);
+
         if ($this->customFields->contains($customField)) {
             $customField->setCustomer(null);
             $this->customFields->removeElement($customField);
@@ -1250,7 +1262,7 @@ class Customer implements EntityInterface
     protected function arrayToFavorite(array $data): CustomerFavoriteProduct
     {
         $productId = null;
-        $pattern = '/\/products\/(?\'product_id\'[\d]+)/';
+        $pattern = '/\/products\/(?\'product_id\'\d+)/';
 
         if (false !== preg_match($pattern, $data['favorite_product'], $matches)) {
             if (isset($matches['product_id'])) {
@@ -1273,6 +1285,14 @@ class Customer implements EntityInterface
     {
         $id = (int)str_replace('/customer_custom_fields/', '', $iri);
         return (new CustomerCustomField())->setCustomFieldId($id);
+    }
+
+    /**
+     * @return CustomerCustomField
+     */
+    public function getNewCustomField(): CustomFieldInterface
+    {
+        return new CustomerCustomField();
     }
 
     public function __clone()
