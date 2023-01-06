@@ -69,7 +69,6 @@ abstract class AbstractCollection implements CollectionInterface
         $operation = $operation ?? ApiInterface::OPERATION_GET;
         $toType = $this->toArrayTypeMapping[$operation] ?? null;
 
-        /** @var EntityInterface $element */
         foreach ($this->elements as $element) {
             if ($element instanceof EntityInterface) {
                 switch ($toType) {
