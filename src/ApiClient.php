@@ -22,8 +22,8 @@ use MailCampaigns\ApiClient\Api\ProductUpSellProductApi;
 use MailCampaigns\ApiClient\Api\ProductVolumeSellProductApi;
 use MailCampaigns\ApiClient\Api\QuoteApi;
 use MailCampaigns\ApiClient\Api\QuoteProductApi;
+use MailCampaigns\ApiClient\Api\SentMailApi;
 use MailCampaigns\ApiClient\Api\SubscriberApi;
-use MailCampaigns\ApiClient\Api\SubscriberReceivedMailApi;
 use MailCampaigns\ApiClient\Exception\ApiAuthenticationException;
 use MailCampaigns\ApiClient\Exception\ApiException;
 use Symfony\Component\HttpClient\HttpClient;
@@ -127,14 +127,14 @@ final class ApiClient
     protected $orderCustomFieldApi;
 
     /**
+     * @var SentMailApi
+     */
+    protected $sentMailApi;
+
+    /**
      * @var SubscriberApi
      */
     protected $subscriberApi;
-
-    /**
-     * @var SubscriberReceivedMailApi
-     */
-    protected $subscriberReceivedMailApi;
 
     /**
      * @var string
@@ -187,8 +187,8 @@ final class ApiClient
         $this->productCustomFieldApi = new ProductCustomFieldApi($this);
         $this->customerCustomFieldApi = new CustomerCustomFieldApi($this);
         $this->orderCustomFieldApi = new OrderCustomFieldApi($this);
+        $this->sentMailApi = new SentMailApi($this);
         $this->subscriberApi = new SubscriberApi($this);
-        $this->subscriberReceivedMailApi = new SubscriberReceivedMailApi($this);
     }
 
     public function getCustomerApi(): CustomerApi
@@ -276,14 +276,14 @@ final class ApiClient
         return $this->orderCustomFieldApi;
     }
 
+    public function getSentMailApi(): SentMailApi
+    {
+        return $this->sentMailApi;
+    }
+
     public function getSubscriberApi(): SubscriberApi
     {
         return $this->subscriberApi;
-    }
-
-    public function getSubscriberReceivedMailApi(): SubscriberReceivedMailApi
-    {
-        return $this->subscriberReceivedMailApi;
     }
 
     public static function create(string $baseUri, string $key, string $secret): self

@@ -3,13 +3,13 @@
 namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
-use MailCampaigns\ApiClient\Collection\SubscriberReceivedMailCollection;
+use MailCampaigns\ApiClient\Collection\SentMailCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
-use MailCampaigns\ApiClient\Entity\SubscriberReceivedMail;
+use MailCampaigns\ApiClient\Entity\SentMail;
 use MailCampaigns\ApiClient\Exception\ApiException;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class SubscriberReceivedMailApi extends AbstractApi
+class SentMailApi extends AbstractApi
 {
     /**
      * @throws HttpClientExceptionInterface
@@ -27,7 +27,7 @@ class SubscriberReceivedMailApi extends AbstractApi
             }
         }
 
-        $data = $this->get('subscriber_received_mails', $params);
+        $data = $this->get('sent_mails', $params);
 
         return $data['hydra:totalItems'] ?? 0;
     }
@@ -42,16 +42,16 @@ class SubscriberReceivedMailApi extends AbstractApi
 
     /**
      * {@inheritDoc}
-     * @return SubscriberReceivedMail
+     * @return SentMail
      */
     public function getById($id): EntityInterface
     {
-        return $this->toEntity($this->get("subscriber_received_mails/{$id}"));
+        return $this->toEntity($this->get("sent_mails/{$id}"));
     }
 
     /**
      * {@inheritDoc}
-     * @return SubscriberReceivedMailCollection
+     * @return SentMailCollection
      */
     public function getCollection(
         ?int $page = null,
@@ -70,9 +70,9 @@ class SubscriberReceivedMailApi extends AbstractApi
             }
         }
 
-        $data = $this->get('subscriber_received_mails', $params);
+        $data = $this->get('sent_mails', $params);
 
-        return $this->toCollection($data, SubscriberReceivedMailCollection::class);
+        return $this->toCollection($data, SentMailCollection::class);
     }
 
     /**
@@ -93,15 +93,16 @@ class SubscriberReceivedMailApi extends AbstractApi
 
     /**
      * @inheritDoc
-     * @return SubscriberReceivedMail
+     * @return SentMail
      */
     public function toEntity(array $data): EntityInterface
     {
-        return new SubscriberReceivedMail(
-            $data['subscriber_received_mail_id'],
+        return new SentMail(
+            $data['sent_mail_id'],
+            $data['to_email_address'],
             $data['subject'],
             $data['url'],
-            $this->toDtObject($data['received_at'] ?? null)
+            $this->toDtObject($data['sent_at'] ?? null)
         );
     }
 }
