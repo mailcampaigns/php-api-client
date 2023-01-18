@@ -22,6 +22,7 @@ use MailCampaigns\ApiClient\Api\ProductUpSellProductApi;
 use MailCampaigns\ApiClient\Api\ProductVolumeSellProductApi;
 use MailCampaigns\ApiClient\Api\QuoteApi;
 use MailCampaigns\ApiClient\Api\QuoteProductApi;
+use MailCampaigns\ApiClient\Api\SentMailApi;
 use MailCampaigns\ApiClient\Api\SubscriberApi;
 use MailCampaigns\ApiClient\Exception\ApiAuthenticationException;
 use MailCampaigns\ApiClient\Exception\ApiException;
@@ -126,6 +127,11 @@ final class ApiClient
     protected $orderCustomFieldApi;
 
     /**
+     * @var SentMailApi
+     */
+    protected $sentMailApi;
+
+    /**
      * @var SubscriberApi
      */
     protected $subscriberApi;
@@ -181,6 +187,7 @@ final class ApiClient
         $this->productCustomFieldApi = new ProductCustomFieldApi($this);
         $this->customerCustomFieldApi = new CustomerCustomFieldApi($this);
         $this->orderCustomFieldApi = new OrderCustomFieldApi($this);
+        $this->sentMailApi = new SentMailApi($this);
         $this->subscriberApi = new SubscriberApi($this);
     }
 
@@ -267,6 +274,11 @@ final class ApiClient
     public function getOrderCustomFieldApi(): OrderCustomFieldApi
     {
         return $this->orderCustomFieldApi;
+    }
+
+    public function getSentMailApi(): SentMailApi
+    {
+        return $this->sentMailApi;
     }
 
     public function getSubscriberApi(): SubscriberApi
