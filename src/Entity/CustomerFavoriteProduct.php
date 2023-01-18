@@ -76,7 +76,7 @@ class CustomerFavoriteProduct implements EntityInterface
         $customer = $this->getCustomer();
         $product = $this->getProduct();
 
-        if (!$customer || !$product) {
+        if (!$customer) {
             return null;
         }
 

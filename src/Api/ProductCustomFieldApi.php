@@ -10,7 +10,7 @@ use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\ProductCustomField;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class ProductCustomFieldApi extends AbstractApi
+class ProductCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
 {
     /**
      * @param EntityInterface|ProductCustomField $entity

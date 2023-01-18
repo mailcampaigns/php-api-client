@@ -2,7 +2,7 @@
 
 namespace MailCampaigns\ApiClient\Entity;
 
-class CustomerCustomField implements EntityInterface, CustomFieldInterface
+class CustomerCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
 
