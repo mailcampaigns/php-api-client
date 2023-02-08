@@ -602,7 +602,7 @@ class Quote implements EntityInterface
                         $quoteProduct
                             ->setBrandTitle($data['brand_title'])
                             ->setProductTitle($data['product_title'])
-                            ->setBaseColli($data['quantity'])
+                            ->setBaseColli($data['base_colli'])
                             ->setBasePriceCost($data['base_price_cost'])
                             ->setBasePriceExcl($data['base_price_excl'])
                             ->setBasePriceIncl($data['base_price_incl'])
