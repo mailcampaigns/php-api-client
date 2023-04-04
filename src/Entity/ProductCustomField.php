@@ -48,6 +48,8 @@ class ProductCustomField implements CustomFieldInterface
 
     public function __destruct()
     {
+        unset($this->createdAt);
+        unset($this->updatedAt);
         unset($this->product);
     }
 }

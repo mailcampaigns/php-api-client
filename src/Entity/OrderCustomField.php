@@ -48,6 +48,8 @@ class OrderCustomField implements CustomFieldInterface
 
     public function __destruct()
     {
+        unset($this->createdAt);
+        unset($this->updatedAt);
         unset($this->order);
     }
 }

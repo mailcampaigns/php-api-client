@@ -316,8 +316,9 @@ class ProductReview implements EntityInterface
 
     public function __destruct()
     {
-        unset($this->product);
         unset($this->createdAt);
+        unset($this->updatedAt);
         unset($this->customer);
+        unset($this->product);
     }
 }

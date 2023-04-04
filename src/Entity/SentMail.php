@@ -93,4 +93,9 @@ class SentMail implements EntityInterface
     {
         return '/sent_mails/' . $this->getSentMailId();
     }
+
+    public function __destruct()
+    {
+        unset($this->sentAt);
+    }
 }

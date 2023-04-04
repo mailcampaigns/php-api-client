@@ -196,4 +196,10 @@ class Subscriber implements EntityInterface
 
         return '/subscribers/' . $this->getSubscriberId();
     }
+
+    public function __destruct()
+    {
+        unset($this->createdAt);
+        unset($this->updatedAt);
+    }
 }

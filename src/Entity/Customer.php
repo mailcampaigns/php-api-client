@@ -1303,6 +1303,8 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
     public function __destruct()
     {
         unset($this->createdAt);
+        unset($this->updatedAt);
+        unset($this->birthDate);
         unset($this->orders);
         unset($this->productReviews);
         unset($this->favorites);

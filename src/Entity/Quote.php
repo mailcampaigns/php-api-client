@@ -810,8 +810,8 @@ class Quote implements EntityInterface
     public function __destruct()
     {
         unset($this->createdAt);
+        unset($this->updatedAt);
         unset($this->customer);
-        unset($this->orders);
         unset($this->quoteProducts);
         unset($this->orders);
     }

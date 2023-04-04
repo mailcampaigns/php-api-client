@@ -1522,7 +1522,11 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
     public function __destruct()
     {
         unset($this->createdAt);
+        unset($this->updatedAt);
+        unset($this->birthDate);
+        unset($this->customer);
         unset($this->orderProducts);
+        unset($this->quote);
         unset($this->customFields);
     }
 }
