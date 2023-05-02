@@ -1516,7 +1516,33 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function __clone()
     {
-        $this->customFields = clone $this->customFields;
+        if ($this->createdAt !== null) {
+            $this->createdAt = clone $this->createdAt;
+        }
+
+        if ($this->updatedAt !== null) {
+            $this->updatedAt = clone $this->updatedAt;
+        }
+
+        if ($this->birthDate !== null) {
+            $this->birthDate = clone $this->birthDate;
+        }
+
+        if ($this->customer !== null) {
+            $this->customer = clone $this->customer;
+        }
+
+        if ($this->orderProducts !== null) {
+            $this->orderProducts = clone $this->orderProducts;
+        }
+
+        if ($this->quote !== null) {
+            $this->quote = clone $this->quote;
+        }
+
+        if ($this->customFields !== null) {
+            $this->customFields = clone $this->customFields;
+        }
     }
 
     public function __destruct()

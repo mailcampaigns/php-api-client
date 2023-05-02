@@ -794,6 +794,10 @@ class Quote implements EntityInterface
             $this->createdAt = clone $this->createdAt;
         }
 
+        if ($this->updatedAt !== null) {
+            $this->updatedAt = clone $this->updatedAt;
+        }
+
         if ($this->customer !== null) {
             $this->customer = clone $this->customer;
         }
