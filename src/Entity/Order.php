@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
@@ -309,7 +311,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
     /**
      * Amount of discount given.
      *
-     * @var string
+     * @var float
      */
     protected $discountAmount;
 
@@ -1410,9 +1412,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toIri(): ?string
     {
         if (null === $this->getOrderId()) {
@@ -1422,9 +1422,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
         return '/orders/' . $this->getOrderId();
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [

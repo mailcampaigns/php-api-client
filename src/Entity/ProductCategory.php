@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
@@ -183,9 +185,7 @@ class ProductCategory implements EntityInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
@@ -199,9 +199,7 @@ class ProductCategory implements EntityInterface
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
+
     function toIri(): ?string
     {
         if (null === $this->getProductCategoryId()) {

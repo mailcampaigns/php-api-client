@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
@@ -116,9 +118,7 @@ class OrderApi extends AbstractApi
         return $this->toEntity($res);
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function deleteById($id): ApiInterface
     {
         $this->delete("orders/{$id}");

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use MailCampaigns\ApiClient\Api\ApiInterface;
@@ -55,9 +57,7 @@ trait LinkedProductTrait
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         $res = [];
@@ -77,9 +77,7 @@ trait LinkedProductTrait
         return $res;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     function toIri(): ?string
     {
         $product = $this->getProduct();

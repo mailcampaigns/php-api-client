@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
@@ -47,9 +49,7 @@ class ProductRelatedProductApi extends AbstractApi
         return $this->toCollection($data, ProductRelatedProductCollection::class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     public function update(EntityInterface $entity): EntityInterface
     {
         throw new ApiException('Operation not supported! Either create or delete this item.');

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use MailCampaigns\ApiClient\Api\ApiInterface;
@@ -41,9 +43,7 @@ class ProductProductCategory implements EntityInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         if ($operation === ApiInterface::OPERATION_GET) {
@@ -58,9 +58,7 @@ class ProductProductCategory implements EntityInterface
         ]);
     }
 
-    /**
-     * @inheritDoc
-     */
+
     function toIri(): ?string
     {
         $product = $this->getProduct();

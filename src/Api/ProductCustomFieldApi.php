@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Api;
 
 use InvalidArgumentException;
@@ -84,9 +86,7 @@ class ProductCustomFieldApi extends AbstractApi implements CustomFieldApiInterfa
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toEntity(array $data): EntityInterface
     {
         $customField = (new ProductCustomField)

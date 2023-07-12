@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 class CustomerFavoriteProduct implements EntityInterface
@@ -50,9 +52,7 @@ class CustomerFavoriteProduct implements EntityInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         $arr = [];
@@ -68,9 +68,7 @@ class CustomerFavoriteProduct implements EntityInterface
         return $arr;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     function toIri(): ?string
     {
         $customer = $this->getCustomer();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Collection;
 
 use MailCampaigns\ApiClient\Api\ApiInterface;
@@ -9,9 +11,7 @@ class CustomerCustomFieldCollection extends AbstractCollection
 {
     public static $entityFqcn = CustomerCustomField::class;
 
-    /**
-     * {@inheritDoc}
-     */
+
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         $arr = [];

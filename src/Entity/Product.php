@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
@@ -1161,9 +1163,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
@@ -1201,13 +1201,11 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             'reviews' => $this->getReviews()->toArray($operation),
             'custom_fields' => $this->getCustomFields()->toArray($operation),
             'children' => $this->getChildren()->toArray($operation),
-            'parent' => $this->getParent() ? $this->getParent()->toIri() : null
+            'parent' => $this->getParent()?->toIri()
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toIri(): ?string
     {
         if (null === $this->getProductId()) {

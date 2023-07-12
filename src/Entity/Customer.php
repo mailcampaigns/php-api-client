@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
+use DateTimeInterface;
 use LogicException;
 use MailCampaigns\ApiClient\Collection\CustomerCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
@@ -14,247 +17,49 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTimeHelperTrait;
 
-    /**
-     * @var int
-     */
-    protected $customerId;
-
-    /**
-     * @var DateTime
-     */
-    protected $createdAt;
-
-    /**
-     * @var DateTime
-     */
-    protected $updatedAt;
-
-    /**
-     * @var string
-     */
-    protected $customerRef;
-
-    /**
-     * @var string
-     */
-    protected $origin;
-
-    /**
-     * @var bool
-     */
-    protected $isSubscribed;
-
-    /**
-     * @var bool
-     */
-    protected $isConfirmed;
-
-    /**
-     * @var string
-     */
-    protected $gender;
-
-    /**
-     * @var DateTime
-     */
-    protected $birthDate;
-
-    /**
-     * @var string
-     */
-    protected $email;
-
-    /**
-     * @var string
-     */
-    protected $firstName;
-
-    /**
-     * @var string
-     */
-    protected $middleName;
-
-    /**
-     * @var string
-     */
-    protected $lastName;
-
-    /**
-     * @var string
-     */
-    protected $phone;
-
-    /**
-     * @var string
-     */
-    protected $mobile;
-
-    /**
-     * @var string
-     */
-    protected $companyName;
-
-    /**
-     * @var string
-     */
-    protected $companyCocNumber;
-
-    /**
-     * @var string
-     */
-    protected $companyVatNumber;
-
-    /**
-     * Billing address name.
-     *
-     * @var string
-     */
-    protected $addressBillingName;
-
-    /**
-     * Billing address street.
-     *
-     * @var string
-     */
-    protected $addressBillingStreet;
-
-    /**
-     * Billing address house number.
-     *
-     * @var string
-     */
-    protected $addressBillingNumber;
-
-    /**
-     * Billing address house number extension.
-     *
-     * @var string
-     */
-    protected $addressBillingExtension;
-
-    /**
-     * Billing address zipcode.
-     *
-     * @var string
-     */
-    protected $addressBillingZipcode;
-
-    /**
-     * Billing address city.
-     *
-     * @var string
-     */
-    protected $addressBillingCity;
-
-    /**
-     * Billing address region.
-     *
-     * @var string
-     */
-    protected $addressBillingRegion;
-
-    /**
-     * Billing address country.
-     *
-     * @var string
-     */
-    protected $addressBillingCountry;
-
-    /**
-     * Shipping address company name.
-     *
-     * @var string
-     */
-    protected $addressShippingCompany;
-
-    /**
-     * Shipping address name.
-     *
-     * @var string
-     */
-    protected $addressShippingName;
-
-    /**
-     * Shipping address street.
-     *
-     * @var string
-     */
-    protected $addressShippingStreet;
-
-    /**
-     * Shipping address house number.
-     *
-     * @var string
-     */
-    protected $addressShippingNumber;
-
-    /**
-     * Shipping address house number extension.
-     *
-     * @var string
-     */
-    protected $addressShippingExtension;
-
-    /**
-     * Shipping address zipcode.
-     *
-     * @var string
-     */
-    protected $addressShippingZipcode;
-
-    /**
-     * Shipping address city.
-     *
-     * @var string
-     */
-    protected $addressShippingCity;
-
-    /**
-     * Shipping address region.
-     *
-     * @var string
-     */
-    protected $addressShippingRegion;
-
-    /**
-     * Shipping address country.
-     *
-     * @var string
-     */
-    protected $addressShippingCountry;
-
-    /**
-     * @var string
-     */
-    protected $language;
-
-    /**
-     * @var OrderCollection
-     */
-    protected $orders;
-
-    /**
-     * @var ProductReviewCollection
-     */
-    protected $productReviews;
-
-    /**
-     * @var CustomerFavoriteProductCollection
-     */
-    protected $favorites;
-
-    /**
-     * @var QuoteCollection
-     */
-    protected $quotes;
-
-    /**
-     * @var CustomerCustomFieldCollection
-     */
-    protected $customFields;
-
-    public function __construct()
-    {
+    public function __construct(
+        protected ?int $customerId = null,
+        protected ?DateTimeInterface $createdAt = null,
+        protected ?DateTimeInterface $updatedAt = null,
+        protected ?string $customerRef = null,
+        protected ?string $origin = null,
+        protected ?bool $isSubscribed = null,
+        protected ?bool $isConfirmed = null,
+        protected ?string $gender = null,
+        protected ?DateTimeInterface $birthDate = null,
+        protected ?string $email = null,
+        protected ?string $firstName = null,
+        protected ?string $middleName = null,
+        protected ?string $lastName = null,
+        protected ?string $phone = null,
+        protected ?string $mobile = null,
+        protected ?string $companyName = null,
+        protected ?string $companyCocNumber = null,
+        protected ?string $companyVatNumber = null,
+        protected ?string $addressBillingName = null,
+        protected ?string $addressBillingStreet = null,
+        protected ?string $addressBillingNumber = null,
+        protected ?string $addressBillingExtension = null,
+        protected ?string $addressBillingZipcode = null,
+        protected ?string $addressBillingCity = null,
+        protected ?string $addressBillingRegion = null,
+        protected ?string $addressBillingCountry = null,
+        protected ?string $addressShippingCompany = null,
+        protected ?string $addressShippingName = null,
+        protected ?string $addressShippingStreet = null,
+        protected ?string $addressShippingNumber = null,
+        protected ?string $addressShippingExtension = null,
+        protected ?string $addressShippingZipcode = null,
+        protected ?string $addressShippingCity = null,
+        protected ?string $addressShippingRegion = null,
+        protected ?string $addressShippingCountry = null,
+        protected ?string $language = null,
+        protected ?OrderCollection $orders = null,
+        protected ?ProductReviewCollection $productReviews = null,
+        protected ?CustomerFavoriteProductCollection $favorites = null,
+        protected ?QuoteCollection $quotes = null,
+        protected ?CustomerCustomFieldCollection $customFields = null,
+    ) {
         $this->createdAt = new DateTime;
         $this->orders = new OrderCollection;
         $this->productReviews = new ProductReviewCollection;
@@ -263,666 +68,407 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         $this->customFields = new CustomerCustomFieldCollection;
     }
 
-    /**
-     * @return int
-     */
     public function getCustomerId(): ?int
     {
         return $this->customerId;
     }
 
-    /**
-     * @param int|null $customerId
-     * @return $this
-     */
     public function setCustomerId(?int $customerId): self
     {
         $this->customerId = $customerId;
         return $this;
     }
 
-    /**
-     * @return DateTime|null
-     */
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param DateTime|null $createdAt
-     * @return $this
-     */
-    public function setCreatedAt(?DateTime $createdAt): self
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
     }
 
-    /**
-     * @return DateTime|null
-     */
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt(): ?DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    /**
-     * @param DateTime|null $updatedAt
-     * @return $this
-     */
-    public function setUpdatedAt(?DateTime $updatedAt): self
+    public function setUpdatedAt(?DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getCustomerRef(): ?string
     {
         return $this->customerRef;
     }
 
-    /**
-     * @param string|null $customerRef
-     * @return $this
-     */
     public function setCustomerRef(?string $customerRef): self
     {
         $this->customerRef = $customerRef;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getOrigin(): ?string
     {
         return $this->origin;
     }
 
-    /**
-     * @param string|null $origin
-     * @return $this
-     */
     public function setOrigin(?string $origin): self
     {
         $this->origin = $origin;
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
     public function isSubscribed(): ?bool
     {
         return $this->isSubscribed;
     }
 
-    /**
-     * @param bool|null $isSubscribed
-     * @return $this
-     */
     public function setIsSubscribed(?bool $isSubscribed): self
     {
         $this->isSubscribed = $isSubscribed;
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
     public function isConfirmed(): ?bool
     {
         return $this->isConfirmed;
     }
 
-    /**
-     * @param bool|null $isConfirmed
-     * @return $this
-     */
     public function setIsConfirmed(?bool $isConfirmed): self
     {
         $this->isConfirmed = $isConfirmed;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getGender(): ?string
     {
         return $this->gender;
     }
 
-    /**
-     * @param string|null $gender
-     * @return $this
-     */
     public function setGender(?string $gender): self
     {
         $this->gender = $gender;
         return $this;
     }
 
-    /**
-     * @return DateTime|null
-     */
-    public function getBirthDate(): ?DateTime
+    public function getBirthDate(): ?DateTimeInterface
     {
         return $this->birthDate;
     }
 
-    /**
-     * @param DateTime|null $birthDate
-     * @return $this
-     */
-    public function setBirthDate(?DateTime $birthDate): self
+    public function setBirthDate(?DateTimeInterface $birthDate): self
     {
         $this->birthDate = $birthDate;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getEmail(): string
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     * @return $this
-     */
     public function setEmail(string $email): self
     {
         $this->email = $email;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getFirstName(): string
     {
         return $this->firstName;
     }
 
-    /**
-     * @param string $firstName
-     * @return $this
-     */
     public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getMiddleName(): ?string
     {
         return $this->middleName;
     }
 
-    /**
-     * @param string|null $middleName
-     * @return $this
-     */
     public function setMiddleName(?string $middleName): self
     {
         $this->middleName = $middleName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getLastName(): string
     {
         return $this->lastName;
     }
 
-    /**
-     * @param string $lastName
-     * @return $this
-     */
     public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPhone(): ?string
     {
         return $this->phone;
     }
 
-    /**
-     * @param string|null $phone
-     * @return $this
-     */
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getMobile(): ?string
     {
         return $this->mobile;
     }
 
-    /**
-     * @param string|null $mobile
-     * @return $this
-     */
     public function setMobile(?string $mobile): self
     {
         $this->mobile = $mobile;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCompanyName(): ?string
     {
         return $this->companyName;
     }
 
-    /**
-     * @param string|null $companyName
-     * @return $this
-     */
     public function setCompanyName(?string $companyName): self
     {
         $this->companyName = $companyName;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCompanyCocNumber(): ?string
     {
         return $this->companyCocNumber;
     }
 
-    /**
-     * @param string|null $companyCocNumber
-     * @return $this
-     */
     public function setCompanyCocNumber(?string $companyCocNumber): self
     {
         $this->companyCocNumber = $companyCocNumber;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCompanyVatNumber(): ?string
     {
         return $this->companyVatNumber;
     }
 
-    /**
-     * @param string|null $companyVatNumber
-     * @return $this
-     */
     public function setCompanyVatNumber(?string $companyVatNumber): self
     {
         $this->companyVatNumber = $companyVatNumber;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressBillingName(): ?string
     {
         return $this->addressBillingName;
     }
 
-    /**
-     * @param string|null $addressBillingName
-     * @return $this
-     */
     public function setAddressBillingName(?string $addressBillingName): self
     {
         $this->addressBillingName = $addressBillingName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressBillingStreet(): ?string
     {
         return $this->addressBillingStreet;
     }
 
-    /**
-     * @param string|null $addressBillingStreet
-     * @return $this
-     */
     public function setAddressBillingStreet(?string $addressBillingStreet): self
     {
         $this->addressBillingStreet = $addressBillingStreet;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressBillingNumber(): ?string
     {
         return $this->addressBillingNumber;
     }
 
-    /**
-     * @param string|null $addressBillingNumber
-     * @return $this
-     */
     public function setAddressBillingNumber(?string $addressBillingNumber): self
     {
         $this->addressBillingNumber = $addressBillingNumber;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressBillingExtension(): ?string
     {
         return $this->addressBillingExtension;
     }
 
-    /**
-     * @param string|null $addressBillingExtension
-     * @return $this
-     */
     public function setAddressBillingExtension(?string $addressBillingExtension): self
     {
         $this->addressBillingExtension = $addressBillingExtension;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressBillingZipcode(): ?string
     {
         return $this->addressBillingZipcode;
     }
 
-    /**
-     * @param string|null $addressBillingZipcode
-     * @return $this
-     */
     public function setAddressBillingZipcode(?string $addressBillingZipcode): self
     {
         $this->addressBillingZipcode = $addressBillingZipcode;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressBillingCity(): ?string
     {
         return $this->addressBillingCity;
     }
 
-    /**
-     * @param string|null $addressBillingCity
-     * @return $this
-     */
     public function setAddressBillingCity(?string $addressBillingCity): self
     {
         $this->addressBillingCity = $addressBillingCity;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressBillingRegion(): ?string
     {
         return $this->addressBillingRegion;
     }
 
-    /**
-     * @param string|null $addressBillingRegion
-     * @return $this
-     */
     public function setAddressBillingRegion(?string $addressBillingRegion): self
     {
         $this->addressBillingRegion = $addressBillingRegion;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressBillingCountry(): ?string
     {
         return $this->addressBillingCountry;
     }
 
-    /**
-     * @param string|null $addressBillingCountry
-     * @return $this
-     */
     public function setAddressBillingCountry(?string $addressBillingCountry): self
     {
         $this->addressBillingCountry = $addressBillingCountry;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressShippingCompany(): ?string
     {
         return $this->addressShippingCompany;
     }
 
-    /**
-     * @param string|null $addressShippingCompany
-     * @return $this
-     */
     public function setAddressShippingCompany(?string $addressShippingCompany): self
     {
         $this->addressShippingCompany = $addressShippingCompany;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressShippingName(): ?string
     {
         return $this->addressShippingName;
     }
 
-    /**
-     * @param string|null $addressShippingName
-     * @return $this
-     */
     public function setAddressShippingName(?string $addressShippingName): self
     {
         $this->addressShippingName = $addressShippingName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressShippingStreet(): ?string
     {
         return $this->addressShippingStreet;
     }
 
-    /**
-     * @param string|null $addressShippingStreet
-     * @return $this
-     */
     public function setAddressShippingStreet(?string $addressShippingStreet): self
     {
         $this->addressShippingStreet = $addressShippingStreet;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressShippingNumber(): ?string
     {
         return $this->addressShippingNumber;
     }
 
-    /**
-     * @param string|null $addressShippingNumber
-     * @return $this
-     */
     public function setAddressShippingNumber(?string $addressShippingNumber): self
     {
         $this->addressShippingNumber = $addressShippingNumber;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressShippingExtension(): ?string
     {
         return $this->addressShippingExtension;
     }
 
-    /**
-     * @param string|null $addressShippingExtension
-     * @return $this
-     */
     public function setAddressShippingExtension(?string $addressShippingExtension): self
     {
         $this->addressShippingExtension = $addressShippingExtension;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressShippingZipcode(): ?string
     {
         return $this->addressShippingZipcode;
     }
 
-    /**
-     * @param string|null $addressShippingZipcode
-     * @return $this
-     */
     public function setAddressShippingZipcode(?string $addressShippingZipcode): self
     {
         $this->addressShippingZipcode = $addressShippingZipcode;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressShippingCity(): ?string
     {
         return $this->addressShippingCity;
     }
 
-    /**
-     * @param string|null $addressShippingCity
-     * @return $this
-     */
     public function setAddressShippingCity(?string $addressShippingCity): self
     {
         $this->addressShippingCity = $addressShippingCity;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressShippingRegion(): ?string
     {
         return $this->addressShippingRegion;
     }
 
-    /**
-     * @param string|null $addressShippingRegion
-     * @return $this
-     */
     public function setAddressShippingRegion(?string $addressShippingRegion): self
     {
         $this->addressShippingRegion = $addressShippingRegion;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAddressShippingCountry(): ?string
     {
         return $this->addressShippingCountry;
     }
 
-    /**
-     * @param string|null $addressShippingCountry
-     * @return $this
-     */
     public function setAddressShippingCountry(?string $addressShippingCountry): self
     {
         $this->addressShippingCountry = $addressShippingCountry;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getLanguage(): ?string
     {
         return $this->language;
     }
 
-    /**
-     * @param string|null $language
-     * @return $this
-     */
     public function setLanguage(?string $language): self
     {
         $this->language = $language;
         return $this;
     }
 
-    /**
-     * @return OrderCollection
-     */
     public function getOrders(): OrderCollection
     {
         return $this->orders;
     }
 
-    /**
-     * @param iterable|OrderCollection|null $orders
-     * @return $this
-     */
     public function setOrders(?iterable $orders): self
     {
         $this->orders = new OrderCollection;
@@ -933,11 +479,13 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 
                 if ($data instanceof Order) {
                     $order = $data;
-                } else if (is_string($data)) {
-                    // Convert order IRI (string) to an Order entity.
-                    $order = $this->iriToOrderEntity($data);
                 } else {
-                    throw new LogicException('Order is neither an array nor an IRI!');
+                    if (is_string($data)) {
+                        // Convert order IRI (string) to an Order entity.
+                        $order = $this->iriToOrderEntity($data);
+                    } else {
+                        throw new LogicException('Order is neither an array nor an IRI!');
+                    }
                 }
 
                 $this->addOrder($order);
@@ -970,36 +518,22 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @return ProductReviewCollection
-     */
     public function getProductReviews(): ProductReviewCollection
     {
         return $this->productReviews;
     }
 
-    /**
-     * @param ProductReviewCollection $productReviews
-     * @return $this
-     */
     public function setProductReviews(ProductReviewCollection $productReviews): self
     {
         $this->productReviews = $productReviews;
         return $this;
     }
 
-    /**
-     * @return CustomerFavoriteProductCollection
-     */
     public function getFavorites(): CustomerFavoriteProductCollection
     {
         return $this->favorites;
     }
 
-    /**
-     * @param iterable|CustomerFavoriteProductCollection|null $favorites
-     * @return $this
-     */
     public function setFavorites(?iterable $favorites): self
     {
         $this->favorites = new CustomerFavoriteProductCollection;
@@ -1010,13 +544,17 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 
                 if ($data instanceof CustomerFavoriteProduct) {
                     $favorite = $data;
-                } else if (is_string($data)) {
-                    // Convert favorite IRI to a favorite entity.
-                    $favorite = $this->iriToFavoriteEntity($data);
-                } else if (is_array($data)) {
-                    $favorite = $this->arrayToFavorite($data);
                 } else {
-                    throw new LogicException('Favorite is neither an array nor an IRI!');
+                    if (is_string($data)) {
+                        // Convert favorite IRI to a favorite entity.
+                        $favorite = $this->iriToFavoriteEntity($data);
+                    } else {
+                        if (is_array($data)) {
+                            $favorite = $this->arrayToFavorite($data);
+                        } else {
+                            throw new LogicException('Favorite is neither an array nor an IRI!');
+                        }
+                    }
                 }
 
                 $this->addFavorite($favorite);
@@ -1039,18 +577,11 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @return QuoteCollection
-     */
     public function getQuotes(): QuoteCollection
     {
         return $this->quotes;
     }
 
-    /**
-     * @param iterable|QuoteCollection|null $quotes
-     * @return $this
-     */
     public function setQuotes(?iterable $quotes): self
     {
         $this->quotes = new QuoteCollection;
@@ -1061,11 +592,13 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 
                 if ($data instanceof Quote) {
                     $quote = $data;
-                } else if (is_string($data)) {
-                    // Convert quote IRI to a quote entity.
-                    $quote = $this->iriToQuoteEntity($data);
                 } else {
-                    throw new LogicException('Quote is neither an array nor an IRI!');
+                    if (is_string($data)) {
+                        // Convert quote IRI to a quote entity.
+                        $quote = $this->iriToQuoteEntity($data);
+                    } else {
+                        throw new LogicException('Quote is neither an array nor an IRI!');
+                    }
                 }
 
                 $this->addQuote($quote);
@@ -1098,18 +631,11 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @return CustomerCustomFieldCollection
-     */
     public function getCustomFields(): CustomerCustomFieldCollection
     {
         return $this->customFields;
     }
 
-    /**
-     * @param iterable|CustomerCustomFieldCollection|null $customFields
-     * @return $this
-     */
     public function setCustomFields(?iterable $customFields): self
     {
         $this->customFields = new CustomerCustomFieldCollection;
@@ -1120,17 +646,21 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 
                 if ($data instanceof CustomerCustomField) {
                     $customField = $data;
-                } else if (is_array($data)) {
-                    $customField = (new CustomerCustomField)
-                        ->setCustomFieldId($data['custom_field_id'])
-                        ->setCustomer($this)
-                        ->setName($data['name'])
-                        ->setValue($data['value']);
-                } else if (is_string($data)) {
-                    // Convert customField IRI to a customField entity.
-                    $customField = $this->iriToCustomerCustomFieldEntity($data);
                 } else {
-                    throw new LogicException('Custom field is of an unexpected type!');
+                    if (is_array($data)) {
+                        $customField = (new CustomerCustomField)
+                            ->setCustomFieldId($data['custom_field_id'])
+                            ->setCustomer($this)
+                            ->setName($data['name'])
+                            ->setValue($data['value']);
+                    } else {
+                        if (is_string($data)) {
+                            // Convert customField IRI to a customField entity.
+                            $customField = $this->iriToCustomerCustomFieldEntity($data);
+                        } else {
+                            throw new LogicException('Custom field is of an unexpected type!');
+                        }
+                    }
                 }
 
                 $this->addCustomField($customField);
@@ -1140,10 +670,6 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @param CustomerCustomField $customField
-     * @return $this
-     */
     public function addCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
     {
         assert($customField instanceof CustomerCustomField);
@@ -1159,10 +685,6 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @param CustomerCustomField $customField
-     * @return $this
-     */
     public function removeCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
     {
         assert($customField instanceof CustomerCustomField);
@@ -1175,9 +697,6 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
@@ -1225,9 +744,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toIri(): ?string
     {
         if (null === $this->getCustomerId()) {
@@ -1287,9 +804,6 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return (new CustomerCustomField())->setCustomFieldId($id);
     }
 
-    /**
-     * @return CustomerCustomField
-     */
     public function getNewCustomField(): CustomFieldInterface
     {
         return new CustomerCustomField();

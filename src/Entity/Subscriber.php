@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
@@ -169,9 +171,7 @@ class Subscriber implements EntityInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
@@ -185,9 +185,7 @@ class Subscriber implements EntityInterface
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toIri(): ?string
     {
         if (null === $this->getSubscriberId()) {

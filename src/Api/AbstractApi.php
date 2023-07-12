@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Api;
 
 use DateTime;
+use DateTimeInterface;
 use InvalidArgumentException;
 use LogicException;
 use MailCampaigns\ApiClient\ApiClient;
@@ -16,14 +19,8 @@ abstract class AbstractApi implements ApiInterface
     /** @var int */
     const DEFAULT_ITEMS_PER_PAGE = 30;
 
-    /**
-     * @var ApiClient
-     */
-    protected $client;
+    protected ApiClient $client;
 
-    /**
-     * @param ApiClient $client
-     */
     public function __construct(ApiClient $client)
     {
         $this->client = $client;
@@ -208,17 +205,14 @@ abstract class AbstractApi implements ApiInterface
 
     /**
      * Converts datetime string to object.
-     *
-     * @param string|null $time
-     * @return DateTime|null
      */
-    protected function toDtObject(?string $time): ?DateTime
+    protected function toDtObject(?string $time): ?DateTimeInterface
     {
         if (!$time) {
             return null;
         }
 
-        $dt = DateTime::createFromFormat(DateTime::ISO8601, $time);
+        $dt = DateTime::createFromFormat(DateTimeInterface::ATOM, $time);
 
         if (false === $dt) {
             return null;

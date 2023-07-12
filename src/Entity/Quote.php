@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
@@ -742,9 +744,7 @@ class Quote implements EntityInterface
         return (new Order)->setOrderId($id);
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
@@ -776,9 +776,7 @@ class Quote implements EntityInterface
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
+
     function toIri(): ?string
     {
         if (null === $this->getQuoteId()) {

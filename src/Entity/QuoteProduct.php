@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 class QuoteProduct implements EntityInterface
@@ -577,9 +579,7 @@ class QuoteProduct implements EntityInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
@@ -604,14 +604,12 @@ class QuoteProduct implements EntityInterface
             'base_additional_cost_excl' => $this->getBaseAdditionalCostExcl(),
             'base_additional_cost_incl' => $this->getBaseAdditionalCostIncl(),
             'line_ref' => $this->getLineRef(),
-            'product' => $this->getProduct() ? $this->getProduct()->toIri() : null,
-            'quote' => $this->getQuote() ? $this->getQuote()->toIri() : null
+            'product' => $this->getProduct()?->toIri(),
+            'quote' => $this->getQuote()?->toIri()
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toIri(): ?string
     {
         if (null === $this->getQuoteProductId()) {

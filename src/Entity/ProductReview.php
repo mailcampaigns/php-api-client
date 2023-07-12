@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
@@ -292,7 +294,7 @@ class ProductReview implements EntityInterface
             'content' => $this->content,
             'language' => $this->language,
             'customer' => $this->getCustomerIri(),
-            'product' => $this->getProduct() ? $this->getProduct()->toIri() : null
+            'product' => $this->getProduct()?->toIri()
         ];
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient;
 
 use DateInterval;
@@ -31,133 +33,33 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ApiClient
 {
-    /**
-     * @var self
-     */
-    protected static $instance;
+    private static ApiClient $instance;
+    private ?HttpClientInterface $httpClient;
+    private CustomerApi $customerApi;
+    private QuoteApi $quoteApi;
+    private QuoteProductApi $quoteProductApi;
+    private OrderApi $orderApi;
+    private OrderProductApi $orderProductApi;
+    private ProductApi $productApi;
+    private ProductCategoryApi $productCategoryApi;
+    private ProductProductCategoryApi $productProductCategoryApi;
+    private ProductReviewApi $productReviewApi;
+    private CustomerFavoriteProductApi $customerFavoriteProductApi;
+    private ProductRelatedProductApi $productRelatedProductApi;
+    private ProductCrossSellProductApi $productCrossSellProductApi;
+    private ProductUpSellProductApi $productUpSellProductApi;
+    private ProductVolumeSellProductApi $productVolumeSellProductApi;
+    private ProductCustomFieldApi $productCustomFieldApi;
+    private CustomerCustomFieldApi $customerCustomFieldApi;
+    private OrderCustomFieldApi $orderCustomFieldApi;
+    private SentMailApi $sentMailApi;
+    private SubscriberApi $subscriberApi;
+    private string $baseUri;
+    private string $key;
+    private string $secret;
+    private DateTime $tokenExpirationDt;
 
-    /**
-     * @var HttpClientInterface
-     */
-    protected $httpClient;
-
-    /**
-     * @var CustomerApi
-     */
-    protected $customerApi;
-
-    /**
-     * @var QuoteApi
-     */
-    protected $quoteApi;
-
-    /**
-     * @var QuoteProductApi
-     */
-    protected $quoteProductApi;
-
-    /**
-     * @var OrderApi
-     */
-    protected $orderApi;
-
-    /**
-     * @var OrderApi
-     */
-    protected $orderProductApi;
-
-    /**
-     * @var ProductApi
-     */
-    protected $productApi;
-
-    /**
-     * @var ProductCategoryApi
-     */
-    protected $productCategoryApi;
-
-    /**
-     * @var ProductProductCategoryApi
-     */
-    protected $productProductCategoryApi;
-
-    /**
-     * @var ProductReviewApi
-     */
-    protected $productReviewApi;
-
-    /**
-     * @var CustomerFavoriteProductApi
-     */
-    protected $customerFavoriteProductApi;
-
-    /**
-     * @var ProductRelatedProductApi
-     */
-    protected $productRelatedProductApi;
-
-    /**
-     * @var ProductCrossSellProductApi
-     */
-    protected $productCrossSellProductApi;
-
-    /**
-     * @var ProductUpSellProductApi
-     */
-    protected $productUpSellProductApi;
-
-    /**
-     * @var ProductVolumeSellProductApi
-     */
-    protected $productVolumeSellProductApi;
-
-    /**
-     * @var ProductCustomFieldApi
-     */
-    protected $productCustomFieldApi;
-
-    /**
-     * @var CustomerCustomFieldApi
-     */
-    protected $customerCustomFieldApi;
-
-    /**
-     * @var OrderCustomFieldApi
-     */
-    protected $orderCustomFieldApi;
-
-    /**
-     * @var SentMailApi
-     */
-    protected $sentMailApi;
-
-    /**
-     * @var SubscriberApi
-     */
-    protected $subscriberApi;
-
-    /**
-     * @var string
-     */
-    protected $baseUri;
-
-    /**
-     * @var string
-     */
-    protected $key;
-
-    /**
-     * @var string
-     */
-    protected $secret;
-
-    /**
-     * Token expiration.
-     * @var DateTime
-     */
-    protected $tokenExpirationDt;
-
-    protected function __construct(string $baseUri, string $key, string $secret)
+    private function __construct(string $baseUri, string $key, string $secret)
     {
         $this->baseUri = $baseUri;
         $this->key = $key;
@@ -308,8 +210,6 @@ final class ApiClient
 
     /**
      * Checks if bearer token has expired.
-     *
-     * @return bool
      */
     public function hasTokenExpired(): bool
     {
@@ -325,10 +225,8 @@ final class ApiClient
 
     /**
      * Retrieves access (bearer) token.
-     *
-     * @return string The access (bearer) token.
      */
-    protected function getBearerToken(): string
+    private function getBearerToken(): string
     {
         $curl = curl_init();
 
@@ -349,8 +247,10 @@ final class ApiClient
         $response = curl_exec($curl);
 
         if (false === $response) {
-            throw new ApiAuthenticationException(sprintf('Failed to retrieve access token: `%s`.',
-                curl_error($curl)), curl_errno($curl));
+            throw new ApiAuthenticationException(
+                sprintf('Failed to retrieve access token: `%s`.', curl_error($curl)),
+                curl_errno($curl)
+            );
         }
 
         curl_close($curl);
@@ -382,28 +282,19 @@ final class ApiClient
 
     /**
      * Sets the moment the bearer token will expire.
-     *
-     * @param int|string $expInSeconds
-     * @return $this
      */
-    protected function setTokenExpiration($expInSeconds): self
+    private function setTokenExpiration(int $expInSeconds): void
     {
-        if (!is_numeric($expInSeconds)) {
-            throw new ApiAuthenticationException('Invalid token expiration format!');
-        }
-
         try {
-            $interval = (new DateInterval(sprintf('PT%dS', (int)$expInSeconds)));
+            $interval = (new DateInterval(sprintf('PT%dS', $expInSeconds)));
         } catch (Exception $e) {
             throw new ApiException('Failed to set token expiration: ' . $e->getMessage(), 0, $e);
         }
 
         $this->tokenExpirationDt = (new DateTime())->add($interval);
-
-        return $this;
     }
 
-    protected function createHttpClient(string $bearerToken): self
+    private function createHttpClient(string $bearerToken): void
     {
         $this->httpClient = HttpClient::create([
             'headers' => [
@@ -412,16 +303,12 @@ final class ApiClient
             'auth_bearer' => $bearerToken,
             'base_uri' => $this->baseUri
         ]);
-
-        return $this;
     }
 
     /**
      * Get version of this package from Composer configuration.
-     *
-     * @return string
      */
-    protected function getComposerPackageVersion(): string
+    private function getComposerPackageVersion(): string
     {
         $composerConfig = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
         return $composerConfig->version;

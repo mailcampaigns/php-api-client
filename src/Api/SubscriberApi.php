@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\CollectionInterface;
@@ -43,9 +45,7 @@ class SubscriberApi extends AbstractApi
         return $data['hydra:totalItems'] ?? 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     public function create(EntityInterface $entity): EntityInterface
     {
         throw new ApiException('Operation not supported!');
@@ -110,17 +110,13 @@ class SubscriberApi extends AbstractApi
         return $this->toCollection($data, SubscriberCollection::class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     public function update(EntityInterface $entity): EntityInterface
     {
         throw new ApiException('Operation not supported!');
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function deleteById($id): ApiInterface
     {
         throw new ApiException('Operation not supported!');

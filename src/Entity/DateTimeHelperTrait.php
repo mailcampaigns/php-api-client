@@ -1,24 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
-use DateTime;
+use DateTimeInterface;
 
 trait DateTimeHelperTrait
 {
     /**
      * Converts a datetime object to a string.
-     *
-     * @param DateTime|null $dt
-     * @return string|null
      */
-    protected function dtToString(?DateTime $dt): ?string
+    protected function dtToString(?DateTimeInterface $dt): ?string
     {
         // Return null when no datetime object was given.
-        if (!$dt instanceof DateTime) {
+        if (!$dt instanceof DateTimeInterface) {
             return null;
         }
 
-        return $dt->format(DateTime::ISO8601);
+        return $dt->format(DateTimeInterface::ATOM);
     }
 }

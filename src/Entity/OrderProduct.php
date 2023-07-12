@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 class OrderProduct implements EntityInterface
@@ -588,9 +590,7 @@ class OrderProduct implements EntityInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
@@ -598,7 +598,7 @@ class OrderProduct implements EntityInterface
             'product_title' => $this->getProductTitle(),
             'quantity_ordered' => $this->getQuantityOrdered(),
             'article_code' => $this->getArticleCode(),
-            'product' => $this->getProduct() ? $this->getProduct()->toIri() : null,
+            'product' => $this->getProduct()?->toIri(),
             'supplier_title' => $this->getSupplierTitle(),
             'brand_title' => $this->getBrandTitle(),
             'tax_rate' => $this->getTaxRate(),
@@ -620,9 +620,7 @@ class OrderProduct implements EntityInterface
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toIri(): ?string
     {
         if (null === $this->getOrderProductId()) {

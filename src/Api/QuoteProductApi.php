@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Api;
 
 use InvalidArgumentException;
@@ -85,9 +87,7 @@ class QuoteProductApi extends AbstractApi
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function toEntity(array $data): EntityInterface
     {
         $quoteProduct = (new QuoteProduct)
