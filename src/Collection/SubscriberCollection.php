@@ -8,5 +8,5 @@ use MailCampaigns\ApiClient\Entity\Subscriber;
 
 class SubscriberCollection extends AbstractCollection
 {
-    public static $entityFqcn = Subscriber::class;
+    public static string $entityFqcn = Subscriber::class;
 }

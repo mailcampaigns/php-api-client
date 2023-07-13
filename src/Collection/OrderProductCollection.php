@@ -8,5 +8,5 @@ use MailCampaigns\ApiClient\Entity\OrderProduct;
 
 class OrderProductCollection extends AbstractCollection
 {
-    public static $entityFqcn = OrderProduct::class;
+    public static string $entityFqcn = OrderProduct::class;
 }

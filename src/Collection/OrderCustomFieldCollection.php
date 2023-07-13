@@ -9,8 +9,7 @@ use MailCampaigns\ApiClient\Entity\OrderCustomField;
 
 class OrderCustomFieldCollection extends AbstractCollection
 {
-    public static $entityFqcn = OrderCustomField::class;
-
+    public static string $entityFqcn = OrderCustomField::class;
 
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {

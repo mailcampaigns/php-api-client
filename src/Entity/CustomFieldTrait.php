@@ -13,36 +13,28 @@ trait CustomFieldTrait
 
     /**
      * The unique numeric identifier for the custom field.
-     *
-     * @var int
      */
-    protected $customFieldId;
+    protected int $customFieldId;
 
     /**
      * A unique name (key) describing this custom field.
-     *
-     * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * The value of this custom field.
-     *
-     * @var string|null
      */
-    protected $value;
+    protected ?string $value;
 
     public function __construct()
     {
         $this->setCreatedAt(new DateTime);
     }
 
-
     public function getCustomFieldId(): ?int
     {
         return $this->customFieldId;
     }
-
 
     public function setCustomFieldId(int $customFieldId): self
     {
@@ -50,12 +42,10 @@ trait CustomFieldTrait
         return $this;
     }
 
-
     public function getName(): string
     {
         return $this->name;
     }
-
 
     public function setName(string $name): self
     {
@@ -63,12 +53,10 @@ trait CustomFieldTrait
         return $this;
     }
 
-
     public function getValue(): ?string
     {
         return $this->value;
     }
-
 
     public function setValue(?string $value): self
     {

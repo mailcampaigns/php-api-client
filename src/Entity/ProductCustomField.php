@@ -8,23 +8,13 @@ class ProductCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
 
-    /**
-     * @var Product
-     */
-    protected $product;
+    protected Product $product;
 
-    /**
-     * @return Product
-     */
     public function getProduct(): ?Product
     {
         return $this->product;
     }
 
-    /**
-     * @param Product|null $product
-     * @return ProductCustomField
-     */
     public function setProduct(?Product $product): ProductCustomField
     {
         $this->product = $product;

@@ -62,19 +62,17 @@ class ResponseMediator
 
     /**
      * Todo: Implement
-     * @param ResponseInterface $response
-     * @return null|string
      * @throws HttpClientExceptionInterface
      */
-    public static function getApiLimit(ResponseInterface $response)
+    public static function getApiLimit(ResponseInterface $response): int
     {
         $remainingCalls = self::getHeader($response, 'X-RateLimit-Remaining');
 
-        if (null !== $remainingCalls && 1 > $remainingCalls) {
-            throw new ApiLimitExceededException($remainingCalls);
+        if (null !== $remainingCalls && 1 > (int)$remainingCalls) {
+            throw new ApiLimitExceededException((int)$remainingCalls);
         }
 
-        return $remainingCalls;
+        return (int)$remainingCalls;
     }
 
     /**

@@ -9,8 +9,7 @@ use MailCampaigns\ApiClient\Entity\CustomerCustomField;
 
 class CustomerCustomFieldCollection extends AbstractCollection
 {
-    public static $entityFqcn = CustomerCustomField::class;
-
+    public static string $entityFqcn = CustomerCustomField::class;
 
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {

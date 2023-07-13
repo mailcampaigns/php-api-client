@@ -8,23 +8,13 @@ class CustomerCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
 
-    /**
-     * @var Customer
-     */
-    protected $customer;
+    protected Customer $customer;
 
-    /**
-     * @return Customer
-     */
     public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
-    /**
-     * @param Customer|null $customer
-     * @return CustomerCustomField
-     */
     public function setCustomer(?Customer $customer): CustomerCustomField
     {
         $this->customer = $customer;

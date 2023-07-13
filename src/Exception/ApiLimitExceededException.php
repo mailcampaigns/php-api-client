@@ -6,21 +6,12 @@ namespace MailCampaigns\ApiClient\Exception;
 
 class ApiLimitExceededException extends ApiException
 {
-    /**
-     * @var int
-     */
-    private $limit;
-
-    /**
-     * @var int
-     */
-    private $reset;
-
-    public function __construct($limit = 5000, $reset = 1800, $code = 0, $previous = null)
-    {
-        $this->limit = (int)$limit;
-        $this->reset = (int)$reset;
-
+    public function __construct(
+        private readonly int $limit = 5000,
+        private readonly int $reset = 1800,
+        $code = 0,
+        $previous = null
+    ) {
         parent::__construct(sprintf('You have reached MailCampaign\'s hourly limit! Actual limit is: %d', $limit), $code, $previous);
     }
 

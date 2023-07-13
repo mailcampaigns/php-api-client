@@ -71,7 +71,7 @@ abstract class AbstractCollection implements CollectionInterface
         return isset($this->elements[$key]) || array_key_exists($key, $this->elements);
     }
 
-    public function remove($key)
+    public function remove(int|string $key): mixed
     {
         if (!isset($this->elements[$key]) && !array_key_exists($key, $this->elements)) {
             return null;
@@ -101,7 +101,7 @@ abstract class AbstractCollection implements CollectionInterface
         return new ArrayIterator($this->elements);
     }
 
-    public function get($key)
+    public function get(string|int $key): mixed
     {
         return $this->elements[$key] ?? null;
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
+use DateTimeInterface;
 use LogicException;
 use MailCampaigns\ApiClient\Collection\OrderCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\OrderProductCollection;
@@ -16,115 +17,83 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
 
     /**
      * The unique numeric identifier for the order.
-     *
-     * @var int
      */
-    protected $orderId;
+    protected int $orderId;
 
     /**
      * Creation date and time.
-     *
-     * @var DateTime
      */
-    protected $createdAt;
+    protected DateTimeInterface $createdAt;
 
     /**
      * Date and time of last update.
-     *
-     * @var DateTime
      */
-    protected $updatedAt;
+    protected DateTimeInterface $updatedAt;
 
     /**
      * Order number.
-     *
-     * @var string
      */
-    protected $number;
+    protected string $number;
 
     /**
      * Order status.
-     *
-     * @var string
      */
-    protected $status;
+    protected string $status;
 
     /**
      * Cost price of order products.
-     *
-     * @var float
      */
-    protected $priceCost;
+    protected float $priceCost;
 
     /**
      * Order price excl. tax.
-     *
-     * @var float
      */
-    protected $priceExcl;
+    protected float $priceExcl;
 
     /**
      * Order price incl. tax.
-     *
-     * @var float
      */
-    protected $priceIncl;
+    protected float $priceIncl;
 
     /**
      * Shipment price excl. tax.
-     *
-     * @var float
      */
-    protected $shipmentPriceExcl;
+    protected float $shipmentPriceExcl;
 
     /**
      * Shipment price incl. tax.
-     *
-     * @var float
      */
-    protected $shipmentPriceIncl;
+    protected float $shipmentPriceIncl;
 
     /**
      * Total weight of order products.
-     *
-     * @var int
      */
-    protected $weight;
+    protected int $weight;
 
     /**
      * Total volume of order products.
-     *
-     * @var int
      */
-    protected $volume;
+    protected int $volume;
 
     /**
      * Gender of customer.
-     *
-     * @var string
      */
-    protected $gender;
+    protected string $gender;
 
     /**
      * Birthdate of customer.
-     *
-     * @var DateTime
      */
-    protected $birthDate;
+    protected DateTimeInterface $birthDate;
 
     /**
      * Email address of the customer.
-     *
-     * @var string
      */
-    protected $email;
+    protected string $email;
 
     /**
      * First name of the customer.
-     *
-     * @var string
      */
-    protected $firstName;
+    protected string $firstName;
 
     /**
      * Middle name of the customer.
