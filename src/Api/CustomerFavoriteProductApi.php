@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\CustomerFavoriteProduct;
@@ -15,80 +14,72 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExcep
 
 class CustomerFavoriteProductApi extends AbstractApi
 {
-    /**
-     * {@inheritDoc}
-     * @param CustomerFavoriteProduct|EntityInterface $entity
-     * @return CustomerFavoriteProduct
-     */
-    public function create(EntityInterface $entity): EntityInterface
+    public function create(CustomerFavoriteProduct|EntityInterface $entity): CustomerFavoriteProduct
     {
-        $this->validateEntityType($entity, CustomerFavoriteProduct::class);
-        $res = $this->post('customer_favorite_products', $entity);
-
-        return $this->toEntity($res);
+        assert($entity instanceof CustomerFavoriteProduct);
+        return $this->toEntity($this->post('customer_favorite_products', $entity));
     }
 
     /**
      * {@inheritDoc}
      * @param string $id In this format: customer=1;favoriteProduct=2
      */
-    public function getById($id): EntityInterface
+    public function getById($id): CustomerFavoriteProduct
     {
-        return $this->toEntity($this->get("customer_favorite_products/{$id}"));
+        assert(is_string($id));
+        return $this->toEntity($this->get("customer_favorite_products/$id"));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return CustomerFavoriteProductCollection
-     */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
+    public function getCollection(?int $page = null, ?int $perPage = null): CustomerFavoriteProductCollection
     {
         $data = $this->get('customer_favorite_products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        return $this->toCollection($data, CustomerFavoriteProductCollection::class);
+        $collection = $this->toCollection($data, CustomerFavoriteProductCollection::class);
+        assert($collection instanceof CustomerFavoriteProductCollection);
+
+        return $collection;
     }
 
     /**
-     * @param int      $customerId
-     * @param int|null $page
-     * @param int|null $perPage
-     * @return CustomerFavoriteProductCollection
      * @throws HttpClientExceptionInterface
      */
-    public function getCollectionByCustomerId(int $customerId, ?int $page = null, ?int $perPage = null): CollectionInterface
-    {
+    public function getCollectionByCustomerId(
+        int $customerId,
+        ?int $page = null,
+        ?int $perPage = null
+    ): CustomerFavoriteProductCollection {
         $data = $this->get("customers/$customerId/favorites", [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        return $this->toCollection($data, CustomerFavoriteProductCollection::class);
+        $collection = $this->toCollection($data, CustomerFavoriteProductCollection::class);
+        assert($collection instanceof CustomerFavoriteProductCollection);
+
+        return $collection;
     }
 
-
-    public function update(EntityInterface $entity): EntityInterface
+    public function update(CustomerFavoriteProductCollection|EntityInterface $entity): EntityInterface
     {
+        assert($entity instanceof CustomerFavoriteProduct);
         throw new ApiException('Operation not supported! Either create or delete this item.');
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      * @param string $id In this format: customer=1;favoriteProduct=2
      */
-    public function deleteById($id): ApiInterface
+    public function deleteById($id): self
     {
-        $this->delete("customer_favorite_products/{$id}");
+        assert(is_string($id));
+        $this->delete("customer_favorite_products/$id");
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     * @return CustomerFavoriteProduct
-     */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): CustomerFavoriteProduct
     {
         $customer = $this->iriToCustomer($data['customer']);
         $product = $this->iriToProduct($data['favorite_product']);
@@ -104,9 +95,7 @@ class CustomerFavoriteProductApi extends AbstractApi
             return null;
         }
 
-        $id = (int)str_replace('/customers/', '', $iri);
-
-        return (new Customer)->setCustomerId($id);
+        return (new Customer)->setCustomerId((int)str_replace('/customers/', '', $iri));
     }
 
     protected function iriToProduct(?string $iri): ?Product
@@ -115,8 +104,6 @@ class CustomerFavoriteProductApi extends AbstractApi
             return null;
         }
 
-        $id = (int)str_replace('/products/', '', $iri);
-
-        return (new Product)->setProductId($id);
+        return (new Product)->setProductId((int)str_replace('/products/', '', $iri));
     }
 }

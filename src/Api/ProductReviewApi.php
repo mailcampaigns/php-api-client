@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
@@ -24,34 +23,21 @@ class ProductReviewApi extends AbstractApi
         'created_at' => 'desc'
     ];
 
-    /**
-     * {@inheritDoc}
-     * @param ProductReview|EntityInterface $entity
-     * @return ProductReview
-     */
-    public function create(EntityInterface $entity): EntityInterface
+    public function create(ProductReview|EntityInterface $entity): ProductReview
     {
-        $this->validateEntityType($entity, ProductReview::class);
-        $res = $this->post('product_reviews', $entity);
-
-        return $this->toEntity($res);
+        assert($entity instanceof ProductReview);
+        return $this->toEntity($this->post('product_reviews', $entity));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return ProductReview
-     */
-    public function getById($id): EntityInterface
+    public function getById(int|string $id): ProductReview
     {
-        return $this->toEntity($this->get("product_reviews/{$id}"));
+        return $this->toEntity($this->get("product_reviews/$id"));
     }
 
     /**
      * Find a product review by reference. Returns null when product review
      * could not be found.
      *
-     * @param string $ref
-     * @return ProductReview|null
      * @throws HttpClientExceptionInterface
      */
     public function getByReviewRef(string $ref): ?ProductReview
@@ -60,56 +46,42 @@ class ProductReviewApi extends AbstractApi
             $this->get('product_reviews', ['review_ref' => $ref])
         );
 
-        if (null !== $data) {
-            return $this->toEntity($data);
-        }
-
-        // Product review was not found.
-        return null;
+        return null !== $data ? $this->toEntity($data) : null;
     }
 
-    /**
-     * {@inheritDoc}
-     * @return ProductReviewCollection
-     */
-    public function getCollection(?int $page = null, ?int $perPage = null,
-                                  ?array $order = null): CollectionInterface
-    {
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null
+    ): ProductReviewCollection {
         $data = $this->get('product_reviews', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
             'order' => $order ?? self::DEFAULT_ORDER
         ]);
 
-        return $this->toCollection($data, ProductReviewCollection::class);
+        $collection = $this->toCollection($data, ProductReviewCollection::class);
+        assert($collection instanceof ProductReviewCollection);
+
+        return $collection;
     }
 
-    /**
-     * {@inheritDoc}
-     * @param ProductReview|EntityInterface $entity
-     * @return ProductReview
-     */
-    public function update(EntityInterface $entity): EntityInterface
+    public function update(ProductReview|EntityInterface $entity): ProductReview
     {
-        $this->validateEntityType($entity, ProductReview::class);
+        assert($entity instanceof ProductReview);
 
-        $res = $this->put("product_reviews/{$entity->getProductReviewId()}", $entity);
-
-        return $this->toEntity($res);
+        return $this->toEntity(
+            $this->put("product_reviews/{$entity->getProductReviewId()}", $entity)
+        );
     }
 
-
-    public function deleteById($id): ApiInterface
+    public function deleteById(int|string $id): self
     {
-        $this->delete("product_reviews/{$id}");
+        $this->delete("product_reviews/$id");
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     * @return ProductReview
-     */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): ProductReview
     {
         $customer = $this->iriToCustomer($data['customer']);
         $product = $this->iriToProduct($data['product']);
@@ -134,9 +106,9 @@ class ProductReviewApi extends AbstractApi
             return null;
         }
 
-        $id = (int)str_replace('/customers/', '', $iri);
-
-        return (new Customer)->setCustomerId($id);
+        return (new Customer)->setCustomerId(
+            (int)str_replace('/customers/', '', $iri)
+        );
     }
 
     protected function iriToProduct(?string $iri): ?Product
@@ -145,8 +117,8 @@ class ProductReviewApi extends AbstractApi
             return null;
         }
 
-        $id = (int)str_replace('/products/', '', $iri);
-
-        return (new Product)->setProductId($id);
+        return (new Product)->setProductId(
+            (int)str_replace('/products/', '', $iri)
+        );
     }
 }

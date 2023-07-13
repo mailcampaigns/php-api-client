@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\SentMailCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\SentMail;
@@ -35,30 +34,22 @@ class SentMailApi extends AbstractApi
     }
 
 
-    public function create(EntityInterface $entity): EntityInterface
+    public function create(SentMail|EntityInterface $entity): SentMail
     {
         throw new ApiException('Operation not supported!');
     }
 
-    /**
-     * {@inheritDoc}
-     * @return SentMail
-     */
-    public function getById($id): EntityInterface
+    public function getById(int|string $id): SentMail
     {
-        return $this->toEntity($this->get("sent_mails/{$id}"));
+        return $this->toEntity($this->get("sent_mails/$id"));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return SentMailCollection
-     */
     public function getCollection(
         ?int $page = null,
         ?int $perPage = null,
         ?array $order = null,
         ?array $filters = null
-    ): CollectionInterface {
+    ): SentMailCollection {
         $params = [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
@@ -70,28 +61,29 @@ class SentMailApi extends AbstractApi
             }
         }
 
-        $data = $this->get('sent_mails', $params);
+        $collection = $this->toCollection(
+            $this->get('sent_mails', $params),
+            SentMailCollection::class
+        );
 
-        return $this->toCollection($data, SentMailCollection::class);
+        assert($collection instanceof SentMailCollection);
+
+        return $collection;
     }
 
 
-    public function update(EntityInterface $entity): EntityInterface
+    public function update(SentMail|EntityInterface $entity): SentMail
     {
         throw new ApiException('Operation not supported!');
     }
 
 
-    public function deleteById($id): ApiInterface
+    public function deleteById(int|string $id): self
     {
         throw new ApiException('Operation not supported!');
     }
 
-    /**
-     * @inheritDoc
-     * @return SentMail
-     */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): SentMail
     {
         return new SentMail(
             $data['sent_mail_id'],

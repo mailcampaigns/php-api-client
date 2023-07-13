@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
-use InvalidArgumentException;
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\OrderProductCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
@@ -15,94 +13,62 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExcep
 
 class OrderProductApi extends AbstractApi
 {
+    public function create(OrderProduct|EntityInterface $entity): OrderProduct
+    {
+        assert($entity instanceof OrderProduct);
+        return $this->toEntity($this->post('order_products', $entity));
+    }
+
+    public function getById($id): OrderProduct
+    {
+        return $this->toEntity($this->get("order_products/$id"));
+    }
+
     /**
-     * @param EntityInterface|OrderProduct $entity
-     * @return OrderProduct
      * @throws HttpClientExceptionInterface
      */
-    public function create(EntityInterface $entity): EntityInterface
+    public function getByOrderId(int|string $id): OrderProductCollection
     {
-        if (!$entity instanceof OrderProduct) {
-            throw new InvalidArgumentException('Expected order product entity!');
-        }
+        assert(is_numeric($id));
 
-        // Send request.
-        $res = $this->post('order_products', $entity);
+        $data = $this->get("orders/$id/order_products");
+        $collection = $this->toCollection($data, OrderProductCollection::class);
+        assert($collection instanceof OrderProductCollection);
 
-        return $this->toEntity($res);
+        return $collection;
     }
 
-    /**
-     * {@inheritDoc}
-     * @return OrderProduct
-     */
-    public function getById($id): EntityInterface
-    {
-        return $this->toEntity($this->get("order_products/{$id}"));
-    }
-
-    /**
-     * Returns a collection by {@see Order::$orderId}.
-     *
-     * @param int $id
-     * @return OrderProductCollection
-     * @throws HttpClientExceptionInterface
-     */
-    public function getByOrderId($id): CollectionInterface
-    {
-        $data = $this->get("orders/{$id}/order_products");
-
-        return $this->toCollection($data, OrderProductCollection::class);
-    }
-
-    /**
-     * {@inheritDoc}
-     * @return OrderProductCollection
-     */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
-    {
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null
+    ): OrderProductCollection {
         $data = $this->get('order_products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        return $this->toCollection($data, OrderProductCollection::class);
+        $collection = $this->toCollection($data, OrderProductCollection::class);
+        assert($collection instanceof OrderProductCollection);
+
+        return $collection;
     }
 
-    /**
-     * Updates an order product.
-     *
-     * @param EntityInterface $entity
-     * @return OrderProduct
-     * @throws HttpClientExceptionInterface
-     */
-    public function update(EntityInterface $entity): EntityInterface
+    public function update(OrderProduct|EntityInterface $entity): OrderProduct
     {
-        if (!$entity instanceof OrderProduct) {
-            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
-                OrderProduct::class));
-        }
+        assert($entity instanceof OrderProduct);
 
-        $res = $this->put("order_products/{$entity->getOrderProductId()}", $entity);
-
-        return $this->toEntity($res);
+        return $this->toEntity(
+            $this->put("order_products/{$entity->getOrderProductId()}", $entity)
+        );
     }
 
-    /**
-     * Deletes an order product by id.
-     *
-     * @param int $id
-     * @return $this
-     * @throws HttpClientExceptionInterface
-     */
-    public function deleteById($id): ApiInterface
+    public function deleteById(int|string $id): self
     {
-        $this->delete("order_products/{$id}");
+        $this->delete("order_products/$id");
         return $this;
     }
 
-
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): OrderProduct
     {
         $orderProduct = (new OrderProduct)
             ->setOrderProductId($data['order_product_id'])

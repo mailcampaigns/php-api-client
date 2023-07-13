@@ -4,73 +4,73 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
+use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\ProductCategory;
 use MailCampaigns\ApiClient\Entity\ProductProductCategory;
-use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Exception\ApiException;
 
 class ProductProductCategoryApi extends AbstractApi
 {
-    /**
-     * {@inheritDoc}
-     * @param ProductProductCategory|EntityInterface $entity
-     * @return ProductProductCategory
-     */
-    public function create(EntityInterface $entity): EntityInterface
-    {
-        $this->validateEntityType($entity, ProductProductCategory::class);
-        $res = $this->post('product_product_categories', $entity);
+    public function create(
+        ProductProductCategory|EntityInterface $entity
+    ): ProductProductCategory {
+        assert($entity instanceof ProductProductCategory);
 
-        return $this->toEntity($res);
+        return $this->toEntity(
+            $this->post('product_product_categories', $entity)
+        );
     }
 
     /**
      * {@inheritDoc}
      * @param string $id In this format: product=1;productCategory=2
      */
-    public function getById($id): EntityInterface
+    public function getById(int|string $id): ProductProductCategory
     {
-        return $this->toEntity($this->get("product_product_categories/{$id}"));
+        assert(is_string($id));
+        return $this->toEntity($this->get("product_product_categories/$id"));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return ProductProductCategoryCollection
-     */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
-    {
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null
+    ): ProductProductCategoryCollection {
         $data = $this->get('product_product_categories', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        return $this->toCollection($data, ProductProductCategoryCollection::class);
+        $collection = $this->toCollection(
+            $data,
+            ProductProductCategoryCollection::class
+        );
+
+        assert($collection instanceof ProductProductCategoryCollection);
+
+        return $collection;
     }
 
-
-    public function update(EntityInterface $entity): EntityInterface
-    {
-        throw new ApiException('Operation not supported! Either create or delete this item.');
+    public function update(
+        ProductProductCategory|EntityInterface $entity
+    ): ProductProductCategory {
+        throw new ApiException(
+            'Operation not supported! Either create or delete this item.'
+        );
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      * @param string $id In this format: product=1;productCategory=2
      */
-    public function deleteById($id): ApiInterface
+    public function deleteById(int|string $id): self
     {
-        $this->delete("product_product_categories/{$id}");
+        $this->delete("product_product_categories/$id");
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     * @return ProductProductCategory
-     */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): ProductProductCategory
     {
         $product = $this->iriToProduct($data['product']);
         $productCategory = $this->toProductCategory($data['product_category']);
@@ -86,9 +86,9 @@ class ProductProductCategoryApi extends AbstractApi
             return null;
         }
 
-        $id = (int)str_replace('/products/', '', $iri);
-
-        return (new Product)->setProductId($id);
+        return (new Product)->setProductId(
+            (int)str_replace('/products/', '', $iri)
+        );
     }
 
     protected function toProductCategory(array $data): ProductCategory
@@ -99,6 +99,5 @@ class ProductProductCategoryApi extends AbstractApi
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
             ->setIsVisible($data['is_visible'])
             ->setTitle($data['title']);
-
     }
 }

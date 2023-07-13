@@ -9,35 +9,13 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 
 interface CustomFieldApiInterface extends ApiInterface
 {
-    /**
-     * @param CustomFieldInterface $entity
-     * @return CustomFieldInterface
-     * {@inheritDoc}
-     */
-    public function create(EntityInterface $entity): EntityInterface;
+    public function create(CustomFieldInterface|EntityInterface $entity): CustomFieldInterface;
 
-    /**
-     * @return CustomFieldInterface
-     * {@inheritDoc}
-     */
-    public function getById($id): EntityInterface;
+    public function getById(int|string $id): CustomFieldInterface;
 
-    /**
-     * @param CustomFieldInterface $entity
-     * @return CustomFieldInterface
-     * {@inheritDoc}
-     */
-    public function update(EntityInterface $entity): EntityInterface;
+    public function update(CustomFieldInterface|EntityInterface $entity): CustomFieldInterface;
 
-    /**
-     * @return CustomFieldApiInterface
-     * @inheritDoc
-     */
-    public function deleteById($id): ApiInterface;
+    public function deleteById(int|string $id): CustomFieldApiInterface;
 
-    /**
-     * @return CustomFieldInterface
-     * {@inheritDoc}
-     */
-    public function toEntity(array $data): EntityInterface;
+    public function toEntity(array $data): CustomFieldInterface;
 }

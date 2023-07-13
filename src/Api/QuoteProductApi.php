@@ -4,91 +4,57 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
-use InvalidArgumentException;
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\QuoteProductCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
+use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\Quote;
 use MailCampaigns\ApiClient\Entity\QuoteProduct;
-use MailCampaigns\ApiClient\Entity\Product;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class QuoteProductApi extends AbstractApi
 {
-    /**
-     * @param EntityInterface|QuoteProduct $entity
-     * @return QuoteProduct
-     * @throws HttpClientExceptionInterface
-     */
-    public function create(EntityInterface $entity): EntityInterface
+    public function create(QuoteProduct|EntityInterface $entity): QuoteProduct
     {
-        if (!$entity instanceof QuoteProduct) {
-            throw new InvalidArgumentException('Expected quote product entity!');
-        }
-
-        // Send request.
-        $res = $this->post('quote_products', $entity);
-
-        return $this->toEntity($res);
+        assert($entity instanceof QuoteProduct);
+        return $this->toEntity($this->post('quote_products', $entity));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return QuoteProduct
-     */
-    public function getById($id): EntityInterface
+    public function getById(int|string $id): QuoteProduct
     {
-        return $this->toEntity($this->get("quote_products/{$id}"));
+        return $this->toEntity($this->get("quote_products/$id"));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return QuoteProductCollection
-     */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
-    {
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null
+    ): QuoteProductCollection {
         $data = $this->get('quote_products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        return $this->toCollection($data, QuoteProductCollection::class);
+        $collection = $this->toCollection($data, QuoteProductCollection::class);
+        assert($collection instanceof QuoteProductCollection);
+
+        return $collection;
     }
 
-    /**
-     * Updates a quote product.
-     *
-     * @param EntityInterface $entity
-     * @return QuoteProduct
-     * @throws HttpClientExceptionInterface
-     */
-    public function update(EntityInterface $entity): EntityInterface
+    public function update(QuoteProduct|EntityInterface $entity): QuoteProduct
     {
-        if (!$entity instanceof QuoteProduct) {
-            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
-                QuoteProduct::class));
-        }
+        assert($entity instanceof QuoteProduct);
 
-        $res = $this->put("quote_products/{$entity->getQuoteProductId()}", $entity);
-
-        return $this->toEntity($res);
+        return $this->toEntity(
+            $this->put("quote_products/{$entity->getQuoteProductId()}", $entity)
+        );
     }
 
-    /**
-     * Deletes a quote product by id.
-     *
-     * @param int $id
-     * @return $this
-     * @throws HttpClientExceptionInterface
-     */
-    public function deleteById($id): ApiInterface
+    public function deleteById(int|string $id): self
     {
-        $this->delete("quote_products/{$id}");
+        $this->delete("quote_products/$id");
         return $this;
     }
 
 
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): QuoteProduct
     {
         $quoteProduct = (new QuoteProduct)
             ->setQuoteProductId($data['quote_product_id'])

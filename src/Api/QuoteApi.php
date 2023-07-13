@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
-use InvalidArgumentException;
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\QuoteCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
@@ -14,35 +12,18 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExcep
 
 class QuoteApi extends AbstractApi
 {
-    /**
-     * @param EntityInterface|Quote $entity
-     * @return Quote
-     * @throws HttpClientExceptionInterface
-     */
-    public function create(EntityInterface $entity): EntityInterface
+    public function create(Quote|EntityInterface $entity): Quote
     {
-        if (!$entity instanceof Quote) {
-            throw new InvalidArgumentException('Expected quote entity!');
-        }
+        assert($entity instanceof Quote);
+        return $this->toEntity($this->post('quotes', $entity));
+    }
 
-        // Send request.
-        $res = $this->post('quotes', $entity);
-
-        return $this->toEntity($res);
+    public function getById(int|string $id): Quote
+    {
+        return $this->toEntity($this->get("quotes/$id"));
     }
 
     /**
-     * {@inheritDoc}
-     * @return Quote
-     */
-    public function getById($id): EntityInterface
-    {
-        return $this->toEntity($this->get("quotes/{$id}"));
-    }
-
-    /**
-     * @param string $ref
-     * @return Quote|null
      * @throws HttpClientExceptionInterface
      */
     public function getByQuoteRef(string $ref): ?Quote
@@ -51,40 +32,41 @@ class QuoteApi extends AbstractApi
             $this->get("quotes", ['quote_ref' => $ref])
         );
 
-        if (null !== $data) {
-            return $this->toEntity($data);
-        }
-
-        return null;
+        return null !== $data ? $this->toEntity($data) : null;
     }
 
     /**
      * Finds and returns quotes by their `quote_ref` values.
      *
-     * @param array $refs
-     * @param int|null $page
-     * @param int|null $perPage
-     * @return QuoteCollection
+     * @param string[] $refs
      * @throws HttpClientExceptionInterface
      */
-    public function getByQuoteRefs(array $refs, ?int $page = null, ?int $perPage = null): CollectionInterface
-    {
+    public function getByQuoteRefs(
+        array $refs,
+        ?int $page = null,
+        ?int $perPage = null
+    ): QuoteCollection {
         $data = $this->get('quotes', [
             'quote_ref' => $refs,
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        return $this->toCollection($data, QuoteCollection::class);
+        $collection = $this->toCollection($data, QuoteCollection::class);
+        assert($collection instanceof QuoteCollection);
+
+        return $collection;
     }
 
     /**
      * {@inheritDoc}
      * @param array $filters Optional filters.
-     * @return QuoteCollection
      */
-    public function getCollection(?int $page = null, ?int $perPage = null, $filters = []): CollectionInterface
-    {
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null,
+        $filters = []
+    ): QuoteCollection {
         $params = [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
@@ -96,48 +78,32 @@ class QuoteApi extends AbstractApi
             }
         }
 
-        $data = $this->get('quotes', $params);
+        $collection = $this->toCollection(
+            $this->get('quotes', $params),
+            QuoteCollection::class
+        );
 
-        return $this->toCollection($data, QuoteCollection::class);
+        assert($collection instanceof QuoteCollection);
+
+        return $collection;
     }
 
-    /**
-     * Updates a quote.
-     *
-     * @param EntityInterface $entity
-     * @return Quote
-     * @throws HttpClientExceptionInterface
-     */
-    public function update(EntityInterface $entity): EntityInterface
+    public function update(Quote|EntityInterface $entity): Quote
     {
-        if (!$entity instanceof Quote) {
-            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
-                Quote::class));
-        }
+        assert($entity instanceof Quote);
 
-        $res = $this->put("quotes/{$entity->getQuoteId()}", $entity);
-
-        return $this->toEntity($res);
+        return $this->toEntity(
+            $this->put("quotes/{$entity->getQuoteId()}", $entity)
+        );
     }
 
-    /**
-     * Deletes a quote by id.
-     *
-     * @param int $id
-     * @return $this
-     * @throws HttpClientExceptionInterface
-     */
-    public function deleteById($id): ApiInterface
+    public function deleteById(int|string $id): self
     {
-        $this->delete("quotes/{$id}");
+        $this->delete("quotes/$id");
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     * @return Quote
-     */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): Quote
     {
         $customer = null;
 

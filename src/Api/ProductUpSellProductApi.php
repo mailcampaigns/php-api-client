@@ -4,72 +4,70 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\ProductUpSellProductCollection;
+use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\ProductUpSellProduct;
-use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Exception\ApiException;
 
 class ProductUpSellProductApi extends AbstractApi
 {
-    /**
-     * {@inheritDoc}
-     * @param ProductUpSellProduct|EntityInterface $entity
-     * @return ProductUpSellProduct
-     */
-    public function create(EntityInterface $entity): EntityInterface
-    {
-        $this->validateEntityType($entity, ProductUpSellProduct::class);
-        $res = $this->post('product_up_sell_products', $entity);
+    public function create(
+        ProductUpSellProduct|EntityInterface $entity
+    ): ProductUpSellProduct {
+        assert($entity instanceof ProductUpSellProduct);
 
-        return $this->toEntity($res);
+        return $this->toEntity(
+            $this->post('product_up_sell_products', $entity)
+        );
     }
 
     /**
      * {@inheritDoc}
      * @param string $id In this format: product=1;linkedProduct=2
      */
-    public function getById($id): EntityInterface
+    public function getById(int|string $id): ProductUpSellProduct
     {
-        return $this->toEntity($this->get("product_up_sell_products/{$id}"));
+        assert(is_string($id));
+        return $this->toEntity($this->get("product_up_sell_products/$id"));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return ProductUpSellProductCollection
-     */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
-    {
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null
+    ): ProductUpSellProductCollection {
         $data = $this->get('product_up_sell_products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        return $this->toCollection($data, ProductUpSellProductCollection::class);
+        $collection = $this->toCollection($data, ProductUpSellProductCollection::class);
+        assert($collection instanceof ProductUpSellProductCollection);
+
+        return $collection;
     }
 
-
-    public function update(EntityInterface $entity): EntityInterface
-    {
-        throw new ApiException('Operation not supported! Either create or delete this item.');
+    public function update(
+        ProductUpSellProduct|EntityInterface $entity
+    ): ProductUpSellProduct {
+        throw new ApiException(
+            'Operation not supported! Either create or delete this item.'
+        );
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      * @param string $id In this format: product=1;linkedProduct=2
      */
-    public function deleteById($id): ApiInterface
+    public function deleteById(int|string $id): self
     {
-        $this->delete("product_up_sell_products/{$id}");
+        assert(is_string($id));
+        $this->delete("product_up_sell_products/$id");
+
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     * @return ProductUpSellProduct
-     */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): ProductUpSellProduct
     {
         $product = $this->iriToProduct($data['product']);
         $linkedProduct = $this->iriToProduct($data['linked_product']);
@@ -85,8 +83,8 @@ class ProductUpSellProductApi extends AbstractApi
             return null;
         }
 
-        $id = (int)str_replace('/products/', '', $iri);
-
-        return (new Product)->setProductId($id);
+        return (new Product)->setProductId(
+            (int)str_replace('/products/', '', $iri)
+        );
     }
 }

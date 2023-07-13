@@ -4,90 +4,50 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
-use InvalidArgumentException;
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\CustomerCustomFieldCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\CustomerCustomField;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class CustomerCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
 {
-    /**
-     * @param EntityInterface|CustomerCustomField $entity
-     * @return CustomerCustomField
-     * @throws HttpClientExceptionInterface
-     */
-    public function create(EntityInterface $entity): EntityInterface
+    public function create(EntityInterface|CustomerCustomField $entity): CustomerCustomField
     {
-        if (!$entity instanceof CustomerCustomField) {
-            throw new InvalidArgumentException('Expected custom customer field entity!');
-        }
-
-        // Send request.
-        $res = $this->post('customer_custom_fields', $entity);
-
-        return $this->toEntity($res);
+        assert($entity instanceof CustomerCustomField);
+        return $this->toEntity($this->post('customer_custom_fields', $entity));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return CustomerCustomField
-     */
-    public function getById($id): EntityInterface
+    public function getById(int|string $id): CustomerCustomField
     {
-        return $this->toEntity($this->get("customer_custom_fields/{$id}"));
+        return $this->toEntity($this->get("customer_custom_fields/$id"));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return CustomerCustomFieldCollection
-     */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
+    public function getCollection(?int $page = null, ?int $perPage = null): CustomerCustomFieldCollection
     {
         $data = $this->get('customer_custom_fields', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        return $this->toCollection($data, CustomerCustomFieldCollection::class);
+        $collection = $this->toCollection($data, CustomerCustomFieldCollection::class);
+        assert($collection instanceof CustomerCustomFieldCollection);
+
+        return $collection;
     }
 
-    /**
-     * Updates a custom customer field.
-     *
-     * @param EntityInterface $entity
-     * @return CustomerCustomField
-     * @throws HttpClientExceptionInterface
-     */
-    public function update(EntityInterface $entity): EntityInterface
+    public function update(CustomerCustomField|EntityInterface $entity): CustomerCustomField
     {
-        if (!$entity instanceof CustomerCustomField) {
-            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
-                CustomerCustomField::class));
-        }
-
-        $res = $this->put("customer_custom_fields/{$entity->getCustomFieldId()}", $entity);
-
-        return $this->toEntity($res);
+        assert($entity instanceof CustomerCustomField);
+        return $this->toEntity($this->put("customer_custom_fields/{$entity->getCustomFieldId()}", $entity));
     }
 
-    /**
-     * Deletes a custom customer field by id.
-     *
-     * @param int $id
-     * @return $this
-     * @throws HttpClientExceptionInterface
-     */
-    public function deleteById($id): ApiInterface
+    public function deleteById(int|string $id): self
     {
-        $this->delete("customer_custom_fields/{$id}");
+        $this->delete("customer_custom_fields/$id");
         return $this;
     }
 
-
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): CustomerCustomField
     {
         $customField = (new CustomerCustomField)
             ->setCustomFieldId($data['custom_field_id'] ?? null)
