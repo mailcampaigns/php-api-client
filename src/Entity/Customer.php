@@ -15,57 +15,51 @@ use MailCampaigns\ApiClient\Collection\QuoteCollection;
 
 class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 {
+    use DateTrait;
     use DateTimeHelperTrait;
-
+    
     public function __construct(
-        protected ?int $customerId = null,
-        protected ?DateTimeInterface $createdAt = null,
-        protected ?DateTimeInterface $updatedAt = null,
-        protected ?string $customerRef = null,
-        protected ?string $origin = null,
-        protected ?bool $isSubscribed = null,
-        protected ?bool $isConfirmed = null,
-        protected ?string $gender = null,
-        protected ?DateTimeInterface $birthDate = null,
-        protected ?string $email = null,
-        protected ?string $firstName = null,
-        protected ?string $middleName = null,
-        protected ?string $lastName = null,
-        protected ?string $phone = null,
-        protected ?string $mobile = null,
-        protected ?string $companyName = null,
-        protected ?string $companyCocNumber = null,
-        protected ?string $companyVatNumber = null,
-        protected ?string $addressBillingName = null,
-        protected ?string $addressBillingStreet = null,
-        protected ?string $addressBillingNumber = null,
-        protected ?string $addressBillingExtension = null,
-        protected ?string $addressBillingZipcode = null,
-        protected ?string $addressBillingCity = null,
-        protected ?string $addressBillingRegion = null,
-        protected ?string $addressBillingCountry = null,
-        protected ?string $addressShippingCompany = null,
-        protected ?string $addressShippingName = null,
-        protected ?string $addressShippingStreet = null,
-        protected ?string $addressShippingNumber = null,
-        protected ?string $addressShippingExtension = null,
-        protected ?string $addressShippingZipcode = null,
-        protected ?string $addressShippingCity = null,
-        protected ?string $addressShippingRegion = null,
-        protected ?string $addressShippingCountry = null,
-        protected ?string $language = null,
-        protected ?OrderCollection $orders = null,
-        protected ?ProductReviewCollection $productReviews = null,
-        protected ?CustomerFavoriteProductCollection $favorites = null,
-        protected ?QuoteCollection $quotes = null,
-        protected ?CustomerCustomFieldCollection $customFields = null,
+        private ?int $customerId = null,
+        private ?string $customerRef = null,
+        private ?string $origin = null,
+        private ?bool $isSubscribed = null,
+        private ?bool $isConfirmed = null,
+        private ?string $gender = null,
+        private ?DateTimeInterface $birthDate = null,
+        private ?string $email = null,
+        private ?string $firstName = null,
+        private ?string $middleName = null,
+        private ?string $lastName = null,
+        private ?string $phone = null,
+        private ?string $mobile = null,
+        private ?string $companyName = null,
+        private ?string $companyCocNumber = null,
+        private ?string $companyVatNumber = null,
+        private ?string $addressBillingName = null,
+        private ?string $addressBillingStreet = null,
+        private ?string $addressBillingNumber = null,
+        private ?string $addressBillingExtension = null,
+        private ?string $addressBillingZipcode = null,
+        private ?string $addressBillingCity = null,
+        private ?string $addressBillingRegion = null,
+        private ?string $addressBillingCountry = null,
+        private ?string $addressShippingCompany = null,
+        private ?string $addressShippingName = null,
+        private ?string $addressShippingStreet = null,
+        private ?string $addressShippingNumber = null,
+        private ?string $addressShippingExtension = null,
+        private ?string $addressShippingZipcode = null,
+        private ?string $addressShippingCity = null,
+        private ?string $addressShippingRegion = null,
+        private ?string $addressShippingCountry = null,
+        private ?string $language = null,
+        private ?OrderCollection $orders = new OrderCollection,
+        private ?ProductReviewCollection $productReviews = new ProductReviewCollection,
+        private ?CustomerFavoriteProductCollection $favorites = new CustomerFavoriteProductCollection,
+        private ?QuoteCollection $quotes = new QuoteCollection,
+        private ?CustomerCustomFieldCollection $customFields = new CustomerCustomFieldCollection,
     ) {
-        $this->createdAt = new DateTime;
-        $this->orders = new OrderCollection;
-        $this->productReviews = new ProductReviewCollection;
-        $this->favorites = new CustomerFavoriteProductCollection;
-        $this->quotes = new QuoteCollection;
-        $this->customFields = new CustomerCustomFieldCollection;
+        $this->createdAt = new DateTime();
     }
 
     public function getCustomerId(): ?int
@@ -76,28 +70,6 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
     public function setCustomerId(?int $customerId): self
     {
         $this->customerId = $customerId;
-        return $this;
-    }
-
-    public function getCreatedAt(): ?DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(?DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
         return $this;
     }
 
@@ -754,19 +726,19 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return '/customers/' . $this->getCustomerId();
     }
 
-    protected function iriToOrderEntity(string $iri): Order
+    private function iriToOrderEntity(string $iri): Order
     {
         $id = (int)str_replace('/orders/', '', $iri);
         return (new Order)->setOrderId($id);
     }
 
-    protected function iriToQuoteEntity(string $iri): Quote
+    private function iriToQuoteEntity(string $iri): Quote
     {
         $id = (int)str_replace('/quotes/', '', $iri);
         return (new Quote)->setQuoteId($id);
     }
 
-    protected function iriToFavoriteEntity(string $iri): CustomerFavoriteProduct
+    private function iriToFavoriteEntity(string $iri): CustomerFavoriteProduct
     {
         //"/customer_favorite_products/customer=4;favoriteProduct=1"
         $id = (int)str_replace('/customer_favorite_products/', '', $iri);
@@ -776,7 +748,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
             ->setProduct((new Product)->setProductId($id));
     }
 
-    protected function arrayToFavorite(array $data): CustomerFavoriteProduct
+    private function arrayToFavorite(array $data): CustomerFavoriteProduct
     {
         $productId = null;
         $pattern = '/\/products\/(?\'product_id\'\d+)/';
@@ -798,7 +770,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
             ->setProduct($product);
     }
 
-    protected function iriToCustomerCustomFieldEntity(string $iri): CustomerCustomField
+    private function iriToCustomerCustomFieldEntity(string $iri): CustomerCustomField
     {
         $id = (int)str_replace('/customer_custom_fields/', '', $iri);
         return (new CustomerCustomField())->setCustomFieldId($id);

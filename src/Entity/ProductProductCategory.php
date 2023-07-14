@@ -11,22 +11,15 @@ use MailCampaigns\ApiClient\Api\ApiInterface;
  */
 class ProductProductCategory implements EntityInterface
 {
-    /**
-     * @var Product
-     */
-    protected $product;
-
-    /**
-     * @var ProductCategory
-     */
-    protected $productCategory;
+    private ?Product $product;
+    private ?ProductCategory $productCategory;
 
     public function getProduct(): ?Product
     {
         return $this->product;
     }
 
-    public function setProduct(Product $product): self
+    public function setProduct(?Product $product): self
     {
         $this->product = $product;
         return $this;
@@ -37,12 +30,11 @@ class ProductProductCategory implements EntityInterface
         return $this->productCategory;
     }
 
-    public function setProductCategory(ProductCategory $productCategory): self
+    public function setProductCategory(?ProductCategory $productCategory): self
     {
         $this->productCategory = $productCategory;
         return $this;
     }
-
 
     function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
@@ -57,7 +49,6 @@ class ProductProductCategory implements EntityInterface
             'product_category' => $productCategory
         ]);
     }
-
 
     function toIri(): ?string
     {
@@ -76,8 +67,11 @@ class ProductProductCategory implements EntityInterface
             return null;
         }
 
-        return sprintf('/product_product_categories/product=%d;productCategory=%d',
-            $product->getProductId(), $category->getProductCategoryId());
+        return sprintf(
+            '/product_product_categories/product=%d;productCategory=%d',
+            $product->getProductId(),
+            $category->getProductCategoryId()
+        );
     }
 
     public function __destruct()

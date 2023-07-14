@@ -8,7 +8,7 @@ class ProductVolumeSellProduct implements EntityInterface
 {
     use LinkedProductTrait;
 
-    public static $endpoint = '/product_volume_sell_products';
+    public static string $endpoint = '/product_volume_sell_products';
 
     public function __destruct()
     {

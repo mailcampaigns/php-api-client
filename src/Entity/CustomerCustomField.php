@@ -8,21 +8,23 @@ class CustomerCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
 
-    protected Customer $customer;
+    private Customer $customer;
 
     public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
-    public function setCustomer(?Customer $customer): CustomerCustomField
+    public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'custom_field_id' => $this->getCustomFieldId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),

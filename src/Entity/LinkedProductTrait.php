@@ -11,54 +11,32 @@ use MailCampaigns\ApiClient\Api\ApiInterface;
  */
 trait LinkedProductTrait
 {
-    /**
-     * @var Product
-     */
-    protected $product;
+    protected ?Product $product;
+    protected ?Product $linkedProduct;
 
-    /**
-     * @var Product
-     */
-    protected $linkedProduct;
-
-    /**
-     * @return Product
-     */
     public function getProduct(): ?Product
     {
         return $this->product;
     }
 
-    /**
-     * @param Product $product
-     * @return $this
-     */
-    public function setProduct(Product $product): self
+    public function setProduct(?Product $product): self
     {
         $this->product = $product;
         return $this;
     }
 
-    /**
-     * @return Product
-     */
-    public function getLinkedProduct(): Product
+    public function getLinkedProduct(): ?Product
     {
         return $this->linkedProduct;
     }
 
-    /**
-     * @param Product $linkedProduct
-     * @return $this
-     */
-    public function setLinkedProduct(Product $linkedProduct): self
+    public function setLinkedProduct(?Product $linkedProduct): self
     {
         $this->linkedProduct = $linkedProduct;
         return $this;
     }
 
-
-    function toArray(?string $operation = null, ?bool $isRoot = false): array
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         $res = [];
 
@@ -77,8 +55,7 @@ trait LinkedProductTrait
         return $res;
     }
 
-
-    function toIri(): ?string
+    public function toIri(): ?string
     {
         $product = $this->getProduct();
         $linkedProduct = $this->getLinkedProduct();
@@ -95,7 +72,11 @@ trait LinkedProductTrait
             return null;
         }
 
-        return sprintf('%s/product=%d;linkedProduct=%d', self::$endpoint,
-            $product->getProductId(), $linkedProduct->getProductId());
+        return sprintf(
+            '%s/product=%d;linkedProduct=%d',
+            self::$endpoint,
+            $product->getProductId(),
+            $linkedProduct->getProductId()
+        );
     }
 }

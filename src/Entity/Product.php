@@ -6,7 +6,6 @@ namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
 use LogicException;
-use MailCampaigns\ApiClient\Collection\ProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductCustomFieldCollection;
@@ -20,692 +19,303 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
-
-    /**
-     * The unique numeric identifier for the product.
-     *
-     * @var int
-     */
-    protected $productId;
-
-    /**
-     * Creation date and time.
-     *
-     * @var DateTime
-     */
-    protected $createdAt;
-
-    /**
-     * Date and time of last update.
-     *
-     * @var DateTime
-     */
-    protected $updatedAt;
-
-    /**
-     * Product visibility.
-     *
-     * @var bool|null
-     */
-    protected $isVisible;
-
-    /**
-     * Product visibility setting. <i>(Examples: "hidden", "visible", "auto")</i>
-     *
-     * @var string|null
-     */
-    protected $visibility;
-
-    /**
-     * Product slug. <i>(Example: "lookin-sharp-tee")</i>
-     *
-     * @var string|null
-     */
-    protected $url;
-
-    /**
-     * Product title. <i>(Example: "Lookin’ Sharp T-Shirt")</i>
-     *
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * Product full title. <i>(Example: "Lookin’ Sharp T-Shirt")</i>
-     *
-     * @var string|null
-     */
-    protected $fullTitle;
-
-    /**
-     * Product brand. <i>(Example: "Sharp")</i>
-     *
-     * @var string|null
-     */
-    protected $brand;
-
-    /**
-     * Product description. <i>(Example: "Description of the Lookin’ Sharp T-Shirt")</i>
-     *
-     * @var string|null
-     */
-    protected $description;
-
-    /**
-     * Product content. <i>(Example: "&lt;p&gt;Long Description of the Lookin’ Sharp T-Shirt&lt;/p&gt;")</i>
-     *
-     * @var string|null
-     */
-    protected $content;
-
-    /**
-     * Main product image URI/URL. <i>(Example: "https://your-tee-shop.com/image/lookin-sharp-tee.png")</i>
-     *
-     * @var string|null
-     */
-    protected $image;
-
-    /**
-     * The custom article code of the product. <i>(For example the unqiue reference in your database: "TSHOP123262")</i>
-     *
-     * @var string|null
-     */
-    protected $articleCode;
-
-    /**
-     * The EAN of the product. <i>(Example: "AB000123")</i>
-     *
-     * @see https://en.wikipedia.org/wiki/International_Article_Number
-     * @var string|null
-     */
-    protected $ean;
-
-    /**
-     * The SKU of the product. <i>(Example: "AB000123")</i>
-     *
-     * @see https://en.wikipedia.org/wiki/Stock_keeping_unit
-     * @var string|null
-     */
-    protected $sku;
-
-    /**
-     * The cost price of the product.
-     *
-     * @var float|null
-     */
-    protected $priceCost;
-
-    /**
-     * The price per product excluding tax.
-     *
-     * @var float|null
-     */
-    protected $priceExcl;
-
-    /**
-     * The price per product including tax.
-     *
-     * @var float|null
-     */
-    protected $priceIncl;
-
-    /**
-     * The old price per product excluding tax. <i>(Example: 5.50)</i>
-     *
-     * @var float|null
-     */
-    protected $oldPriceExcl;
-
-    /**
-     * The old price per product including tax. <i>(Example: 6.25)</i>
-     *
-     * @var float|null
-     */
-    protected $oldPriceIncl;
-
-    /**
-     * The type of discount that applies to this product.
-     *
-     * @var string|null
-     */
-    protected $discountType;
-
-    /**
-     * The discount in percentage. (Example: 0.1366867)
-     *
-     * @var float|null
-     */
-    protected $discountPercentage;
-
-    /**
-     * The stock status of the product. <i>(Examples: 'on_stock', 'temp_out_of_stock', 'out_of_stock')</i>
-     *
-     * @var string|null
-     */
-    protected $stockStatus;
-
-    /**
-     * The amount of products in stock.
-     *
-     * @var int
-     */
-    protected $stockCount;
-
-    /**
-     * The amount of tax that applies to this product. <i>(Example: 2.53)</i>
-     *
-     * @var float
-     */
-    protected $tax;
-
-    /**
-     * Tax rate that applies to this product. <i>(Example: 0.21 which equals to 21%)</i>
-     *
-     * @var float|null
-     */
-    protected $taxRate;
-
-    /**
-     * The categories of the product.
-     *
-     * @var ProductCategoryCollection
-     */
-    protected $categories;
-
-    /**
-     * Products related to this product.
-     *
-     * @var ProductRelatedProductCollection
-     */
-    protected $relatedProducts;
-
-    /**
-     * Cross-sell products.
-     *
-     * @var ProductCrossSellProductCollection
-     */
-    protected $crossSellProducts;
-
-    /**
-     * Up-sell products.
-     *
-     * @var ProductUpSellProductCollection
-     */
-    protected $upSellProducts;
-
-    /**
-     * Volume-sell products.
-     *
-     * @var ProductVolumeSellProductCollection
-     */
-    protected $volumeSellProducts;
-
-    /**
-     * Product's reviews.
-     *
-     * @var ProductReviewCollection
-     */
-    protected $reviews;
-
-    /**
-     * @var ProductCustomFieldCollection
-     */
-    protected $customFields;
-
-    /**
-     * Products nested under this product.
-     *
-     * @var ProductCollection
-     */
-    protected $children;
-
-    /**
-     * The parent product.
-     *
-     * @var Product|null
-     */
-    protected $parent;
-
-    public function __construct()
-    {
-        $this->createdAt = new DateTime;
-        $this->isVisible = true;
-        $this->reviews = new ProductReviewCollection;
-        $this->categories = new ProductProductCategoryCollection;
-        $this->relatedProducts = new ProductRelatedProductCollection;
-        $this->crossSellProducts = new ProductCrossSellProductCollection;
-        $this->upSellProducts = new ProductUpSellProductCollection;
-        $this->volumeSellProducts = new ProductVolumeSellProductCollection;
-        $this->customFields = new ProductCustomFieldCollection;
-        $this->children = new ProductCollection;
+    
+    public function __construct(
+        private ?int $productId = null,
+        private ?string $title = null,
+        private ?int $stockCount = null,
+        private ?float $tax = null,
+        private ?bool $isVisible = true,
+        private ?string $visibility = null,
+        private ?string $url = null,
+        private ?string $fullTitle = null,
+        private ?string $brand = null,
+        private ?string $description = null,
+        private ?string $content = null,
+        private ?string $image = null,
+        private ?string $articleCode = null,
+        private ?string $ean = null,
+        private ?string $sku = null,
+        private ?float $priceCost = null,
+        private ?float $priceExcl = null,
+        private ?float $priceIncl = null,
+        private ?float $oldPriceExcl = null,
+        private ?float $oldPriceIncl = null,
+        private ?string $discountType = null,
+        private ?float $discountPercentage = null,
+        private ?string $stockStatus = null,
+        private ?float $taxRate = null,
+        private ?Product $parent = null,
+        private ProductProductCategoryCollection $categories = new ProductProductCategoryCollection,
+        private ProductRelatedProductCollection $relatedProducts = new ProductRelatedProductCollection,
+        private ProductCrossSellProductCollection $crossSellProducts = new ProductCrossSellProductCollection,
+        private ProductUpSellProductCollection $upSellProducts = new ProductUpSellProductCollection,
+        private ProductVolumeSellProductCollection $volumeSellProducts = new ProductVolumeSellProductCollection,
+        private ProductReviewCollection $reviews = new ProductReviewCollection,
+        private ProductCustomFieldCollection $customFields = new ProductCustomFieldCollection,
+        private ProductCollection $children = new ProductCollection,
+    ) {
+        $this->createdAt = new DateTime();
     }
 
-    /**
-     * @return int|null
-     */
     public function getProductId(): ?int
     {
         return $this->productId;
     }
 
-    /**
-     * @param int|null $productId
-     * @return Product
-     */
     public function setProductId(?int $productId): self
     {
         $this->productId = $productId;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * @param string|null $title
-     * @return Product
-     */
     public function setTitle(?string $title): self
     {
         $this->title = $title;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function getIsVisible(): bool
     {
         return true === $this->isVisible;
     }
 
-    /**
-     * @param bool $isVisible
-     * @return Product
-     */
     public function setIsVisible(?bool $isVisible): self
     {
         $this->isVisible = $isVisible;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getVisibility(): ?string
     {
         return $this->visibility;
     }
 
-    /**
-     * @param string|null $visibility
-     * @return Product
-     */
     public function setVisibility(?string $visibility): self
     {
         $this->visibility = $visibility;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    /**
-     * @param string|null $url
-     * @return Product
-     */
     public function setUrl(?string $url): self
     {
         $this->url = $url;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFullTitle(): ?string
     {
         return $this->fullTitle;
     }
 
-    /**
-     * @param string|null $fullTitle
-     * @return Product
-     */
     public function setFullTitle(?string $fullTitle): self
     {
         $this->fullTitle = $fullTitle;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getBrand(): ?string
     {
         return $this->brand;
     }
 
-    /**
-     * @param string|null $brand
-     * @return Product
-     */
     public function setBrand(?string $brand): self
     {
         $this->brand = $brand;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string|null $description
-     * @return Product
-     */
     public function setDescription(?string $description): self
     {
         $this->description = $description;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getContent(): ?string
     {
         return $this->content;
     }
 
-    /**
-     * @param string|null $content
-     * @return Product
-     */
     public function setContent(?string $content): self
     {
         $this->content = $content;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getImage(): ?string
     {
         return $this->image;
     }
 
-    /**
-     * @param string|null $image
-     * @return Product
-     */
     public function setImage(?string $image): self
     {
         $this->image = $image;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getArticleCode(): ?string
     {
         return $this->articleCode;
     }
 
-    /**
-     * @param string|null $articleCode
-     * @return Product
-     */
     public function setArticleCode(?string $articleCode): self
     {
         $this->articleCode = $articleCode;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEan(): ?string
     {
         return $this->ean;
     }
 
-    /**
-     * @param string|null $ean
-     * @return Product
-     */
     public function setEan(?string $ean): self
     {
         $this->ean = $ean;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSku(): ?string
     {
         return $this->sku;
     }
 
-    /**
-     * @param string|null $sku
-     * @return Product
-     */
     public function setSku(?string $sku): self
     {
         $this->sku = $sku;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getPriceCost(): ?float
     {
         return $this->priceCost;
     }
 
-    /**
-     * @param float|null $priceCost
-     * @return Product
-     */
     public function setPriceCost(?float $priceCost): self
     {
         $this->priceCost = $priceCost;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getPriceExcl(): ?float
     {
         return $this->priceExcl;
     }
 
-    /**
-     * @param float|null $priceExcl
-     * @return Product
-     */
     public function setPriceExcl(?float $priceExcl): self
     {
         $this->priceExcl = $priceExcl;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getPriceIncl(): ?float
     {
         return $this->priceIncl;
     }
 
-    /**
-     * @param float|null $priceIncl
-     * @return Product
-     */
     public function setPriceIncl(?float $priceIncl): self
     {
         $this->priceIncl = $priceIncl;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getOldPriceExcl(): ?float
     {
         return $this->oldPriceExcl;
     }
 
-    /**
-     * @param float|null $oldPriceExcl
-     * @return Product
-     */
     public function setOldPriceExcl(?float $oldPriceExcl): self
     {
         $this->oldPriceExcl = $oldPriceExcl;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getOldPriceIncl(): ?float
     {
         return $this->oldPriceIncl;
     }
 
-    /**
-     * @param float|null $oldPriceIncl
-     * @return Product
-     */
     public function setOldPriceIncl(?float $oldPriceIncl): self
     {
         $this->oldPriceIncl = $oldPriceIncl;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDiscountType(): ?string
     {
         return $this->discountType;
     }
 
-    /**
-     * @param string|null $discountType
-     * @return $this
-     */
     public function setDiscountType(?string $discountType): self
     {
         $this->discountType = $discountType;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getDiscountPercentage(): ?float
     {
         return $this->discountPercentage;
     }
 
-    /**
-     * @param float|null $discountPercentage
-     * @return Product
-     */
     public function setDiscountPercentage(?float $discountPercentage): Product
     {
         $this->discountPercentage = $discountPercentage;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getStockStatus(): ?string
     {
         return $this->stockStatus;
     }
 
-    /**
-     * @param string|null $stockStatus
-     * @return Product
-     */
     public function setStockStatus(?string $stockStatus): self
     {
         $this->stockStatus = $stockStatus;
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getStockCount(): ?int
     {
         return $this->stockCount;
     }
 
-    /**
-     * @param int|null $stockCount
-     * @return Product
-     */
     public function setStockCount(?int $stockCount): self
     {
         $this->stockCount = $stockCount;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getTax(): ?float
     {
         return $this->tax;
     }
 
-    /**
-     * @param float|null $tax
-     * @return Product
-     */
     public function setTax(?float $tax): self
     {
         $this->tax = $tax;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getTaxRate(): ?float
     {
         return $this->taxRate;
     }
 
-    /**
-     * @param float|null $taxRate
-     * @return Product
-     */
     public function setTaxRate(?float $taxRate): self
     {
         $this->taxRate = $taxRate;
@@ -1006,18 +616,11 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @return ProductCustomFieldCollection
-     */
     public function getCustomFields(): ProductCustomFieldCollection
     {
         return $this->customFields;
     }
 
-    /**
-     * @param iterable|ProductCustomFieldCollection|null $customFields
-     * @return $this
-     */
     public function setCustomFields(?iterable $customFields): self
     {
         $this->customFields = new ProductCustomFieldCollection;
@@ -1048,10 +651,6 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @param ProductCustomField $customField
-     * @return $this
-     */
     public function addCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
     {
         assert($customField instanceof ProductCustomField);
@@ -1067,10 +666,6 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @param ProductCustomField $customField
-     * @return $this
-     */
     public function removeCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
     {
         assert($customField instanceof ProductCustomField);
@@ -1083,18 +678,11 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @return ProductCollection
-     */
     public function getChildren(): ProductCollection
     {
         return $this->children;
     }
 
-    /**
-     * @param ProductCollection $collection
-     * @return $this
-     */
     public function setChildren(ProductCollection $collection): self
     {
         $this->children = new ProductCollection;
@@ -1117,10 +705,6 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @param Product $child
-     * @return $this
-     */
     public function addChild(Product $child): self
     {
         if (!$this->children->contains($child)) {
@@ -1131,10 +715,6 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @param Product $child
-     * @return $this
-     */
     public function removeChild(Product $child): self
     {
         if ($this->children->contains($child)) {
@@ -1145,24 +725,16 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    /**
-     * @return Product|null
-     */
     public function getParent(): ?Product
     {
         return $this->parent;
     }
 
-    /**
-     * @param Product|null $parent
-     * @return Product
-     */
     public function setParent(?Product $parent): Product
     {
         $this->parent = $parent;
         return $this;
     }
-
 
     public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
@@ -1215,7 +787,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return '/products/' . $this->getProductId();
     }
 
-    protected function toProductProductCategory(array $data): ProductProductCategory
+    private function toProductProductCategory(array $data): ProductProductCategory
     {
         $id = $title = $isVisible = $categoryRef = null;
 
@@ -1253,7 +825,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             );
     }
 
-    protected function iriToProductProductCategory(string $iri): ProductProductCategory
+    private function iriToProductProductCategory(string $iri): ProductProductCategory
     {
         $categoryId = $productId = null;
 
@@ -1284,7 +856,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             ->setProductCategory($category);
     }
 
-    protected function toProductRelatedProduct(array $data): ProductRelatedProduct
+    private function toProductRelatedProduct(array $data): ProductRelatedProduct
     {
         $linkedProduct = $this->getLinkedProduct($data);
 
@@ -1293,7 +865,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             ->setLinkedProduct($linkedProduct);
     }
 
-    protected function iriToProductRelatedProduct(string $iri): ProductRelatedProduct
+    private function iriToProductRelatedProduct(string $iri): ProductRelatedProduct
     {
         $relatedProductId = $productId = null;
         // IRI example: "/product_related_products/product=4;relatedProduct=1"
@@ -1317,14 +889,14 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             throw new LogicException('IRI error: Product id does not match.');
         }
 
-        $relatedProduct = (new Product)->setProductId($relatedProductId);
+        $relatedProduct = (new Product())->setProductId($relatedProductId);
 
         return (new ProductRelatedProduct)
             ->setProduct($this)
             ->setLinkedProduct($relatedProduct);
     }
 
-    protected function toProductCrossSellProduct(array $data): ProductCrossSellProduct
+    private function toProductCrossSellProduct(array $data): ProductCrossSellProduct
     {
         $linkedProduct = $this->getLinkedProduct($data);
 
@@ -1333,7 +905,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             ->setLinkedProduct($linkedProduct);
     }
 
-    protected function iriToProductCrossSellProduct(string $iri): ProductCrossSellProduct
+    private function iriToProductCrossSellProduct(string $iri): ProductCrossSellProduct
     {
         $crossSellProductId = $productId = null;
         // IRI example: "/product_cross_sell_products/product=4;crossSellProduct=1"
@@ -1364,7 +936,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             ->setLinkedProduct($crossSellProduct);
     }
 
-    protected function toProductUpSellProduct(array $data): ProductUpSellProduct
+    private function toProductUpSellProduct(array $data): ProductUpSellProduct
     {
         $linkedProduct = $this->getLinkedProduct($data);
 
@@ -1373,7 +945,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             ->setLinkedProduct($linkedProduct);
     }
 
-    protected function iriToProductUpSellProduct(string $iri): ProductUpSellProduct
+    private function iriToProductUpSellProduct(string $iri): ProductUpSellProduct
     {
         $upSellProductId = $productId = null;
         // IRI example: "/product_up_sell_products/product=4;upSellProduct=1"
@@ -1404,7 +976,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             ->setLinkedProduct($upSellProduct);
     }
 
-    protected function toProductVolumeSellProduct(array $data): ProductVolumeSellProduct
+    private function toProductVolumeSellProduct(array $data): ProductVolumeSellProduct
     {
         $linkedProduct = $this->getLinkedProduct($data);
 
@@ -1413,7 +985,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             ->setLinkedProduct($linkedProduct);
     }
 
-    protected function iriToProductVolumeSellProduct(string $iri): ProductVolumeSellProduct
+    private function iriToProductVolumeSellProduct(string $iri): ProductVolumeSellProduct
     {
         $volumeSellProductId = $productId = null;
         // IRI example: "/product_volume_sell_products/product=4;volumeSellProduct=1"
@@ -1444,7 +1016,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             ->setLinkedProduct($volumeSellProduct);
     }
 
-    protected function toProduct(array $data): Product
+    private function toProduct(array $data): Product
     {
         $id = null;
         $pattern = '/\/products\/(?\'id\'\d+)/';
@@ -1462,7 +1034,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return (new Product)->setProductId($id);
     }
 
-    protected function iriToProduct(?string $iri): ?Product
+    private function iriToProduct(?string $iri): ?Product
     {
         if (!$iri) {
             return null;
@@ -1473,7 +1045,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return (new Product)->setProductId($id);
     }
 
-    protected function toProductReview(array $data): ProductReview
+    private function toProductReview(array $data): ProductReview
     {
         $id = null;
         $score = $data['score'];
@@ -1498,7 +1070,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             ->setCustomer($customer);
     }
 
-    protected function iriToProductReview(string $iri): ?ProductReview
+    private function iriToProductReview(string $iri): ?ProductReview
     {
         $pattern = '/\/product_reviews\/(?\'id\'\d+)/';
 
@@ -1509,13 +1081,13 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return null;
     }
 
-    protected function iriToProductCustomFieldEntity(string $iri): ProductCustomField
+    private function iriToProductCustomFieldEntity(string $iri): ProductCustomField
     {
         $id = (int)str_replace('/product_custom_fields/', '', $iri);
         return (new ProductCustomField())->setCustomFieldId($id);
     }
 
-    protected function iriToCustomer(string $iri): Customer
+    private function iriToCustomer(string $iri): Customer
     {
         $id = (int)str_replace('/customers/', '', $iri);
         return (new Customer)->setCustomerId($id);
@@ -1524,11 +1096,8 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     /**
      * Converts raw data to a linked product entity.
      * The raw data can be an array, IRI or just an ID.
-     *
-     * @param mixed $data
-     * @return Product
      */
-    protected function getLinkedProduct($data): Product
+    private function getLinkedProduct(int|string|array $data): self
     {
         $linkedProduct = new Product;
 
@@ -1575,9 +1144,6 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $linkedProduct;
     }
 
-    /**
-     * @return ProductCustomField
-     */
     public function getNewCustomField(): CustomFieldInterface
     {
         return new ProductCustomField();

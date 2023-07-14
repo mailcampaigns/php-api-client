@@ -8,21 +8,23 @@ class ProductCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
 
-    protected Product $product;
+    private Product $product;
 
     public function getProduct(): ?Product
     {
         return $this->product;
     }
 
-    public function setProduct(?Product $product): ProductCustomField
+    public function setProduct(?Product $product): self
     {
         $this->product = $product;
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'custom_field_id' => $this->getCustomFieldId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),

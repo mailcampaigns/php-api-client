@@ -6,15 +6,22 @@ use Symfony\Component\HttpClient\HttpClient;
 
 class ApiClientTest extends TestCase
 {
-    protected $apiClient;
+    private ApiClient $apiClient;
 
     public function setUp(): void
     {
-        $this->apiClient = ApiClient::create('https://mailcampaigns.io', 'testkey', 'testsecret');
+        $this->apiClient = ApiClient::create(
+            'https://mailcampaigns.io',
+            'testkey',
+            'testsecret'
+        );
     }
 
     public function testGetHttpClient()
     {
-        $this->assertInstanceOf(HttpClient::class, $this->apiClient->getHttpClient());
+        $this->assertInstanceOf(
+            HttpClient::class,
+            $this->apiClient->getHttpClient()
+        );
     }
 }

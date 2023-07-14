@@ -8,31 +8,23 @@ class OrderCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
 
-    /**
-     * @var Order
-     */
-    protected $order;
+    private ?Order $order;
 
-    /**
-     * @return Order
-     */
     public function getOrder(): ?Order
     {
         return $this->order;
     }
 
-    /**
-     * @param Order|null $order
-     * @return OrderCustomField
-     */
-    public function setOrder(?Order $order): OrderCustomField
+    public function setOrder(?Order $order): self
     {
         $this->order = $order;
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'custom_field_id' => $this->getCustomFieldId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),
