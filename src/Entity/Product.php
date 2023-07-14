@@ -19,7 +19,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
-    
+
     public function __construct(
         private ?int $productId = null,
         private ?string $title = null,
@@ -46,14 +46,14 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         private ?string $stockStatus = null,
         private ?float $taxRate = null,
         private ?Product $parent = null,
-        private ProductProductCategoryCollection $categories = new ProductProductCategoryCollection,
-        private ProductRelatedProductCollection $relatedProducts = new ProductRelatedProductCollection,
-        private ProductCrossSellProductCollection $crossSellProducts = new ProductCrossSellProductCollection,
-        private ProductUpSellProductCollection $upSellProducts = new ProductUpSellProductCollection,
-        private ProductVolumeSellProductCollection $volumeSellProducts = new ProductVolumeSellProductCollection,
-        private ProductReviewCollection $reviews = new ProductReviewCollection,
-        private ProductCustomFieldCollection $customFields = new ProductCustomFieldCollection,
-        private ProductCollection $children = new ProductCollection,
+        private ProductProductCategoryCollection $categories = new ProductProductCategoryCollection(),
+        private ProductRelatedProductCollection $relatedProducts = new ProductRelatedProductCollection(),
+        private ProductCrossSellProductCollection $crossSellProducts = new ProductCrossSellProductCollection(),
+        private ProductUpSellProductCollection $upSellProducts = new ProductUpSellProductCollection(),
+        private ProductVolumeSellProductCollection $volumeSellProducts = new ProductVolumeSellProductCollection(),
+        private ProductReviewCollection $reviews = new ProductReviewCollection(),
+        private ProductCustomFieldCollection $customFields = new ProductCustomFieldCollection(),
+        private ProductCollection $children = new ProductCollection(),
     ) {
         $this->createdAt = new DateTime();
     }
@@ -329,15 +329,15 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setCategories(ProductProductCategoryCollection $collection): self
     {
-        $this->categories = new ProductProductCategoryCollection;
+        $this->categories = new ProductProductCategoryCollection();
 
         foreach ($collection as $element) {
             // Convert to entity if raw data (array) or IRI for the item is supplied.
             if ($element instanceof ProductProductCategory) {
                 $entity = $element;
-            } else if (is_array($element)) {
+            } elseif (is_array($element)) {
                 $entity = $this->toProductProductCategory($element);
-            } else if (is_string($element)) {
+            } elseif (is_string($element)) {
                 $entity = $this->iriToProductProductCategory($element);
             } else {
                 throw new LogicException('Unexpected element type in collection!');
@@ -378,15 +378,15 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setRelatedProducts(ProductRelatedProductCollection $collection): self
     {
-        $this->relatedProducts = new ProductRelatedProductCollection;
+        $this->relatedProducts = new ProductRelatedProductCollection();
 
         foreach ($collection as $element) {
             // Convert to entity if raw data (array) or IRI for the item is supplied.
             if ($element instanceof ProductRelatedProduct) {
                 $entity = $element;
-            } else if (is_array($element)) {
+            } elseif (is_array($element)) {
                 $entity = $this->toProductRelatedProduct($element);
-            } else if (is_string($element)) {
+            } elseif (is_string($element)) {
                 $entity = $this->iriToProductRelatedProduct($element);
             } else {
                 throw new LogicException('Unexpected element type in collection!');
@@ -424,18 +424,18 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     {
         return $this->reviews;
     }
-    
+
     public function setReviews(ProductReviewCollection $collection): self
     {
-        $this->reviews = new ProductReviewCollection;
-        
+        $this->reviews = new ProductReviewCollection();
+
         foreach ($collection as $element) {
             // Convert to entity if raw data (array) or IRI for the item is supplied.
             if ($element instanceof ProductReview) {
                 $entity = $element;
-            } else if (is_array($element)) {
+            } elseif (is_array($element)) {
                 $entity = $this->toProductReview($element);
-            } else if (is_string($element)) {
+            } elseif (is_string($element)) {
                 $entity = $this->iriToProductReview($element);
             } else {
                 throw new LogicException('Unexpected element type in collection!');
@@ -443,7 +443,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
             $this->addReview($entity);
         }
-        
+
         return $this;
     }
 
@@ -459,7 +459,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
         return $this;
     }
-    
+
     public function removeReview(ProductReview $review): self
     {
         if ($this->reviews->contains($review)) {
@@ -476,15 +476,15 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setCrossSellProducts(ProductCrossSellProductCollection $collection): self
     {
-        $this->crossSellProducts = new ProductCrossSellProductCollection;
+        $this->crossSellProducts = new ProductCrossSellProductCollection();
 
         foreach ($collection as $element) {
             // Convert to entity if raw data (array) or IRI for the item is supplied.
             if ($element instanceof ProductCrossSellProduct) {
                 $entity = $element;
-            } else if (is_array($element)) {
+            } elseif (is_array($element)) {
                 $entity = $this->toProductCrossSellProduct($element);
-            } else if (is_string($element)) {
+            } elseif (is_string($element)) {
                 $entity = $this->iriToProductCrossSellProduct($element);
             } else {
                 throw new LogicException('Unexpected element type in collection!');
@@ -525,15 +525,15 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setUpSellProducts(ProductUpSellProductCollection $collection): self
     {
-        $this->upSellProducts = new ProductUpSellProductCollection;
+        $this->upSellProducts = new ProductUpSellProductCollection();
 
         foreach ($collection as $element) {
             // Convert to entity if raw data (array) or IRI for the item is supplied.
             if ($element instanceof ProductUpSellProduct) {
                 $entity = $element;
-            } else if (is_array($element)) {
+            } elseif (is_array($element)) {
                 $entity = $this->toProductUpSellProduct($element);
-            } else if (is_string($element)) {
+            } elseif (is_string($element)) {
                 $entity = $this->iriToProductUpSellProduct($element);
             } else {
                 throw new LogicException('Unexpected element type in collection!');
@@ -574,15 +574,15 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setVolumeSellProducts(ProductVolumeSellProductCollection $collection): self
     {
-        $this->volumeSellProducts = new ProductVolumeSellProductCollection;
+        $this->volumeSellProducts = new ProductVolumeSellProductCollection();
 
         foreach ($collection as $element) {
             // Convert to entity if raw data (array) or IRI for the item is svolumeplied.
             if ($element instanceof ProductVolumeSellProduct) {
                 $entity = $element;
-            } else if (is_array($element)) {
+            } elseif (is_array($element)) {
                 $entity = $this->toProductVolumeSellProduct($element);
-            } else if (is_string($element)) {
+            } elseif (is_string($element)) {
                 $entity = $this->iriToProductVolumeSellProduct($element);
             } else {
                 throw new LogicException('Unexpected element type in collection!');
@@ -623,7 +623,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setCustomFields(?iterable $customFields): self
     {
-        $this->customFields = new ProductCustomFieldCollection;
+        $this->customFields = new ProductCustomFieldCollection();
 
         if ($customFields) {
             foreach ($customFields as $data) {
@@ -631,13 +631,13 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
                 if ($data instanceof ProductCustomField) {
                     $customField = $data;
-                } else if (is_array($data)) {
-                    $customField = (new ProductCustomField)
+                } elseif (is_array($data)) {
+                    $customField = (new ProductCustomField())
                         ->setCustomFieldId($data['custom_field_id'])
                         ->setProduct($this)
                         ->setName($data['name'])
                         ->setValue($data['value']);
-                } else if (is_string($data)) {
+                } elseif (is_string($data)) {
                     // Convert customField IRI to a customField entity.
                     $customField = $this->iriToProductCustomFieldEntity($data);
                 } else {
@@ -685,15 +685,15 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setChildren(ProductCollection $collection): self
     {
-        $this->children = new ProductCollection;
+        $this->children = new ProductCollection();
 
         foreach ($collection as $element) {
             // Convert to entity if raw data (array) or IRI for the item is supplied.
             if ($element instanceof Product) {
                 $entity = $element;
-            } else if (is_array($element)) {
+            } elseif (is_array($element)) {
                 $entity = $this->toProduct($element);
-            } else if (is_string($element)) {
+            } elseif (is_string($element)) {
                 $entity = $this->iriToProduct($element);
             } else {
                 throw new LogicException('Unexpected element type in collection!');
@@ -797,7 +797,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
         if (is_int($data)) {
             $id = $data;
-        } else if (is_string($data)) {
+        } elseif (is_string($data)) {
             $pattern = '/\/product_categories\/(?\'id\'\d+)/';
 
             if (false !== preg_match($pattern, $data, $matches) && isset($matches['id'])) {
@@ -814,10 +814,10 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             throw new LogicException('Could not determine id!');
         }
 
-        return (new ProductProductCategory)
+        return (new ProductProductCategory())
             ->setProduct($this)
             ->setProductCategory(
-                (new ProductCategory)
+                (new ProductCategory())
                     ->setProductCategoryId($id)
                     ->setTitle($title)
                     ->setCategoryRef($categoryRef)
@@ -849,9 +849,9 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             throw new LogicException('IRI error: Product id does not match.');
         }
 
-        $category = (new ProductCategory)->setProductCategoryId($categoryId);
+        $category = (new ProductCategory())->setProductCategoryId($categoryId);
 
-        return (new ProductProductCategory)
+        return (new ProductProductCategory())
             ->setProduct($this)
             ->setProductCategory($category);
     }
@@ -860,7 +860,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     {
         $linkedProduct = $this->getLinkedProduct($data);
 
-        return (new ProductRelatedProduct)
+        return (new ProductRelatedProduct())
             ->setProduct($this)
             ->setLinkedProduct($linkedProduct);
     }
@@ -891,7 +891,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
         $relatedProduct = (new Product())->setProductId($relatedProductId);
 
-        return (new ProductRelatedProduct)
+        return (new ProductRelatedProduct())
             ->setProduct($this)
             ->setLinkedProduct($relatedProduct);
     }
@@ -900,7 +900,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     {
         $linkedProduct = $this->getLinkedProduct($data);
 
-        return (new ProductCrossSellProduct)
+        return (new ProductCrossSellProduct())
             ->setProduct($this)
             ->setLinkedProduct($linkedProduct);
     }
@@ -929,9 +929,9 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             throw new LogicException('IRI error: Product id does not match.');
         }
 
-        $crossSellProduct = (new Product)->setProductId($crossSellProductId);
+        $crossSellProduct = (new Product())->setProductId($crossSellProductId);
 
-        return (new ProductCrossSellProduct)
+        return (new ProductCrossSellProduct())
             ->setProduct($this)
             ->setLinkedProduct($crossSellProduct);
     }
@@ -940,7 +940,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     {
         $linkedProduct = $this->getLinkedProduct($data);
 
-        return (new ProductUpSellProduct)
+        return (new ProductUpSellProduct())
             ->setProduct($this)
             ->setLinkedProduct($linkedProduct);
     }
@@ -969,9 +969,9 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             throw new LogicException('IRI error: Product id does not match.');
         }
 
-        $upSellProduct = (new Product)->setProductId($upSellProductId);
+        $upSellProduct = (new Product())->setProductId($upSellProductId);
 
-        return (new ProductUpSellProduct)
+        return (new ProductUpSellProduct())
             ->setProduct($this)
             ->setLinkedProduct($upSellProduct);
     }
@@ -980,7 +980,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     {
         $linkedProduct = $this->getLinkedProduct($data);
 
-        return (new ProductVolumeSellProduct)
+        return (new ProductVolumeSellProduct())
             ->setProduct($this)
             ->setLinkedProduct($linkedProduct);
     }
@@ -1009,9 +1009,9 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             throw new LogicException('IRI error: Product id does not match.');
         }
 
-        $volumeSellProduct = (new Product)->setProductId($volumeSellProductId);
+        $volumeSellProduct = (new Product())->setProductId($volumeSellProductId);
 
-        return (new ProductVolumeSellProduct)
+        return (new ProductVolumeSellProduct())
             ->setProduct($this)
             ->setLinkedProduct($volumeSellProduct);
     }
@@ -1031,7 +1031,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             throw new LogicException('Could not determine product id!');
         }
 
-        return (new Product)->setProductId($id);
+        return (new Product())->setProductId($id);
     }
 
     private function iriToProduct(?string $iri): ?Product
@@ -1042,7 +1042,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
         $id = (int)str_replace('/products/', '', $iri);
 
-        return (new Product)->setProductId($id);
+        return (new Product())->setProductId($id);
     }
 
     private function toProductReview(array $data): ProductReview
@@ -1063,7 +1063,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             throw new LogicException('Could not determine product review id!');
         }
 
-        return (new ProductReview)
+        return (new ProductReview())
             ->setProductReviewId($id)
             ->setTitle($title)
             ->setScore($score)
@@ -1075,7 +1075,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         $pattern = '/\/product_reviews\/(?\'id\'\d+)/';
 
         if (false !== preg_match($pattern, $iri, $matches) && isset($matches['id'])) {
-            return (new ProductReview)->setProductReviewId((int)$matches['id']);
+            return (new ProductReview())->setProductReviewId((int)$matches['id']);
         }
 
         return null;
@@ -1090,7 +1090,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     private function iriToCustomer(string $iri): Customer
     {
         $id = (int)str_replace('/customers/', '', $iri);
-        return (new Customer)->setCustomerId($id);
+        return (new Customer())->setCustomerId($id);
     }
 
     /**
@@ -1099,7 +1099,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
      */
     private function getLinkedProduct(int|string|array $data): self
     {
-        $linkedProduct = new Product;
+        $linkedProduct = new Product();
 
         if (isset($data['linked_product'])) {
             $data = $data['linked_product'];
@@ -1107,14 +1107,16 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
 
         if (is_int($data)) {
             $linkedProduct->setProductId($data);
-        } else if (is_string($data)) {
+        } elseif (is_string($data)) {
             $pattern = '/\/[a-z_]+\/(?\'id\'\d+)/';
 
-            if (false !== preg_match($pattern, $data, $matches)
-                && isset($matches['id'])) {
+            if (
+                false !== preg_match($pattern, $data, $matches)
+                && isset($matches['id'])
+            ) {
                 $linkedProduct->setProductId((int)$matches['id']);
             }
-        } else if (is_array($data)) {
+        } elseif (is_array($data)) {
             $id = isset($data['product_id']) ? (int)$data['product_id'] : null;
             $isVisible = $data['is_visible'] ?? null;
             $url = $data['url'] ?? null;

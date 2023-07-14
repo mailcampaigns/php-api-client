@@ -73,7 +73,7 @@ class ProductCrossSellProductApi extends AbstractApi
         $product = $this->iriToProduct($data['product']);
         $linkedProduct = $this->iriToProduct($data['linked_product']);
 
-        return (new ProductCrossSellProduct)
+        return (new ProductCrossSellProduct())
             ->setProduct($product)
             ->setLinkedProduct($linkedProduct);
     }
@@ -84,7 +84,7 @@ class ProductCrossSellProductApi extends AbstractApi
             return null;
         }
 
-        return (new Product)->setProductId(
+        return (new Product())->setProductId(
             (int)str_replace('/products/', '', $iri)
         );
     }

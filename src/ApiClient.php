@@ -213,7 +213,7 @@ final class ApiClient
      */
     public function hasTokenExpired(): bool
     {
-        $secondsLeft = $this->tokenExpirationDt->getTimestamp() - (new DateTime)->getTimestamp();
+        $secondsLeft = $this->tokenExpirationDt->getTimestamp() - (new DateTime())->getTimestamp();
         return $secondsLeft <= 0;
     }
 
@@ -271,8 +271,11 @@ final class ApiClient
                 $error = $decodedResponse->error;
                 $errorDescription = $decodedResponse->error_description ?? '(no error description)';
 
-                throw new ApiAuthenticationException(sprintf('Failed to retrieve access token: [%s] %s.',
-                    $error, $errorDescription));
+                throw new ApiAuthenticationException(sprintf(
+                    'Failed to retrieve access token: [%s] %s.',
+                    $error,
+                    $errorDescription
+                ));
             }
         }
 

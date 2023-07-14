@@ -23,7 +23,7 @@ class ProductReview implements EntityInterface
         private ?Customer $customer = null,
         private ?Product $product = null,
     ) {
-        $this->createdAt = new DateTime;
+        $this->createdAt = new DateTime();
     }
 
     public function getProductReviewId(): int

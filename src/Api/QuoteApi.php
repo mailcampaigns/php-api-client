@@ -111,12 +111,12 @@ class QuoteApi extends AbstractApi
             if (false !== preg_match('/\/customers\/(\d+)/', $data['customer'], $matches)) {
                 if (isset($matches[1])) {
                     $customerId = (int)$matches[1];
-                    $customer = (new Customer)->setCustomerId($customerId);
+                    $customer = (new Customer())->setCustomerId($customerId);
                 }
             }
         }
 
-        return (new Quote)
+        return (new Quote())
             ->setQuoteId($data['quote_id'])
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))

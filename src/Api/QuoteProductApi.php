@@ -56,7 +56,7 @@ class QuoteProductApi extends AbstractApi
 
     public function toEntity(array $data): QuoteProduct
     {
-        $quoteProduct = (new QuoteProduct)
+        $quoteProduct = (new QuoteProduct())
             ->setQuoteProductId($data['quote_product_id'])
             ->setBrandTitle($data['brand_title'])
             ->setProductTitle($data['product_title'])
@@ -86,7 +86,7 @@ class QuoteProductApi extends AbstractApi
                     $quoteId = (int)$matches[1];
 
                     $quoteProduct->setQuote(
-                        (new Quote)
+                        (new Quote())
                             ->setQuoteId($quoteId)
                             ->addQuoteProduct($quoteProduct)
                     );
@@ -98,7 +98,7 @@ class QuoteProductApi extends AbstractApi
         if (isset($data['product']) && is_string($data['product'])) {
             if (false !== preg_match('/\/products\/(\d+)/', $data['product'], $matches)) {
                 if (isset($matches[1])) {
-                    $product = (new Product)->setProductId((int)$matches[1]);
+                    $product = (new Product())->setProductId((int)$matches[1]);
                     $quoteProduct->setProduct($product);
                 }
             }

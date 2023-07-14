@@ -19,7 +19,7 @@ class CustomerCustomFieldCollection extends AbstractCollection
             if ($element instanceof CustomerCustomField) {
                 if ($operation === ApiInterface::OPERATION_POST) {
                     $arr[] = $element->toArray($operation);
-                } else if ($operation === ApiInterface::OPERATION_PUT) {
+                } elseif ($operation === ApiInterface::OPERATION_PUT) {
                     if ($element->getCustomFieldId()) {
                         $arr[] = $element->toIri();
                     }

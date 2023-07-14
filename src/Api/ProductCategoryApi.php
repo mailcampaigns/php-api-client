@@ -85,7 +85,7 @@ class ProductCategoryApi extends AbstractApi
     {
         $productProductCategories = new ProductProductCategoryCollection($data['products'] ?? []);
 
-        return (new ProductCategory)
+        return (new ProductCategory())
             ->setProductCategoryId($data['product_category_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))

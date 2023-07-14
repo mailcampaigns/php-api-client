@@ -17,7 +17,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
-    
+
     public function __construct(
         private ?int $customerId = null,
         private ?string $customerRef = null,
@@ -53,11 +53,11 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         private ?string $addressShippingRegion = null,
         private ?string $addressShippingCountry = null,
         private ?string $language = null,
-        private ?OrderCollection $orders = new OrderCollection,
-        private ?ProductReviewCollection $productReviews = new ProductReviewCollection,
-        private ?CustomerFavoriteProductCollection $favorites = new CustomerFavoriteProductCollection,
-        private ?QuoteCollection $quotes = new QuoteCollection,
-        private ?CustomerCustomFieldCollection $customFields = new CustomerCustomFieldCollection,
+        private ?OrderCollection $orders = new OrderCollection(),
+        private ?ProductReviewCollection $productReviews = new ProductReviewCollection(),
+        private ?CustomerFavoriteProductCollection $favorites = new CustomerFavoriteProductCollection(),
+        private ?QuoteCollection $quotes = new QuoteCollection(),
+        private ?CustomerCustomFieldCollection $customFields = new CustomerCustomFieldCollection(),
     ) {
         $this->createdAt = new DateTime();
     }
@@ -443,7 +443,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setOrders(?iterable $orders): self
     {
-        $this->orders = new OrderCollection;
+        $this->orders = new OrderCollection();
 
         if ($orders) {
             foreach ($orders as $data) {
@@ -508,7 +508,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setFavorites(?iterable $favorites): self
     {
-        $this->favorites = new CustomerFavoriteProductCollection;
+        $this->favorites = new CustomerFavoriteProductCollection();
 
         if ($favorites) {
             foreach ($favorites as $data) {
@@ -556,7 +556,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setQuotes(?iterable $quotes): self
     {
-        $this->quotes = new QuoteCollection;
+        $this->quotes = new QuoteCollection();
 
         if ($quotes) {
             foreach ($quotes as $data) {
@@ -610,7 +610,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setCustomFields(?iterable $customFields): self
     {
-        $this->customFields = new CustomerCustomFieldCollection;
+        $this->customFields = new CustomerCustomFieldCollection();
 
         if ($customFields) {
             foreach ($customFields as $data) {
@@ -620,7 +620,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
                     $customField = $data;
                 } else {
                     if (is_array($data)) {
-                        $customField = (new CustomerCustomField)
+                        $customField = (new CustomerCustomField())
                             ->setCustomFieldId($data['custom_field_id'])
                             ->setCustomer($this)
                             ->setName($data['name'])
@@ -729,13 +729,13 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
     private function iriToOrderEntity(string $iri): Order
     {
         $id = (int)str_replace('/orders/', '', $iri);
-        return (new Order)->setOrderId($id);
+        return (new Order())->setOrderId($id);
     }
 
     private function iriToQuoteEntity(string $iri): Quote
     {
         $id = (int)str_replace('/quotes/', '', $iri);
-        return (new Quote)->setQuoteId($id);
+        return (new Quote())->setQuoteId($id);
     }
 
     private function iriToFavoriteEntity(string $iri): CustomerFavoriteProduct
@@ -743,9 +743,9 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         //"/customer_favorite_products/customer=4;favoriteProduct=1"
         $id = (int)str_replace('/customer_favorite_products/', '', $iri);
 
-        return (new CustomerFavoriteProduct)
+        return (new CustomerFavoriteProduct())
             ->setCustomer($this)
-            ->setProduct((new Product)->setProductId($id));
+            ->setProduct((new Product())->setProductId($id));
     }
 
     private function arrayToFavorite(array $data): CustomerFavoriteProduct
@@ -763,9 +763,9 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
             throw new LogicException('Could not determine product id!');
         }
 
-        $product = (new Product)->setProductId($productId);
+        $product = (new Product())->setProductId($productId);
 
-        return (new CustomerFavoriteProduct)
+        return (new CustomerFavoriteProduct())
             ->setCustomer($this)
             ->setProduct($product);
     }

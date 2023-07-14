@@ -75,7 +75,7 @@ class ProductProductCategoryApi extends AbstractApi
         $product = $this->iriToProduct($data['product']);
         $productCategory = $this->toProductCategory($data['product_category']);
 
-        return (new ProductProductCategory)
+        return (new ProductProductCategory())
             ->setProduct($product)
             ->setProductCategory($productCategory);
     }
@@ -86,14 +86,14 @@ class ProductProductCategoryApi extends AbstractApi
             return null;
         }
 
-        return (new Product)->setProductId(
+        return (new Product())->setProductId(
             (int)str_replace('/products/', '', $iri)
         );
     }
 
     protected function toProductCategory(array $data): ProductCategory
     {
-        return (new ProductCategory)
+        return (new ProductCategory())
             ->setProductCategoryId($data['product_category_id'])
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))

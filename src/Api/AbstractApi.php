@@ -52,8 +52,7 @@ abstract class AbstractApi implements ApiInterface
         string $path,
         array $parameters = [],
         array $requestHeaders = []
-    ): array|string
-    {
+    ): array|string {
         if ($this->client->hasTokenExpired()) {
             $this->client->refreshToken();
         }
@@ -228,7 +227,7 @@ abstract class AbstractApi implements ApiInterface
             throw new LogicException($invalidFqcnMsg);
         }
 
-        $collection = new $fqcn;
+        $collection = new $fqcn();
 
         if (!$collection instanceof CollectionInterface) {
             throw new LogicException($invalidFqcnMsg);

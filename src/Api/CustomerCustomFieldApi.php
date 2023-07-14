@@ -49,7 +49,7 @@ class CustomerCustomFieldApi extends AbstractApi implements CustomFieldApiInterf
 
     public function toEntity(array $data): CustomerCustomField
     {
-        $customField = (new CustomerCustomField)
+        $customField = (new CustomerCustomField())
             ->setCustomFieldId($data['custom_field_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
@@ -60,7 +60,7 @@ class CustomerCustomFieldApi extends AbstractApi implements CustomFieldApiInterf
         if (isset($data['customer']) && is_string($data['customer'])) {
             if (false !== preg_match('/\/customers\/(\d+)/', $data['customer'], $matches)) {
                 if (isset($matches[1])) {
-                    $customer = (new Customer)->setCustomerId((int)$matches[1]);
+                    $customer = (new Customer())->setCustomerId((int)$matches[1]);
                     $customField->setCustomer($customer);
                 }
             }

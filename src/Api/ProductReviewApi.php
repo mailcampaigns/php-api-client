@@ -86,7 +86,7 @@ class ProductReviewApi extends AbstractApi
         $customer = $this->iriToCustomer($data['customer']);
         $product = $this->iriToProduct($data['product']);
 
-        return (new ProductReview)
+        return (new ProductReview())
             ->setProductReviewId($data['product_review_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
@@ -106,7 +106,7 @@ class ProductReviewApi extends AbstractApi
             return null;
         }
 
-        return (new Customer)->setCustomerId(
+        return (new Customer())->setCustomerId(
             (int)str_replace('/customers/', '', $iri)
         );
     }
@@ -117,7 +117,7 @@ class ProductReviewApi extends AbstractApi
             return null;
         }
 
-        return (new Product)->setProductId(
+        return (new Product())->setProductId(
             (int)str_replace('/products/', '', $iri)
         );
     }

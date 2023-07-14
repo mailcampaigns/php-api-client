@@ -111,7 +111,7 @@ class OrderApi extends AbstractApi
                 if (false !== preg_match('/\/customers\/(\d+)/', $data['customer'], $matches)) {
                     if (isset($matches[1])) {
                         $customerId = (int)$matches[1];
-                        $customer = (new Customer)->setCustomerId($customerId);
+                        $customer = (new Customer())->setCustomerId($customerId);
                     }
                 }
             } else {
@@ -126,14 +126,14 @@ class OrderApi extends AbstractApi
             if (false !== preg_match('/\/quotes\/(\d+)/', $data['quote'], $matches)) {
                 if (isset($matches[1])) {
                     $quoteId = (int)$matches[1];
-                    $quote = (new Quote)->setQuoteId($quoteId);
+                    $quote = (new Quote())->setQuoteId($quoteId);
                 }
             }
         }
 
         $customFields = new OrderCustomFieldCollection($data['custom_fields'] ?? []);
 
-        return (new Order)
+        return (new Order())
             ->setOrderId($data['order_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
             ->setUpdatedAt($this->toDtObject($data['updated_at'] ?? null))

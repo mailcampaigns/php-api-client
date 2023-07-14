@@ -36,10 +36,10 @@ class Quote implements EntityInterface
         private ?string $discountCouponCode = null,
         private ?string $customerRef = null,
         private ?Customer $customer = null,
-        private ?QuoteProductCollection $quoteProducts = new QuoteProductCollection,
-        private ?OrderCollection $orders = new OrderCollection,
+        private ?QuoteProductCollection $quoteProducts = new QuoteProductCollection(),
+        private ?OrderCollection $orders = new OrderCollection(),
     ) {
-        $this->createdAt = new DateTime;
+        $this->createdAt = new DateTime();
     }
 
     public function getQuoteId(): ?int
@@ -280,7 +280,7 @@ class Quote implements EntityInterface
 
     public function setQuoteProducts(?iterable $quoteProducts): self
     {
-        $this->quoteProducts = new QuoteProductCollection;
+        $this->quoteProducts = new QuoteProductCollection();
 
         if ($quoteProducts) {
             foreach ($quoteProducts as $data) {
@@ -288,7 +288,7 @@ class Quote implements EntityInterface
 
                 if (is_array($data)) {
                     if (isset($data['@id']) && is_string($data['@id'])) {
-                        $quoteProduct = new QuoteProduct;
+                        $quoteProduct = new QuoteProduct();
 
                         if (false !== preg_match('/\/quote_products\/(\d+)/', $data['@id'], $matches)) {
                             if (isset($matches[1])) {
@@ -360,7 +360,7 @@ class Quote implements EntityInterface
 
     public function setOrders(?iterable $orders): self
     {
-        $this->orders = new OrderCollection;
+        $this->orders = new OrderCollection();
 
         if ($orders) {
             foreach ($orders as $data) {
@@ -494,7 +494,7 @@ class Quote implements EntityInterface
     {
         if (false !== preg_match('/\/products\/(\d+)/', $iri, $matches)) {
             if (isset($matches[1])) {
-                return (new Product)->setProductId((int)$matches[1]);
+                return (new Product())->setProductId((int)$matches[1]);
             }
         }
 
@@ -504,6 +504,6 @@ class Quote implements EntityInterface
     private function iriToOrderEntity(string $iri): Order
     {
         $id = (int)str_replace('/orders/', '', $iri);
-        return (new Order)->setOrderId($id);
+        return (new Order())->setOrderId($id);
     }
 }

@@ -16,7 +16,7 @@ trait CustomFieldTrait
         private ?string $name = null,
         private ?string $value = null,
     ) {
-        $this->setCreatedAt(new DateTime);
+        $this->setCreatedAt(new DateTime());
     }
 
     public function getCustomFieldId(): ?int

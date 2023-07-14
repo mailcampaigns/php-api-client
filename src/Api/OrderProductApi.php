@@ -70,7 +70,7 @@ class OrderProductApi extends AbstractApi
 
     public function toEntity(array $data): OrderProduct
     {
-        $orderProduct = (new OrderProduct)
+        $orderProduct = (new OrderProduct())
             ->setOrderProductId($data['order_product_id'])
             ->setSupplierTitle($data['supplier_title'])
             ->setBrandTitle($data['brand_title'])
@@ -100,7 +100,7 @@ class OrderProductApi extends AbstractApi
                     $orderId = (int)$matches[1];
 
                     $orderProduct->setOrder(
-                        (new Order)
+                        (new Order())
                             ->setOrderId($orderId)
                             ->addOrderProduct($orderProduct)
                     );
@@ -112,7 +112,7 @@ class OrderProductApi extends AbstractApi
         if (isset($data['product']) && is_string($data['product'])) {
             if (false !== preg_match('/\/products\/(\d+)/', $data['product'], $matches)) {
                 if (isset($matches[1])) {
-                    $product = (new Product)->setProductId((int)$matches[1]);
+                    $product = (new Product())->setProductId((int)$matches[1]);
                     $orderProduct->setProduct($product);
                 }
             }

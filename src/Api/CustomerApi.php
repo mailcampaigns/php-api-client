@@ -167,11 +167,13 @@ class CustomerApi extends AbstractApi
                 }
 
                 // Now that we've got the IRI, let's extract the customer and product ids.
-                if (false !== preg_match(
+                if (
+                    false !== preg_match(
                         '/\/customer_favorite_products\/customer=(\d+);favoriteProduct=(\d+)/',
                         $favoriteIri,
                         $matches
-                    )) {
+                    )
+                ) {
                     if (isset($matches[1], $matches[2])) {
                         $customer = (new Customer())->setCustomerId((int)$matches[1]);
                         $product = (new Product())->setProductId((int)$matches[2]);
@@ -191,7 +193,7 @@ class CustomerApi extends AbstractApi
         $quotes = new QuoteCollection($data['quotes'] ?? []);
         $customFields = new CustomerCustomFieldCollection($data['custom_fields'] ?? []);
 
-        return (new Customer)
+        return (new Customer())
             ->setCustomerId($data['customer_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))

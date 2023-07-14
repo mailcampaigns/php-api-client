@@ -67,10 +67,10 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function __construct()
     {
-        $this->createdAt = new DateTime;
-        $this->orderProducts = new OrderProductCollection;
+        $this->createdAt = new DateTime();
+        $this->orderProducts = new OrderProductCollection();
         $this->isDiscounted = false;
-        $this->customFields = new OrderCustomFieldCollection;
+        $this->customFields = new OrderCustomFieldCollection();
     }
 
     public function getOrderId(): ?int
@@ -586,7 +586,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setOrderProducts(?iterable $orderProducts): self
     {
-        $this->orderProducts = new OrderProductCollection;
+        $this->orderProducts = new OrderProductCollection();
 
         if ($orderProducts) {
             foreach ($orderProducts as $data) {
@@ -597,7 +597,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
                 } else {
                     if (is_array($data)) {
                         $orderProductId = null;
-                        $orderProduct = new OrderProduct;
+                        $orderProduct = new OrderProduct();
 
                         if (isset($data['@id']) && is_string($data['@id'])) {
                             if (false !== preg_match('/\/order_products\/(\d+)/', $data['@id'], $matches)) {
@@ -680,7 +680,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
     {
         if (false !== preg_match('/\/products\/(\d+)/', $iri, $matches)) {
             if (isset($matches[1])) {
-                return (new Product)->setProductId((int)$matches[1]);
+                return (new Product())->setProductId((int)$matches[1]);
             }
         }
 
@@ -705,7 +705,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
 
     public function setCustomFields(?iterable $customFields): self
     {
-        $this->customFields = new OrderCustomFieldCollection;
+        $this->customFields = new OrderCustomFieldCollection();
 
         if ($customFields) {
             foreach ($customFields as $data) {
@@ -715,7 +715,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
                     $customField = $data;
                 } else {
                     if (is_array($data)) {
-                        $customField = (new OrderCustomField)
+                        $customField = (new OrderCustomField())
                             ->setCustomFieldId($data['custom_field_id'])
                             ->setOrder($this)
                             ->setName($data['name'])

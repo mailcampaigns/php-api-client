@@ -84,7 +84,7 @@ class CustomerFavoriteProductApi extends AbstractApi
         $customer = $this->iriToCustomer($data['customer']);
         $product = $this->iriToProduct($data['favorite_product']);
 
-        return (new CustomerFavoriteProduct)
+        return (new CustomerFavoriteProduct())
             ->setCustomer($customer)
             ->setProduct($product);
     }
@@ -95,7 +95,7 @@ class CustomerFavoriteProductApi extends AbstractApi
             return null;
         }
 
-        return (new Customer)->setCustomerId((int)str_replace('/customers/', '', $iri));
+        return (new Customer())->setCustomerId((int)str_replace('/customers/', '', $iri));
     }
 
     protected function iriToProduct(?string $iri): ?Product
@@ -104,6 +104,6 @@ class CustomerFavoriteProductApi extends AbstractApi
             return null;
         }
 
-        return (new Product)->setProductId((int)str_replace('/products/', '', $iri));
+        return (new Product())->setProductId((int)str_replace('/products/', '', $iri));
     }
 }

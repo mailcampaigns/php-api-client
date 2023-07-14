@@ -17,9 +17,9 @@ class ProductCategory implements EntityInterface
         private ?bool $isVisible = null,
         private ?string $title = null,
         private ?string $categoryRef = null,
-        private ?ProductProductCategoryCollection $productProductCategories = new ProductProductCategoryCollection,
+        private ?ProductProductCategoryCollection $productProductCategories = new ProductProductCategoryCollection(),
     ) {
-        $this->createdAt = new DateTime;
+        $this->createdAt = new DateTime();
     }
 
     public function getProductCategoryId(): ?int
@@ -73,7 +73,7 @@ class ProductCategory implements EntityInterface
 
     public function setProductProductCategories($productProductCategories): self
     {
-        $this->productProductCategories = new ProductProductCategoryCollection;
+        $this->productProductCategories = new ProductProductCategoryCollection();
 
         foreach ($productProductCategories as $productProductCategory) {
             $this->addProductProductCategory($productProductCategory);
@@ -89,14 +89,16 @@ class ProductCategory implements EntityInterface
         if (is_array($productProductCategory) && is_string($productProductCategory['product'])) {
             $pattern = '/\/products\/(?\'id\'\d+)/';
 
-            if (false !== preg_match($pattern, $productProductCategory['product'], $matches)
-                && isset($matches['id'])) {
+            if (
+                false !== preg_match($pattern, $productProductCategory['product'], $matches)
+                && isset($matches['id'])
+            ) {
                 $id = (int)$matches['id'];
 
-                $entity = (new ProductProductCategory)
+                $entity = (new ProductProductCategory())
                     ->setProductCategory($this)
                     ->setProduct(
-                        (new Product)->setProductId($id)
+                        (new Product())->setProductId($id)
                     );
             }
         }

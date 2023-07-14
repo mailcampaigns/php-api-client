@@ -55,7 +55,7 @@ class OrderCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
 
     public function toEntity(array $data): OrderCustomField
     {
-        $customField = (new OrderCustomField)
+        $customField = (new OrderCustomField())
             ->setCustomFieldId($data['custom_field_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
@@ -66,7 +66,7 @@ class OrderCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
         if (isset($data['order']) && is_string($data['order'])) {
             if (false !== preg_match('/\/orders\/(\d+)/', $data['order'], $matches)) {
                 if (isset($matches[1])) {
-                    $order = (new Order)->setOrderId((int)$matches[1]);
+                    $order = (new Order())->setOrderId((int)$matches[1]);
                     $customField->setOrder($order);
                 }
             }

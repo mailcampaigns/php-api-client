@@ -298,12 +298,12 @@ class ProductApi extends AbstractApi
         if (isset($data['parent']) && is_string($data['parent'])) {
             if (false !== preg_match('/\/products\/(\d+)/', $data['parent'], $matches)) {
                 if (isset($matches[1])) {
-                    $parent = (new Product)->setProductId((int)$matches[1]);
+                    $parent = (new Product())->setProductId((int)$matches[1]);
                 }
             }
         }
 
-        return (new Product)
+        return (new Product())
             ->setProductId($data['product_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
             ->setUpdatedAt($this->toDtObject($data['updated_at'] ?? null))

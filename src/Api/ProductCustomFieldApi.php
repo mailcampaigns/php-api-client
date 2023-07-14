@@ -64,7 +64,7 @@ class ProductCustomFieldApi extends AbstractApi implements CustomFieldApiInterfa
 
     public function toEntity(array $data): ProductCustomField
     {
-        $customField = (new ProductCustomField)
+        $customField = (new ProductCustomField())
             ->setCustomFieldId($data['custom_field_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
@@ -75,7 +75,7 @@ class ProductCustomFieldApi extends AbstractApi implements CustomFieldApiInterfa
         if (isset($data['product']) && is_string($data['product'])) {
             if (false !== preg_match('/\/products\/(\d+)/', $data['product'], $matches)) {
                 if (isset($matches[1])) {
-                    $product = (new Product)->setProductId((int)$matches[1]);
+                    $product = (new Product())->setProductId((int)$matches[1]);
                     $customField->setProduct($product);
                 }
             }
