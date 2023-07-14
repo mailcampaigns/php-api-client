@@ -15,62 +15,58 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
     use DateTrait;
     use DateTimeHelperTrait;
 
-    private int $orderId;
-    private string $number;
-    private string $status;
-    private float $priceCost;
-    private float $priceExcl;
-    private float $priceIncl;
-    private float $shipmentPriceExcl;
-    private float $shipmentPriceIncl;
-    private int $weight;
-    private int $volume;
-    private string $gender;
-    private ?DateTimeInterface $birthDate;
-    private string $email;
-    private string $firstName;
-    private string $middleName;
-    private string $lastName;
-    private string $phone;
-    private string $mobile;
-    private string $companyName;
-    private string $companyCocNumber;
-    private string $companyVatNumber;
-    private string $addressBillingName;
-    private string $addressBillingStreet;
-    private string $addressBillingNumber;
-    private string $addressBillingExtension;
-    private string $addressBillingZipcode;
-    private string $addressBillingCity;
-    private string $addressBillingRegion;
-    private string $addressBillingCountry;
-    private string $addressShippingCompany;
-    private string $addressShippingName;
-    private string $addressShippingStreet;
-    private string $addressShippingNumber;
-    private string $addressShippingExtension;
-    private string $addressShippingZipcode;
-    private string $addressShippingCity;
-    private string $addressShippingRegion;
-    private string $addressShippingCountry;
-    private bool $isDiscounted;
-    private string $discountType;
-    private float $discountAmount;
-    private float $discountPercentage;
-    private string $discountCouponCode;
-    private string $language;
-    private string $customerRef;
-    private ?Customer $customer;
-    private ?OrderProductCollection $orderProducts;
-    private ?Quote $quote;
-    private ?OrderCustomFieldCollection $customFields;
-
-    public function __construct()
-    {
+    public function __construct(
+        private ?int $orderId = null,
+        private ?string $number = null,
+        private ?string $status = null,
+        private ?float $priceCost = null,
+        private ?float $priceExcl = null,
+        private ?float $priceIncl = null,
+        private ?float $shipmentPriceExcl = null,
+        private ?float $shipmentPriceIncl = null,
+        private ?int $weight = null,
+        private ?int $volume = null,
+        private ?string $gender = null,
+        private ?DateTimeInterface $birthDate = null,
+        private ?string $email = null,
+        private ?string $firstName = null,
+        private ?string $middleName = null,
+        private ?string $lastName = null,
+        private ?string $phone = null,
+        private ?string $mobile = null,
+        private ?string $companyName = null,
+        private ?string $companyCocNumber = null,
+        private ?string $companyVatNumber = null,
+        private ?string $addressBillingName = null,
+        private ?string $addressBillingStreet = null,
+        private ?string $addressBillingNumber = null,
+        private ?string $addressBillingExtension = null,
+        private ?string $addressBillingZipcode = null,
+        private ?string $addressBillingCity = null,
+        private ?string $addressBillingRegion = null,
+        private ?string $addressBillingCountry = null,
+        private ?string $addressShippingCompany = null,
+        private ?string $addressShippingName = null,
+        private ?string $addressShippingStreet = null,
+        private ?string $addressShippingNumber = null,
+        private ?string $addressShippingExtension = null,
+        private ?string $addressShippingZipcode = null,
+        private ?string $addressShippingCity = null,
+        private ?string $addressShippingRegion = null,
+        private ?string $addressShippingCountry = null,
+        private ?bool $isDiscounted = false,
+        private ?string $discountType = null,
+        private ?float $discountAmount = null,
+        private ?float $discountPercentage = null,
+        private ?string $discountCouponCode = null,
+        private ?string $language = null,
+        private ?string $customerRef = null,
+        private ?Customer $customer = null,
+        private ?Quote $quote = null,
+        private ?OrderProductCollection $orderProducts = new OrderProductCollection(),
+        private ?OrderCustomFieldCollection $customFields = new OrderCustomFieldCollection(),
+    ) {
         $this->createdAt = new DateTime();
-        $this->orderProducts = new OrderProductCollection();
-        $this->isDiscounted = false;
-        $this->customFields = new OrderCustomFieldCollection();
     }
 
     public function getOrderId(): ?int
@@ -600,7 +596,13 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
                         $orderProduct = new OrderProduct();
 
                         if (isset($data['@id']) && is_string($data['@id'])) {
-                            if (false !== preg_match('/\/order_products\/(\d+)/', $data['@id'], $matches)) {
+                            $pregMatchRes = preg_match(
+                                '/\/order_products\/(\d+)/',
+                                $data['@id'],
+                                $matches
+                            );
+
+                            if (false !== $pregMatchRes) {
                                 if (isset($matches[1])) {
                                     $orderProductId = (int)$matches[1];
                                 }
@@ -642,7 +644,9 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
                             );
                         }
                     } else {
-                        throw new LogicException('Order product is neither an array nor an entity!');
+                        throw new LogicException(
+                            'Order product is neither an array nor an entity!'
+                        );
                     }
                 }
 
@@ -725,7 +729,9 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
                             // Convert customField IRI to a customField entity.
                             $customField = $this->iriToOrderCustomFieldEntity($data);
                         } else {
-                            throw new LogicException('Custom field is of an unexpected type!');
+                            throw new LogicException(
+                                'Custom field is of an unexpected type!'
+                            );
                         }
                     }
                 }
@@ -737,7 +743,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function addCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
+    public function addCustomField(CustomFieldInterface $customField): self
     {
         assert($customField instanceof OrderCustomField);
 
@@ -752,7 +758,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function removeCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
+    public function removeCustomField(CustomFieldInterface $customField): self
     {
         assert($customField instanceof OrderCustomField);
 
@@ -773,8 +779,10 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
         return '/orders/' . $this->getOrderId();
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'order_id' => $this->getOrderId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),

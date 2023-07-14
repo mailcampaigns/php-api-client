@@ -18,7 +18,8 @@ abstract class AbstractCollection implements CollectionInterface
          */
         protected array $elements = [],
         /**
-         * @var array|string[] Set the default mapping for 'hydration' of a collection.
+         * @var array|string[] Set the default mapping for 'hydration'
+         *  of a collection.
          */
         protected array $toArrayTypeMapping = [
             ApiInterface::OPERATION_GET => 'array',
@@ -34,8 +35,10 @@ abstract class AbstractCollection implements CollectionInterface
         return self::class . '@' . spl_object_hash($this);
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         $arr = [];
         $operation = $operation ?? ApiInterface::OPERATION_GET;
         $toType = $this->toArrayTypeMapping[$operation] ?? null;
@@ -45,7 +48,9 @@ abstract class AbstractCollection implements CollectionInterface
                 $arr[] = match ($toType) {
                     'iri' => $element->toIri(),
                     'array' => $element->toArray($operation, $isRoot),
-                    default => throw new LogicException('Invalid or missing type mapping!'),
+                    default => throw new LogicException(
+                        'Invalid or missing type mapping!'
+                    ),
                 };
             } else {
                 $arr[] = $element;

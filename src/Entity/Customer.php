@@ -524,7 +524,9 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
                         if (is_array($data)) {
                             $favorite = $this->arrayToFavorite($data);
                         } else {
-                            throw new LogicException('Favorite is neither an array nor an IRI!');
+                            throw new LogicException(
+                                'Favorite is neither an array nor an IRI!'
+                            );
                         }
                     }
                 }
@@ -642,7 +644,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function addCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
+    public function addCustomField(CustomFieldInterface $customField): self
     {
         assert($customField instanceof CustomerCustomField);
 
@@ -657,7 +659,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function removeCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
+    public function removeCustomField(CustomFieldInterface $customField): self
     {
         assert($customField instanceof CustomerCustomField);
 
@@ -669,8 +671,10 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'customer_id' => $this->getCustomerId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),

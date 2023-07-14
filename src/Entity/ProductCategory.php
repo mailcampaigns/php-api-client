@@ -87,12 +87,13 @@ class ProductCategory implements EntityInterface
         $entity = null;
 
         if (is_array($productProductCategory) && is_string($productProductCategory['product'])) {
-            $pattern = '/\/products\/(?\'id\'\d+)/';
+            $pregMatchRes = preg_match(
+                '/\/products\/(?\'id\'\d+)/',
+                $productProductCategory['product'],
+                $matches
+            );
 
-            if (
-                false !== preg_match($pattern, $productProductCategory['product'], $matches)
-                && isset($matches['id'])
-            ) {
+            if (false !== $pregMatchRes && isset($matches['id'])) {
                 $id = (int)$matches['id'];
 
                 $entity = (new ProductProductCategory())
@@ -116,8 +117,10 @@ class ProductCategory implements EntityInterface
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'product_category_id' => $this->getProductCategoryId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),

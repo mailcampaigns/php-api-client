@@ -651,7 +651,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function addCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
+    public function addCustomField(CustomFieldInterface $customField): self
     {
         assert($customField instanceof ProductCustomField);
 
@@ -666,7 +666,7 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function removeCustomField(CustomFieldInterface $customField): CustomFieldAwareEntityInterface
+    public function removeCustomField(CustomFieldInterface $customField): self
     {
         assert($customField instanceof ProductCustomField);
 
@@ -736,8 +736,10 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'product_id' => $this->getProductId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),
@@ -843,7 +845,9 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         }
 
         if (null === $categoryId || null === $productId) {
-            throw new LogicException('IRI error: Could not determine product and/or category id!');
+            throw new LogicException(
+                'IRI error: Could not determine product and/or category id!'
+            );
         }
 
         if ($productId !== $this->getProductId()) {
@@ -884,7 +888,9 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         }
 
         if (null === $relatedProductId || null === $productId) {
-            throw new LogicException('IRI error: Could not determine product and/or related product id!');
+            throw new LogicException(
+                'IRI error: Could not determine product and/or related product id!'
+            );
         }
 
         if ($productId !== $this->getProductId()) {
@@ -925,7 +931,9 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         }
 
         if (null === $crossSellProductId || null === $productId) {
-            throw new LogicException('IRI error: Could not determine product and/or cross-sell product id!');
+            throw new LogicException(
+                'IRI error: Could not determine product and/or cross-sell product id!'
+            );
         }
 
         if ($productId !== $this->getProductId()) {
@@ -966,7 +974,9 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         }
 
         if (null === $upSellProductId || null === $productId) {
-            throw new LogicException('IRI error: Could not determine product and/or up-sell product id!');
+            throw new LogicException(
+                'IRI error: Could not determine product and/or up-sell product id!'
+            );
         }
 
         if ($productId !== $this->getProductId()) {
@@ -1007,7 +1017,9 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
         }
 
         if (null === $volumeSellProductId || null === $productId) {
-            throw new LogicException('IRI error: Could not determine product and/or volume-sell product id!');
+            throw new LogicException(
+                'IRI error: Could not determine product and/or volume-sell product id!'
+            );
         }
 
         if ($productId !== $this->getProductId()) {

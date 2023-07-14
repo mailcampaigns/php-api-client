@@ -44,8 +44,10 @@ class SentMail implements EntityInterface
         return $this->sentAt;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'sent_mail_id' => $this->getSentMailId(),
             'to_email_address' => $this->getToEmailAddress(),

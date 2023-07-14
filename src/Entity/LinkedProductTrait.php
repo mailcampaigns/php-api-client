@@ -36,8 +36,10 @@ trait LinkedProductTrait
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         $res = [];
 
         if ($isRoot) {

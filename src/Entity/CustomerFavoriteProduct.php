@@ -6,33 +6,35 @@ namespace MailCampaigns\ApiClient\Entity;
 
 class CustomerFavoriteProduct implements EntityInterface
 {
-    private Customer $customer;
-    private Product $product;
+    private ?Customer $customer;
+    private ?Product $product;
 
     public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
-    public function setCustomer(Customer $customer): self
+    public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
         return $this;
     }
 
-    public function getProduct(): Product
+    public function getProduct(): ?Product
     {
         return $this->product;
     }
 
-    public function setProduct(Product $product): self
+    public function setProduct(?Product $product): self
     {
         $this->product = $product;
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         $arr = [];
 
         if ($this->customer->getCustomerId()) {

@@ -76,8 +76,10 @@ class Subscriber implements EntityInterface
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'subscriber_id' => $this->getSubscriberId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),

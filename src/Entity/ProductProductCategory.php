@@ -30,14 +30,17 @@ class ProductProductCategory implements EntityInterface
         return $this->productCategory;
     }
 
-    public function setProductCategory(?ProductCategory $productCategory): self
-    {
+    public function setProductCategory(
+        ?ProductCategory $productCategory
+    ): self {
         $this->productCategory = $productCategory;
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         if ($operation === ApiInterface::OPERATION_GET) {
             $productCategory = $this->productCategory->toArray($operation);
         } else {

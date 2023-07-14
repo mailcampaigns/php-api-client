@@ -11,8 +11,10 @@ class ProductCustomFieldCollection extends AbstractCollection
 {
     public static string $entityFqcn = ProductCustomField::class;
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         $arr = [];
 
         foreach ($this->elements as $element) {

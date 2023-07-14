@@ -20,7 +20,10 @@ interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
     /**
      * Gets a native PHP array representation of the collection.
      */
-    public function toArray(?string $operation = null, ?bool $isRoot = null): array;
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = null
+    ): array;
 
     /**
      * Adds an element at the end of the collection.
@@ -34,7 +37,8 @@ interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
     public function contains(mixed $element): bool;
 
     /**
-     * Checks whether the collection contains an element with the specified key/index.
+     * Checks whether the collection contains an element with the
+     * specified key/index.
      */
     public function containsKey(string|int $key): bool;
 
