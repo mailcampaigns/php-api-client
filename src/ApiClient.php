@@ -33,7 +33,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ApiClient
 {
-    private static ApiClient $instance;
+    private static ?ApiClient $instance = null;
     private ?HttpClientInterface $httpClient;
     private CustomerApi $customerApi;
     private QuoteApi $quoteApi;
