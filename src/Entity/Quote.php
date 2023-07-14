@@ -449,7 +449,7 @@ class Quote implements EntityInterface
         ];
     }
 
-    function toIri(): ?string
+    public function toIri(): ?string
     {
         if (null === $this->getQuoteId()) {
             return null;

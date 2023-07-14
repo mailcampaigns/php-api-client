@@ -31,7 +31,7 @@ class CustomerFavoriteProduct implements EntityInterface
         return $this;
     }
 
-    function toArray(?string $operation = null, ?bool $isRoot = false): array
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         $arr = [];
 
@@ -46,7 +46,7 @@ class CustomerFavoriteProduct implements EntityInterface
         return $arr;
     }
 
-    function toIri(): ?string
+    public function toIri(): ?string
     {
         $customer = $this->getCustomer();
         $product = $this->getProduct();

@@ -18,13 +18,13 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExcep
 
 class CustomerApi extends AbstractApi
 {
-    const ORDERABLE_PARAMS = [
+    public const ORDERABLE_PARAMS = [
         'customer_id',
         'created_at',
         'updated_at'
     ];
 
-    const DEFAULT_ORDER = [
+    public const DEFAULT_ORDER = [
         'created_at' => 'desc'
     ];
 

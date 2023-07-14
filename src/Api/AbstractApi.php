@@ -16,7 +16,7 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExcep
 abstract class AbstractApi implements ApiInterface
 {
     /** @var int */
-    const DEFAULT_ITEMS_PER_PAGE = 30;
+    public const DEFAULT_ITEMS_PER_PAGE = 30;
 
     public function __construct(protected ApiClient $client)
     {

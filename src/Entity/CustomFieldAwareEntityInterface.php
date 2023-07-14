@@ -6,9 +6,9 @@ namespace MailCampaigns\ApiClient\Entity;
 
 interface CustomFieldAwareEntityInterface
 {
-    function getNewCustomField(): CustomFieldInterface;
+    public function getNewCustomField(): CustomFieldInterface;
 
-    function addCustomField(CustomFieldInterface $customField): self;
+    public function addCustomField(CustomFieldInterface $customField): self;
 
-    function removeCustomField(CustomFieldInterface $customField): self;
+    public function removeCustomField(CustomFieldInterface $customField): self;
 }

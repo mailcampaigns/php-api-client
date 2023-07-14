@@ -10,15 +10,15 @@ namespace MailCampaigns\ApiClient\Entity;
  */
 interface CustomFieldInterface extends EntityInterface
 {
-    function getCustomFieldId(): ?int;
+    public function getCustomFieldId(): ?int;
 
-    function setCustomFieldId(int $customFieldId): self;
+    public function setCustomFieldId(int $customFieldId): self;
 
-    function getName(): ?string;
+    public function getName(): ?string;
 
-    function setName(?string $name): self;
+    public function setName(?string $name): self;
 
-    function getValue(): ?string;
+    public function getValue(): ?string;
 
-    function setValue(?string $value): self;
+    public function setValue(?string $value): self;
 }

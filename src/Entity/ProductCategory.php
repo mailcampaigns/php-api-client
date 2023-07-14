@@ -116,7 +116,7 @@ class ProductCategory implements EntityInterface
         return $this;
     }
 
-    function toArray(?string $operation = null, ?bool $isRoot = false): array
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         return [
             'product_category_id' => $this->getProductCategoryId(),
@@ -129,7 +129,7 @@ class ProductCategory implements EntityInterface
         ];
     }
 
-    function toIri(): ?string
+    public function toIri(): ?string
     {
         if (null === $this->getProductCategoryId()) {
             return null;

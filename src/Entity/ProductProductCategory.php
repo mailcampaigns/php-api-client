@@ -36,7 +36,7 @@ class ProductProductCategory implements EntityInterface
         return $this;
     }
 
-    function toArray(?string $operation = null, ?bool $isRoot = false): array
+    public function toArray(?string $operation = null, ?bool $isRoot = false): array
     {
         if ($operation === ApiInterface::OPERATION_GET) {
             $productCategory = $this->productCategory->toArray($operation);
@@ -50,7 +50,7 @@ class ProductProductCategory implements EntityInterface
         ]);
     }
 
-    function toIri(): ?string
+    public function toIri(): ?string
     {
         $product = $this->getProduct();
         $category = $this->getProductCategory();

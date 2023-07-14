@@ -829,7 +829,8 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     {
         $categoryId = $productId = null;
 
-        $pattern = '/^\/product_product_categories\/product=(?\'product_id\'\d+);productCategory=(?\'category_id\'\d+)$/';
+        $pattern = '/^\/product_product_categories\/product=(?\'product_id\'\d+);'
+            . 'productCategory=(?\'category_id\'\d+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['category_id'])) {
@@ -869,7 +870,8 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     {
         $relatedProductId = $productId = null;
         // IRI example: "/product_related_products/product=4;relatedProduct=1"
-        $pattern = '/^\/product_related_products\/product=(?\'product_id\'\d+);relatedProduct=(?\'related_product_id\'\d+)$/';
+        $pattern = '/^\/product_related_products\/product=(?\'product_id\'\d+);'
+            . 'relatedProduct=(?\'related_product_id\'\d+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['product_id'])) {
@@ -909,7 +911,8 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     {
         $crossSellProductId = $productId = null;
         // IRI example: "/product_cross_sell_products/product=4;crossSellProduct=1"
-        $pattern = '/^\/product_cross_sell_products\/product=(?\'product_id\'\d+);crossSellProduct=(?\'cross_sell_product_id\'\d+)$/';
+        $pattern = '/^\/product_cross_sell_products\/product=(?\'product_id\'\d+);'
+            . 'crossSellProduct=(?\'cross_sell_product_id\'\d+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['product_id'])) {
@@ -949,7 +952,8 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     {
         $upSellProductId = $productId = null;
         // IRI example: "/product_up_sell_products/product=4;upSellProduct=1"
-        $pattern = '/^\/product_up_sell_products\/product=(?\'product_id\'\d+);upSellProduct=(?\'up_sell_product_id\'\d+)$/';
+        $pattern = '/^\/product_up_sell_products\/product=(?\'product_id\'\d+);'
+            . 'upSellProduct=(?\'up_sell_product_id\'\d+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['product_id'])) {
@@ -989,7 +993,8 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
     {
         $volumeSellProductId = $productId = null;
         // IRI example: "/product_volume_sell_products/product=4;volumeSellProduct=1"
-        $pattern = '/^\/product_volume_sell_products\/product=(?\'product_id\'\d+);volumeSellProduct=(?\'volume_sell_product_id\'\d+)$/';
+        $pattern = '/^\/product_volume_sell_products\/product=(?\'product_id\'\d+);'
+            . 'volumeSellProduct=(?\'volume_sell_product_id\'\d+)$/';
 
         if (false !== preg_match($pattern, $iri, $matches)) {
             if (isset($matches['product_id'])) {

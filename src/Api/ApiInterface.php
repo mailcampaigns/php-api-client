@@ -14,11 +14,11 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExcep
  */
 interface ApiInterface
 {
-    const OPERATION_GET = 'GET';
-    const OPERATION_PUT = 'PUT';
-    const OPERATION_POST = 'POST';
-    const OPERATION_PATCH = 'PATCH';
-    const OPERATION_DELETE = 'DELETE';
+    public const OPERATION_GET = 'GET';
+    public const OPERATION_PUT = 'PUT';
+    public const OPERATION_POST = 'POST';
+    public const OPERATION_PATCH = 'PATCH';
+    public const OPERATION_DELETE = 'DELETE';
 
     /**
      * Creates a new resource.
@@ -26,7 +26,7 @@ interface ApiInterface
      * @throws McApiException|HttpClientExceptionInterface
      * @api
      */
-    function create(EntityInterface $entity): EntityInterface;
+    public function create(EntityInterface $entity): EntityInterface;
 
     /**
      * Retrieves a resource by id.
@@ -35,7 +35,7 @@ interface ApiInterface
      * @throws McApiException|HttpClientExceptionInterface
      * @api
      */
-    function getById(int|string $id): EntityInterface;
+    public function getById(int|string $id): EntityInterface;
 
     /**
      * Retrieves a collection of resources.
@@ -46,7 +46,7 @@ interface ApiInterface
      * @throws McApiException|HttpClientExceptionInterface
      * @api
      */
-    function getCollection(?int $page, ?int $perPage): CollectionInterface;
+    public function getCollection(?int $page, ?int $perPage): CollectionInterface;
 
     /**
      * Updates a resource.
@@ -54,7 +54,7 @@ interface ApiInterface
      * @throws McApiException|HttpClientExceptionInterface
      * @api
      */
-    function update(EntityInterface $entity): EntityInterface;
+    public function update(EntityInterface $entity): EntityInterface;
 
     /**
      * Deletes a resource by id.
@@ -63,10 +63,10 @@ interface ApiInterface
      * @throws McApiException|HttpClientExceptionInterface
      * @api
      */
-    function deleteById(int|string $id): ApiInterface;
+    public function deleteById(int|string $id): ApiInterface;
 
     /**
      * Converts an array of resource data to an entity (object).
      */
-    function toEntity(array $data): EntityInterface;
+    public function toEntity(array $data): EntityInterface;
 }
