@@ -8,7 +8,7 @@ class CustomerCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
 
-    private Customer $customer;
+    private ?Customer $customer = null;
 
     public function getCustomer(): ?Customer
     {

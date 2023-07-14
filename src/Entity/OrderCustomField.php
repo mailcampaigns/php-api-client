@@ -8,7 +8,7 @@ class OrderCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
 
-    private ?Order $order;
+    private ?Order $order = null;
 
     public function getOrder(): ?Order
     {

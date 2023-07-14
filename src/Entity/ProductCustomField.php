@@ -8,7 +8,7 @@ class ProductCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
 
-    private Product $product;
+    private ?Product $product = null;
 
     public function getProduct(): ?Product
     {
