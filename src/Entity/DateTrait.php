@@ -8,8 +8,8 @@ use DateTimeInterface;
 
 trait DateTrait
 {
-    protected ?DateTimeInterface $createdAt;
-    protected ?DateTimeInterface $updatedAt;
+    protected ?DateTimeInterface $createdAt = null;
+    protected ?DateTimeInterface $updatedAt = null;
 
     public function getCreatedAt(): ?DateTimeInterface
     {
