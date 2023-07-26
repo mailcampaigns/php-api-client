@@ -1,179 +1,85 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
 
 class Subscriber implements EntityInterface
 {
+    use DateTrait;
     use DateTimeHelperTrait;
 
-    /**
-     * @var int
-     */
-    protected $subscriberId;
+    public function __construct(
+        private ?int $subscriberId = null,
+        private ?string $emailAddress = null,
+        private ?bool $isSubscribed = null,
+        private ?bool $isConfirmed = null,
+        private ?array $data = [],
+    ) {
+        $this->createdAt = new DateTime();
+    }
 
-    /**
-     * @var DateTime
-     */
-    protected $createdAt;
-
-    /**
-     * @var DateTime
-     */
-    protected $updatedAt;
-
-    /**
-     * @var string
-     */
-    protected $emailAddress;
-
-    /**
-     * @var bool
-     */
-    protected $isSubscribed;
-
-    /**
-     * @var bool
-     */
-    protected $isConfirmed;
-
-    /**
-     * @var array
-     */
-    protected $data = [];
-
-    /**
-     * @return int
-     */
     public function getSubscriberId(): ?int
     {
         return $this->subscriberId;
     }
 
-    /**
-     * @param int|null $subscriberId
-     * @return $this
-     */
     public function setSubscriberId(?int $subscriberId): self
     {
         $this->subscriberId = $subscriberId;
         return $this;
     }
 
-    /**
-     * @return DateTime|null
-     */
-    public function getCreatedAt(): ?DateTime
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @param DateTime|null $createdAt
-     * @return $this
-     */
-    public function setCreatedAt(?DateTime $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    /**
-     * @return DateTime|null
-     */
-    public function getUpdatedAt(): ?DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * @param DateTime|null $updatedAt
-     * @return $this
-     */
-    public function setUpdatedAt(?DateTime $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getEmailAddress(): string
     {
         return $this->emailAddress;
     }
 
-    /**
-     * @param string $emailAddress
-     * @return $this
-     */
     public function setEmailAddress(string $emailAddress): self
     {
         $this->emailAddress = $emailAddress;
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
     public function isSubscribed(): ?bool
     {
         return $this->isSubscribed;
     }
 
-    /**
-     * @param bool|null $isSubscribed
-     * @return $this
-     */
     public function setIsSubscribed(?bool $isSubscribed): self
     {
         $this->isSubscribed = $isSubscribed;
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
     public function isConfirmed(): ?bool
     {
         return $this->isConfirmed;
     }
 
-    /**
-     * @param bool|null $isConfirmed
-     * @return $this
-     */
     public function setIsConfirmed(?bool $isConfirmed): self
     {
         $this->isConfirmed = $isConfirmed;
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getData(): array
     {
         return $this->data;
     }
 
-    /**
-     * @param array $data
-     * @return $this
-     */
     public function setData(array $data): self
     {
         $this->data = $data;
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'subscriber_id' => $this->getSubscriberId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),
@@ -185,9 +91,6 @@ class Subscriber implements EntityInterface
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function toIri(): ?string
     {
         if (null === $this->getSubscriberId()) {

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Collection;
 
 use MailCampaigns\ApiClient\Entity\ProductRelatedProduct;
 
 class ProductRelatedProductCollection extends AbstractCollection
 {
-    public static $entityFqcn = ProductRelatedProduct::class;
+    public static string $entityFqcn = ProductRelatedProduct::class;
 
     public function __construct(array $elements = [])
     {

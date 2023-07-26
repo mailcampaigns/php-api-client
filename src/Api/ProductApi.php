@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Api;
 
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
-use MailCampaigns\ApiClient\Collection\ProductCustomFieldCollection;
-use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
+use MailCampaigns\ApiClient\Collection\ProductCustomFieldCollection;
+use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductRelatedProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Collection\ProductUpSellProductCollection;
@@ -17,36 +18,28 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExcep
 
 class ProductApi extends AbstractApi
 {
-    const ORDERABLE_PARAMS = [
+    public const ORDERABLE_PARAMS = [
         'product_id',
         'created_at',
         'updated_at'
     ];
 
-    const DEFAULT_ORDER = [
+    public const DEFAULT_ORDER = [
         'created_at' => 'desc'
     ];
 
-    /**
-     * {@inheritDoc}
-     * @param Product|EntityInterface $entity
-     * @return Product
-     */
-    public function create(EntityInterface $entity): EntityInterface
+    public function create(Product|EntityInterface $entity): Product
     {
-        $this->validateEntityType($entity, Product::class);
-        $res = $this->post('products', $entity);
-
-        return $this->toEntity($res);
+        assert($entity instanceof Product);
+        return $this->toEntity($this->post('products', $entity));
     }
 
     /**
      * {@inheritDoc}
-     * @param array|null $propertyFilter Optionally set properties to return in response,
+     * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return Product
      */
-    public function getById($id, ?array $propertyFilter = null): EntityInterface
+    public function getById($id, ?array $propertyFilter = null): Product
     {
         $path = "products/{$id}";
 
@@ -66,17 +59,16 @@ class ProductApi extends AbstractApi
     }
 
     /**
-     * Tries to find a product by article code, returns null when no
-     * product was found with the given article code.
+     * Tries to find a product by article code, returns null when no product was found.
      *
-     * @param string $articleCode
-     * @param array|null $propertyFilter Optionally set properties to return in response,
+     * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return Product|null
      * @throws HttpClientExceptionInterface
      */
-    public function getByArticleCode(string $articleCode, ?array $propertyFilter = null): ?EntityInterface
-    {
+    public function getByArticleCode(
+        string $articleCode,
+        ?array $propertyFilter = null
+    ): ?Product {
         $parameters = ['article_code' => $articleCode];
 
         // If set, add property filter.
@@ -88,23 +80,13 @@ class ProductApi extends AbstractApi
             $this->get('products', $parameters)
         );
 
-        if (null !== $data) {
-            return $this->toEntity($data);
-        }
-
-        // Product was not found.
-        return null;
+        return null !== $data ? $this->toEntity($data) : null;
     }
 
     /**
-     * @param array $articleCodes A list of article codes to retrieve products by.
-     * @param int|null $page Defaults to first page.
-     * @param int|null $perPage Number of resources to retrieve. If not supplied, uses
-     *  default number of resources per page.
-     * @param array|null $order Overrides default order to sort results on.
-     * @param array|null $propertyFilter Optionally set properties to return in response,
+     * @param string[] $articleCodes A list of article codes to retrieve products by.
+     * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return ProductCollection
      * @throws HttpClientExceptionInterface
      */
     public function getByArticleCodes(
@@ -113,8 +95,7 @@ class ProductApi extends AbstractApi
         ?int $perPage = null,
         ?array $order = null,
         ?array $propertyFilter = null
-    ): CollectionInterface
-    {
+    ): ProductCollection {
         $parameters = [
             'article_code' => $articleCodes,
             'page' => $page ?? 1,
@@ -129,20 +110,21 @@ class ProductApi extends AbstractApi
 
         $data = $this->get('products', $parameters);
 
-        return $this->toCollection($data, ProductCollection::class);
+        $collection = $this->toCollection($data, ProductCollection::class);
+        assert($collection instanceof ProductCollection);
+
+        return $collection;
     }
 
     /**
      * Tries to find a product by EAN (International Article Number), returns null
      * when no product was found with the given product EAN.
      *
-     * @param string $ean
-     * @param array|null $propertyFilter Optionally set properties to return in response,
+     * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return Product|null
      * @throws HttpClientExceptionInterface
      */
-    public function getByEan(string $ean, ?array $propertyFilter = null): ?EntityInterface
+    public function getByEan(string $ean, ?array $propertyFilter = null): ?Product
     {
         $parameters = ['ean' => $ean];
 
@@ -155,23 +137,13 @@ class ProductApi extends AbstractApi
             $this->get('products', $parameters)
         );
 
-        if (null !== $data) {
-            return $this->toEntity($data);
-        }
-
-        // Product was not found.
-        return null;
+        return null !== $data ? $this->toEntity($data) : null;
     }
 
     /**
-     * @param array $eans A list of EANs to retrieve products by.
-     * @param int|null $page Defaults to first page.
-     * @param int|null $perPage Number of resources to retrieve. If not supplied, uses
-     *  default number of resources per page.
-     * @param array|null $order Overrides default order to sort results on.
-     * @param array|null $propertyFilter Optionally set properties to return in response,
+     * @param string[] $eans A list of EANs to retrieve products by.
+     * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return ProductCollection
      * @throws HttpClientExceptionInterface
      */
     public function getByEans(
@@ -180,8 +152,7 @@ class ProductApi extends AbstractApi
         ?int $perPage = null,
         ?array $order = null,
         ?array $propertyFilter = null
-    ): CollectionInterface
-    {
+    ): ProductCollection {
         $parameters = [
             'ean' => $eans,
             'page' => $page ?? 1,
@@ -196,20 +167,21 @@ class ProductApi extends AbstractApi
 
         $data = $this->get('products', $parameters);
 
-        return $this->toCollection($data, ProductCollection::class);
+        $collection = $this->toCollection($data, ProductCollection::class);
+        assert($collection instanceof ProductCollection);
+
+        return $collection;
     }
 
     /**
      * Tries to find a product by SKU (Stock Keeping Unit), returns null when no
      * product was found with the given product SKU.
      *
-     * @param string $sku
-     * @param array|null $propertyFilter Optionally set properties to return in response,
+     * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return Product|null
      * @throws HttpClientExceptionInterface
      */
-    public function getBySku(string $sku, ?array $propertyFilter = null): ?EntityInterface
+    public function getBySku(string $sku, ?array $propertyFilter = null): ?Product
     {
         $parameters = ['sku' => $sku];
 
@@ -222,23 +194,17 @@ class ProductApi extends AbstractApi
             $this->get('products', $parameters)
         );
 
-        if (null !== $data) {
-            return $this->toEntity($data);
-        }
-
-        // Product was not found.
-        return null;
+        return null !== $data ? $this->toEntity($data) : null;
     }
 
     /**
-     * @param array $skus A list of SKUs to retrieve products by.
+     * @param string[] $skus A list of SKUs to retrieve products by.
      * @param int|null $page Defaults to first page.
      * @param int|null $perPage Number of resources to retrieve. If not supplied, uses
      *  default number of resources per page.
-     * @param array|null $order Overrides default order to sort results on.
-     * @param array|null $propertyFilter Optionally set properties to return in response,
+     * @param string[]|null $order Overrides default order to sort results on.
+     * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return ProductCollection
      * @throws HttpClientExceptionInterface
      */
     public function getBySkus(
@@ -247,8 +213,7 @@ class ProductApi extends AbstractApi
         ?int $perPage = null,
         ?array $order = null,
         ?array $propertyFilter = null
-    ): CollectionInterface
-    {
+    ): ProductCollection {
         $parameters = [
             'sku' => $skus,
             'page' => $page ?? 1,
@@ -261,25 +226,28 @@ class ProductApi extends AbstractApi
             $parameters['properties'] = $propertyFilter;
         }
 
-        $data = $this->get('products', $parameters);
+        $collection = $this->toCollection(
+            $this->get('products', $parameters),
+            ProductCollection::class
+        );
 
-        return $this->toCollection($data, ProductCollection::class);
+        assert($collection instanceof ProductCollection);
+
+        return $collection;
     }
 
     /**
      * {@inheritDoc}
-     * @param array|null $order Overrides default order to sort results on.
-     * @param array|null $propertyFilter Optionally set properties to return in response,
+     * @param string[]|null $order Overrides default order to sort results on.
+     * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @return ProductCollection
      */
     public function getCollection(
         ?int $page = null,
         ?int $perPage = null,
         ?array $order = null,
         ?array $propertyFilter = null
-    ): CollectionInterface
-    {
+    ): ProductCollection {
         $parameters = [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
@@ -293,40 +261,30 @@ class ProductApi extends AbstractApi
 
         $data = $this->get('products', $parameters);
 
-        return $this->toCollection($data, ProductCollection::class);
+        $collection = $this->toCollection($data, ProductCollection::class);
+        assert($collection instanceof ProductCollection);
+
+        return $collection;
     }
 
-    /**
-     * {@inheritDoc}
-     * @param Product|EntityInterface $entity
-     * @return Product
-     */
-    public function update(EntityInterface $entity): EntityInterface
+    public function update(Product|EntityInterface $entity): Product
     {
-        $this->validateEntityType($entity, Product::class);
+        assert($entity instanceof Product);
 
-        $res = $this->put("products/{$entity->getProductId()}", $entity);
-
-        return $this->toEntity($res);
+        return $this->toEntity(
+            $this->put("products/{$entity->getProductId()}", $entity)
+        );
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function deleteById($id): ApiInterface
+    public function deleteById(int|string $id): self
     {
-        $this->delete("products/{$id}");
+        $this->delete("products/$id");
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     * @return Product
-     */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): Product
     {
         $parent = null;
-
         $categories = new ProductProductCategoryCollection($data['categories'] ?? []);
         $relatedProducts = new ProductRelatedProductCollection($data['related_products'] ?? []);
         $crossSellProducts = new ProductCrossSellProductCollection($data['cross_sell_products'] ?? []);
@@ -340,12 +298,12 @@ class ProductApi extends AbstractApi
         if (isset($data['parent']) && is_string($data['parent'])) {
             if (false !== preg_match('/\/products\/(\d+)/', $data['parent'], $matches)) {
                 if (isset($matches[1])) {
-                    $parent = (new Product)->setProductId((int)$matches[1]);
+                    $parent = (new Product())->setProductId((int)$matches[1]);
                 }
             }
         }
 
-        return (new Product)
+        return (new Product())
             ->setProductId($data['product_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
             ->setUpdatedAt($this->toDtObject($data['updated_at'] ?? null))

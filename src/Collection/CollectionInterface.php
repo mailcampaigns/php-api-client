@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Collection;
 
 use ArrayAccess;
@@ -17,68 +19,46 @@ interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
 {
     /**
      * Gets a native PHP array representation of the collection.
-     *
-     * @param string|null $operation
-     * @param bool|null $isRoot
-     * @return array
      */
-    public function toArray(?string $operation = null, ?bool $isRoot = null): array;
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = null
+    ): array;
 
     /**
      * Adds an element at the end of the collection.
-     *
-     * @param mixed $element The element to add.
-     * @return $this
      */
-    public function add($element): self;
+    public function add(mixed $element): self;
 
     /**
      * Checks whether an element is contained in the collection.
      * This is an O(n) operation, where n is the size of the collection.
-     *
-     * @param mixed $element The element to search for.
-     * @return bool TRUE if the collection contains the element, FALSE otherwise.
      */
-    public function contains($element): bool;
+    public function contains(mixed $element): bool;
 
     /**
-     * Checks whether the collection contains an element with the specified key/index.
-     *
-     * @param string|int $key The key/index to check for.
-     * @return bool TRUE if the collection contains an element with the specified key/index,
-     *              FALSE otherwise.
+     * Checks whether the collection contains an element with the
+     * specified key/index.
      */
-    public function containsKey($key): bool;
+    public function containsKey(string|int $key): bool;
 
     /**
      * Gets the element at the specified key/index.
-     *
-     * @param string|int $key The key/index of the element to retrieve.
-     * @return mixed
      */
-    public function get($key);
+    public function get(string|int $key): mixed;
 
     /**
      * Removes the element at the specified index from the collection.
-     *
-     * @param string|int $key The key/index of the element to remove.
-     * @return mixed The removed element or NULL, if the collection did not contain the element.
      */
-    public function remove($key);
+    public function remove(string|int $key): mixed;
 
     /**
      * Removes the specified element from the collection, if it is found.
-     *
-     * @param mixed $element The element to remove.
-     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeElement($element): bool;
+    public function removeElement(mixed $element): bool;
 
     /**
      * Sets an element in the collection at the specified key/index.
-     *
-     * @param string|int $key The key/index of the element to set.
-     * @param mixed $value The element to set.
      */
-    public function set($key, $value): void;
+    public function set(string|int $key, mixed $value): void;
 }

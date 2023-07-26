@@ -1,8 +1,8 @@
 {
     "name": "mailcampaigns/api-client",
-    "version": "1.12.2",
+    "version": "2.0.0",
     "description": "MailCampaigns API client",
-    "homepage": "https://docs.mailcampaigns.io",
+    "homepage": "https://api-v3.docs.mailcampaigns.io/",
     "type": "library",
     "license": "proprietary",
     "autoload": {
@@ -11,13 +11,13 @@
         }
     },
     "require": {
-        "PHP": "^7.1",
+        "PHP": "^8.2",
         "symfony/http-client": "^5.1",
         "ext-json": "*",
         "ext-curl": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.2"
+        "squizlabs/php_codesniffer": "^3.7"
     },
     "authors": [
         {

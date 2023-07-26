@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Collection;
 
 use MailCampaigns\ApiClient\Api\ApiInterface;
@@ -7,20 +9,19 @@ use MailCampaigns\ApiClient\Entity\ProductCustomField;
 
 class ProductCustomFieldCollection extends AbstractCollection
 {
-    public static $entityFqcn = ProductCustomField::class;
+    public static string $entityFqcn = ProductCustomField::class;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         $arr = [];
 
         foreach ($this->elements as $element) {
             if ($element instanceof ProductCustomField) {
                 if ($operation === ApiInterface::OPERATION_POST) {
                     $arr[] = $element->toArray($operation);
-                } else if ($operation === ApiInterface::OPERATION_PUT) {
+                } elseif ($operation === ApiInterface::OPERATION_PUT) {
                     if ($element->getCustomFieldId()) {
                         $arr[] = $element->toIri();
                     }

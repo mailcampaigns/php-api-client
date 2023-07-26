@@ -1,36 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 class CustomerCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
 
-    /**
-     * @var Customer
-     */
-    protected $customer;
+    private ?Customer $customer = null;
 
-    /**
-     * @return Customer
-     */
     public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
-    /**
-     * @param Customer|null $customer
-     * @return CustomerCustomField
-     */
-    public function setCustomer(?Customer $customer): CustomerCustomField
+    public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
         return $this;
     }
 
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'custom_field_id' => $this->getCustomFieldId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),

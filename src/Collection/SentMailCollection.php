@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Collection;
 
 use MailCampaigns\ApiClient\Entity\SentMail;
 
 class SentMailCollection extends AbstractCollection
 {
-    public static $entityFqcn = SentMail::class;
+    public static string $entityFqcn = SentMail::class;
 }

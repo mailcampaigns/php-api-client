@@ -1,77 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 class CustomerFavoriteProduct implements EntityInterface
 {
-    /**
-     * @var Customer
-     */
-    protected $customer;
+    private ?Customer $customer;
+    private ?Product $product;
 
-    /**
-     * @var Product
-     */
-    protected $product;
-
-    /**
-     * @return Customer|null
-     */
     public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
-    /**
-     * @param Customer $customer
-     * @return CustomerFavoriteProduct
-     */
-    public function setCustomer(Customer $customer): CustomerFavoriteProduct
+    public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
         return $this;
     }
 
-    /**
-     * @return Product
-     */
-    public function getProduct(): Product
+    public function getProduct(): ?Product
     {
         return $this->product;
     }
 
-    /**
-     * @param Product $product
-     * @return CustomerFavoriteProduct
-     */
-    public function setProduct(Product $product): CustomerFavoriteProduct
+    public function setProduct(?Product $product): self
     {
         $this->product = $product;
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         $arr = [];
 
-        if ($this->customer instanceof Customer && $this->customer->getCustomerId()) {
+        if ($this->customer->getCustomerId()) {
             $arr['customer'] = $this->customer->toIri();
         }
 
-        if ($this->product instanceof Product && $this->product->getProductId()) {
+        if ($this->product->getProductId()) {
             $arr['favorite_product'] = $this->product->toIri();
         }
 
         return $arr;
     }
 
-    /**
-     * @inheritDoc
-     */
-    function toIri(): ?string
+    public function toIri(): ?string
     {
         $customer = $this->getCustomer();
         $product = $this->getProduct();
@@ -88,8 +65,11 @@ class CustomerFavoriteProduct implements EntityInterface
             return null;
         }
 
-        return sprintf('/customer_favorite_products/customer=%d;favoriteProduct=%d',
-            $customer->getCustomerId(), $product->getProductId());
+        return sprintf(
+            '/customer_favorite_products/customer=%d;favoriteProduct=%d',
+            $customer->getCustomerId(),
+            $product->getProductId()
+        );
     }
 
     public function __destruct()

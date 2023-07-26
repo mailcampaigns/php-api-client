@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Api;
 
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\CustomerCollection;
 use MailCampaigns\ApiClient\Collection\CustomerCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
@@ -17,65 +18,52 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExcep
 
 class CustomerApi extends AbstractApi
 {
-    const ORDERABLE_PARAMS = [
+    public const ORDERABLE_PARAMS = [
         'customer_id',
         'created_at',
         'updated_at'
     ];
 
-    const DEFAULT_ORDER = [
+    public const DEFAULT_ORDER = [
         'created_at' => 'desc'
     ];
 
-    /**
-     * {@inheritDoc}
-     * @param Customer|EntityInterface $entity
-     * @return Customer
-     */
-    public function create(EntityInterface $entity): EntityInterface
+    public function create(Customer|EntityInterface $entity): Customer
     {
-        $this->validateEntityType($entity, Customer::class);
-        $res = $this->post('customers', $entity);
-
-        return $this->toEntity($res);
+        assert($entity instanceof Customer);
+        return $this->toEntity($this->post('customers', $entity));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return Customer
-     */
-    public function getById($id): EntityInterface
+    public function getById(int|string $id): Customer
     {
-        return $this->toEntity($this->get("customers/{$id}"));
+        return $this->toEntity($this->get("customers/$id"));
     }
 
     /**
      * Tries to find a customer by reference, returns null when no customer was
      * found with the given customer reference.
      *
-     * @param string $customerRef
-     * @return Customer|null
      * @throws HttpClientExceptionInterface
      */
-    public function getByCustomerRef(string $customerRef): ?EntityInterface
+    public function getByCustomerRef(string $ref): ?Customer
     {
         $data = $this->handleSingleItemResponse(
-            $this->get('customers', ['customer_ref' => $customerRef])
+            $this->get('customers', ['customer_ref' => $ref])
         );
 
-        if (null !== $data) {
-            return $this->toEntity($data);
-        }
-
-        // Customer was not found.
-        return null;
+        return null !== $data ? $this->toEntity($data) : null;
     }
 
     /**
+     * @param string[] $refs
      * @throws HttpClientExceptionInterface
      */
-    public function getByCustomerRefs(array $refs, ?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
-    {
+    public function getByCustomerRefs(
+        array $refs,
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null
+    ): CustomerCollection {
         $data = $this->get('customers', [
             'customer_ref' => $refs,
             'page' => $page ?? 1,
@@ -83,36 +71,39 @@ class CustomerApi extends AbstractApi
             'order' => $order ?? self::DEFAULT_ORDER
         ]);
 
-        return $this->toCollection($data, CustomerCollection::class);
+        $collection = $this->toCollection($data, CustomerCollection::class);
+        assert($collection instanceof CustomerCollection);
+
+        return $collection;
     }
 
     /**
      * Tries to find a customer by email address, returns null if no customer was
      * found with the given email address.
      *
-     * @param string $email
-     * @return Customer|null
      * @throws HttpClientExceptionInterface
      */
-    public function getByEmail(string $email): ?EntityInterface
+    public function getByEmail(string $email): ?Customer
     {
         $data = $this->handleSingleItemResponse(
             $this->get('customers', ['email' => $email])
         );
 
-        if (null !== $data) {
-            return $this->toEntity($data);
-        }
-
-        // Customer was not found.
-        return null;
+        return null !== $data ? $this->toEntity($data) : null;
     }
 
     /**
+     * @param string[] $emails
+     * @param string[] $order One of more pairs where the key is the field name and
+     *   the value is the direction (asc/desc).
      * @throws HttpClientExceptionInterface
      */
-    public function getByEmails(array $emails, ?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
-    {
+    public function getByEmails(
+        array $emails,
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null
+    ): CustomerCollection {
         $data = $this->get('customers', [
             'email' => $emails,
             'page' => $page ?? 1,
@@ -120,52 +111,48 @@ class CustomerApi extends AbstractApi
             'order' => $order ?? self::DEFAULT_ORDER
         ]);
 
-        return $this->toCollection($data, CustomerCollection::class);
+        $collection = $this->toCollection($data, CustomerCollection::class);
+        assert($collection instanceof CustomerCollection);
+
+        return $collection;
     }
 
     /**
+     * @param string[] $order One of more pairs where the key is the field name
+     *  and the value is the direction (asc/desc).
      * {@inheritDoc}
-     * @return CustomerCollection
      */
-    public function getCollection(?int $page = null, ?int $perPage = null, ?array $order = null): CollectionInterface
-    {
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null
+    ): CustomerCollection {
         $data = $this->get('customers', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
             'order' => $order ?? self::DEFAULT_ORDER
         ]);
 
-        return $this->toCollection($data, CustomerCollection::class);
+        $collection = $this->toCollection($data, CustomerCollection::class);
+        assert($collection instanceof CustomerCollection);
+
+        return $collection;
     }
 
-    /**
-     * {@inheritDoc}
-     * @param Customer|EntityInterface $entity
-     * @return Customer
-     */
-    public function update(EntityInterface $entity): EntityInterface
+    public function update(Customer|EntityInterface $entity): Customer
     {
-        $this->validateEntityType($entity, Customer::class);
-
-        $res = $this->put("customers/{$entity->getCustomerId()}", $entity);
-
-        return $this->toEntity($res);
+        assert($entity instanceof Customer);
+        return $this->toEntity($this->put("customers/{$entity->getCustomerId()}", $entity));
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function deleteById($id): ApiInterface
+
+    public function deleteById(int|string $id): self
     {
-        $this->delete("customers/{$id}");
+        $this->delete("customers/$id");
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     * @return Customer
-     */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): Customer
     {
         $favoriteProducts = new CustomerFavoriteProductCollection();
 
@@ -180,7 +167,13 @@ class CustomerApi extends AbstractApi
                 }
 
                 // Now that we've got the IRI, let's extract the customer and product ids.
-                if (false !== preg_match('/\/customer_favorite_products\/customer=(\d+);favoriteProduct=(\d+)/', $favoriteIri, $matches)) {
+                if (
+                    false !== preg_match(
+                        '/\/customer_favorite_products\/customer=(\d+);favoriteProduct=(\d+)/',
+                        $favoriteIri,
+                        $matches
+                    )
+                ) {
                     if (isset($matches[1], $matches[2])) {
                         $customer = (new Customer())->setCustomerId((int)$matches[1]);
                         $product = (new Product())->setProductId((int)$matches[2]);
@@ -200,7 +193,7 @@ class CustomerApi extends AbstractApi
         $quotes = new QuoteCollection($data['quotes'] ?? []);
         $customFields = new CustomerCustomFieldCollection($data['custom_fields'] ?? []);
 
-        return (new Customer)
+        return (new Customer())
             ->setCustomerId($data['customer_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at'] ?? null))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))

@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient;
 
 use MailCampaigns\ApiClient\Exception\ApiException;
-use MailCampaigns\ApiClient\Exception\ApiLimitExceededException;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -45,7 +46,8 @@ class ResponseMediator
             return;
         }
 
-        $header = self::getHeader($response, 'Link');
+        $header = array_shift($response->getHeaders()['Link']);
+
         $pagination = [];
         foreach (explode(',', $header) as $link) {
             preg_match('/<(.*)>; rel="(.*)"/i', trim($link, ','), $match);
@@ -56,37 +58,5 @@ class ResponseMediator
         }
 
         return $pagination;
-    }
-
-    /**
-     * Todo: Implement
-     * @param ResponseInterface $response
-     * @return null|string
-     * @throws HttpClientExceptionInterface
-     */
-    public static function getApiLimit(ResponseInterface $response)
-    {
-        $remainingCalls = self::getHeader($response, 'X-RateLimit-Remaining');
-
-        if (null !== $remainingCalls && 1 > $remainingCalls) {
-            throw new ApiLimitExceededException($remainingCalls);
-        }
-
-        return $remainingCalls;
-    }
-
-    /**
-     * Get the value for a single header.
-     *
-     * @param ResponseInterface $response
-     * @param string $name
-     * @return string|null
-     * @throws HttpClientExceptionInterface
-     */
-    public static function getHeader(ResponseInterface $response, $name)
-    {
-        $headers = $response->getHeaders()[$name];
-
-        return array_shift($headers);
     }
 }

@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Api;
 
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\SubscriberCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Subscriber;
@@ -11,13 +12,13 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExcep
 
 class SubscriberApi extends AbstractApi
 {
-    const ORDERABLE_PARAMS = [
+    public const ORDERABLE_PARAMS = [
         'subscriber_id',
         'created_at',
         'updated_at'
     ];
 
-    const DEFAULT_ORDER = [
+    public const DEFAULT_ORDER = [
         'subscriber_id' => 'desc',
         'updated_at' => 'desc'
     ];
@@ -43,56 +44,38 @@ class SubscriberApi extends AbstractApi
         return $data['hydra:totalItems'] ?? 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function create(EntityInterface $entity): EntityInterface
+
+    public function create(Subscriber|EntityInterface $entity): Subscriber
     {
         throw new ApiException('Operation not supported!');
     }
 
-    /**
-     * {@inheritDoc}
-     * @return Subscriber
-     */
-    public function getById($id): EntityInterface
+    public function getById(int|string $id): Subscriber
     {
-        return $this->toEntity($this->get("subscribers/{$id}"));
+        return $this->toEntity($this->get("subscribers/$id"));
     }
 
     /**
      * Tries to find a subscriber by email address, returns null when no subscriber
      * was found.
      *
-     * @param string $emailAddress
-     * @return Subscriber|null
      * @throws HttpClientExceptionInterface
      */
-    public function getByEmailAddress(string $emailAddress): ?EntityInterface
+    public function getByEmailAddress(string $emailAddress): ?Subscriber
     {
         $data = $this->handleSingleItemResponse(
             $this->get('subscribers', ['email_address' => $emailAddress])
         );
 
-        if (null !== $data) {
-            return $this->toEntity($data);
-        }
-
-        // Subscriber was not found.
-        return null;
+        return null !== $data ? $this->toEntity($data) : null;
     }
 
-    /**
-     * {@inheritDoc}
-     * @return SubscriberCollection
-     */
     public function getCollection(
         ?int $page = null,
         ?int $perPage = null,
         ?array $order = null,
         ?array $filters = null
-    ): CollectionInterface
-    {
+    ): SubscriberCollection {
         $params = [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
@@ -105,32 +88,28 @@ class SubscriberApi extends AbstractApi
             }
         }
 
-        $data = $this->get('subscribers', $params);
+        $collection = $this->toCollection(
+            $this->get('subscribers', $params),
+            SubscriberCollection::class
+        );
 
-        return $this->toCollection($data, SubscriberCollection::class);
+        assert($collection instanceof SubscriberCollection);
+
+        return $collection;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function update(EntityInterface $entity): EntityInterface
+    public function update(Subscriber|EntityInterface $entity): Subscriber
     {
         throw new ApiException('Operation not supported!');
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function deleteById($id): ApiInterface
+
+    public function deleteById(int|string $id): self
     {
         throw new ApiException('Operation not supported!');
     }
 
-    /**
-     * @inheritDoc
-     * @return Subscriber
-     */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): Subscriber
     {
         return (new Subscriber())
             ->setSubscriberId($data['subscriber_id'] ?? null)

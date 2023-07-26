@@ -1,50 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
-use DateTime;
+use DateTimeInterface;
 
 class SentMail implements EntityInterface
 {
     use DateTimeHelperTrait;
 
-    /**
-     * @var int
-     */
-    private $sentMailId;
-
-    /**
-     * @var string
-     */
-    private $toEmailAddress;
-
-    /**
-     * @var string
-     */
-    private $subject;
-
-    /**
-     * @var string
-     */
-    private $url;
-
-    /**
-     * @var DateTime
-     */
-    private $sentAt;
-
     public function __construct(
-        int $sentMailId,
-        string $toEmailAddress,
-        string $subject,
-        string $url,
-        DateTime $sentAt
+        private readonly int $sentMailId,
+        private readonly string $toEmailAddress,
+        private readonly string $subject,
+        private readonly string $url,
+        private DateTimeInterface $sentAt,
     ) {
-        $this->sentMailId = $sentMailId;
-        $this->toEmailAddress = $toEmailAddress;
-        $this->subject = $subject;
-        $this->url = $url;
-        $this->sentAt = $sentAt;
     }
 
     public function getSentMailId(): int
@@ -67,16 +39,15 @@ class SentMail implements EntityInterface
         return $this->url;
     }
 
-    public function getSentAt(): DateTime
+    public function getSentAt(): DateTimeInterface
     {
         return $this->sentAt;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'sent_mail_id' => $this->getSentMailId(),
             'to_email_address' => $this->getToEmailAddress(),
@@ -86,9 +57,6 @@ class SentMail implements EntityInterface
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function toIri(): ?string
     {
         return '/sent_mails/' . $this->getSentMailId();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
@@ -12,577 +14,273 @@ class Quote implements EntityInterface
     use DateTrait;
     use DateTimeHelperTrait;
 
-    /**
-     * The unique numeric identifier for the quote.
-     *
-     * @var int
-     */
-    protected $quoteId;
-
-    /**
-     * The date and time when the quote was created.
-     *
-     * @var DateTime
-     */
-    protected $createdAt;
-
-    /**
-     * The date and time when the quote was last updated.
-     *
-     * @var DateTime
-     */
-    protected $updatedAt;
-
-    /**
-     * Quote reference.
-     *
-     * @var string
-     */
-    protected $quoteRef;
-
-    /**
-     * The total quantity of the quote.
-     *
-     * @var int
-     */
-    protected $quantity;
-
-    /**
-     * The total cost price of the quote.
-     *
-     * @var float
-     */
-    protected $priceCost;
-
-    /**
-     * The total price excluding tax.
-     *
-     * @var float
-     */
-    protected $priceExcl;
-
-    /**
-     * The total price including tax.
-     *
-     * @var float
-     */
-    protected $priceIncl;
-
-    /**
-     * Shipment price excl. tax.
-     *
-     * @var float
-     */
-    protected $shipmentPriceExcl;
-
-    /**
-     * Shipment price incl. tax.
-     *
-     * @var float
-     */
-    protected $shipmentPriceIncl;
-
-    /**
-     * The total discount amount excluding tax.
-     *
-     * @var float
-     */
-    protected $discountExcl;
-
-    /**
-     * The total discount amount including tax.
-     *
-     * @var float
-     */
-    protected $discountIncl;
-
-    /**
-     * The total count of products in this quote.
-     *
-     * @var int
-     */
-    protected $productsCount;
-
-    /**
-     * The total quantity of product in this quote.
-     *
-     * @var int
-     */
-    protected $productsQuantity;
-
-    /**
-     * The unique (external) identifier that links to the discount code used for this quote.
-     *
-     * @var string
-     */
-    protected $discountRef;
-
-    /**
-     * The type of discount that has been applied. (Example: "amount")
-     *
-     * @var string
-     */
-    protected $discountType;
-
-    /**
-     * The total amount of the discount.
-     *
-     * @var float
-     */
-    protected $discountAmount;
-
-    /**
-     * The total percentage of the discount.
-     *
-     * @var float
-     */
-    protected $discountPercentage;
-
-    /**
-     * The type of discount applied to the shipment method. (Examples: "default", "discount", "free")
-     *
-     * @var string
-     */
-    protected $discountShipment;
-
-    /**
-     * The minimum quote amount to allow the discount to be applied to.
-     *
-     * @var float
-     */
-    protected $discountMinimumAmount;
-
-    /**
-     * Discount coupon code used (Example: "CP-258-151").
-     *
-     * @var string
-     */
-    protected $discountCouponCode;
-
-    /**
-     * Customer reference (external).
-     *
-     * @var string
-     */
-    protected $customerRef;
-
-    /**
-     * @var Customer
-     */
-    protected $customer;
-
-    /**
-     * The products in this quote.
-     *
-     * @var QuoteProductCollection
-     */
-    protected $quoteProducts;
-
-    /**
-     * @var OrderCollection
-     */
-    protected $orders;
-
-    public function __construct()
-    {
-        $this->createdAt = new DateTime;
-        $this->quoteProducts = new QuoteProductCollection;
-        $this->orders = new OrderCollection;
+    public function __construct(
+        private ?int $quoteId = null,
+        private ?string $quoteRef = null,
+        private ?int $quantity = null,
+        private ?float $priceCost = null,
+        private ?float $priceExcl = null,
+        private ?float $priceIncl = null,
+        private ?float $shipmentPriceExcl = null,
+        private ?float $shipmentPriceIncl = null,
+        private ?float $discountExcl = null,
+        private ?float $discountIncl = null,
+        private ?int $productsCount = null,
+        private ?int $productsQuantity = null,
+        private ?string $discountRef = null,
+        private ?string $discountType = null,
+        private ?float $discountAmount = null,
+        private ?float $discountPercentage = null,
+        private ?string $discountShipment = null,
+        private ?float $discountMinimumAmount = null,
+        private ?string $discountCouponCode = null,
+        private ?string $customerRef = null,
+        private ?Customer $customer = null,
+        private ?QuoteProductCollection $quoteProducts = new QuoteProductCollection(),
+        private ?OrderCollection $orders = new OrderCollection(),
+    ) {
+        $this->createdAt = new DateTime();
     }
 
-    /**
-     * @return int
-     */
     public function getQuoteId(): ?int
     {
         return $this->quoteId;
     }
 
-    /**
-     * @param int $quoteId
-     * @return Quote
-     */
-    public function setQuoteId(int $quoteId): Quote
+    public function setQuoteId(int $quoteId): self
     {
         $this->quoteId = $quoteId;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getQuoteRef(): ?string
     {
         return $this->quoteRef;
     }
 
-    /**
-     * @param string|null $quoteRef
-     * @return Quote
-     */
-    public function setQuoteRef(?string $quoteRef): Quote
+    public function setQuoteRef(?string $quoteRef): self
     {
         $this->quoteRef = $quoteRef;
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getQuantity(): ?int
     {
         return $this->quantity;
     }
 
-    /**
-     * @param int|null $quantity
-     * @return Quote
-     */
-    public function setQuantity(?int $quantity): Quote
+    public function setQuantity(?int $quantity): self
     {
         $this->quantity = $quantity;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getPriceCost(): ?float
     {
         return $this->priceCost;
     }
 
-    /**
-     * @param float|null $priceCost
-     * @return Quote
-     */
-    public function setPriceCost(?float $priceCost): Quote
+    public function setPriceCost(?float $priceCost): self
     {
         $this->priceCost = $priceCost;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getPriceExcl(): ?float
     {
         return $this->priceExcl;
     }
 
-    /**
-     * @param float|null $priceExcl
-     * @return Quote
-     */
-    public function setPriceExcl(?float $priceExcl): Quote
+    public function setPriceExcl(?float $priceExcl): self
     {
         $this->priceExcl = $priceExcl;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getPriceIncl(): ?float
     {
         return $this->priceIncl;
     }
 
-    /**
-     * @param float|null $priceIncl
-     * @return Quote
-     */
-    public function setPriceIncl(?float $priceIncl): Quote
+    public function setPriceIncl(?float $priceIncl): self
     {
         $this->priceIncl = $priceIncl;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getShipmentPriceExcl(): ?float
     {
         return $this->shipmentPriceExcl;
     }
 
-    /**
-     * @param float|null $shipmentPriceExcl
-     * @return Quote
-     */
-    public function setShipmentPriceExcl(?float $shipmentPriceExcl): Quote
+    public function setShipmentPriceExcl(?float $shipmentPriceExcl): self
     {
         $this->shipmentPriceExcl = $shipmentPriceExcl;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getShipmentPriceIncl(): ?float
     {
         return $this->shipmentPriceIncl;
     }
 
-    /**
-     * @param float|null $shipmentPriceIncl
-     * @return Quote
-     */
-    public function setShipmentPriceIncl(?float $shipmentPriceIncl): Quote
+    public function setShipmentPriceIncl(?float $shipmentPriceIncl): self
     {
         $this->shipmentPriceIncl = $shipmentPriceIncl;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getDiscountExcl(): ?float
     {
         return $this->discountExcl;
     }
 
-    /**
-     * @param float|null $discountExcl
-     * @return Quote
-     */
-    public function setDiscountExcl(?float $discountExcl): Quote
+    public function setDiscountExcl(?float $discountExcl): self
     {
         $this->discountExcl = $discountExcl;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getDiscountIncl(): ?float
     {
         return $this->discountIncl;
     }
 
-    /**
-     * @param float|null $discountIncl
-     * @return Quote
-     */
-    public function setDiscountIncl(?float $discountIncl): Quote
+    public function setDiscountIncl(?float $discountIncl): self
     {
         $this->discountIncl = $discountIncl;
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getProductsCount(): ?int
     {
         return $this->productsCount;
     }
 
-    /**
-     * @param int|null $productsCount
-     * @return Quote
-     */
-    public function setProductsCount(?int $productsCount): Quote
+    public function setProductsCount(?int $productsCount): self
     {
         $this->productsCount = $productsCount;
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getProductsQuantity(): ?int
     {
         return $this->productsQuantity;
     }
 
-    /**
-     * @param int|null $productsQuantity
-     * @return Quote
-     */
-    public function setProductsQuantity(?int $productsQuantity): Quote
+    public function setProductsQuantity(?int $productsQuantity): self
     {
         $this->productsQuantity = $productsQuantity;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDiscountRef(): ?string
     {
         return $this->discountRef;
     }
 
-    /**
-     * @param string|null $discountRef
-     * @return Quote
-     */
-    public function setDiscountRef(?string $discountRef): Quote
+    public function setDiscountRef(?string $discountRef): self
     {
         $this->discountRef = $discountRef;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDiscountType(): ?string
     {
         return $this->discountType;
     }
 
-    /**
-     * @param string|null $discountType
-     * @return Quote
-     */
-    public function setDiscountType(?string $discountType): Quote
+    public function setDiscountType(?string $discountType): self
     {
         $this->discountType = $discountType;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getDiscountAmount(): ?float
     {
         return $this->discountAmount;
     }
 
-    /**
-     * @param float|null $discountAmount
-     * @return Quote
-     */
-    public function setDiscountAmount(?float $discountAmount): Quote
+    public function setDiscountAmount(?float $discountAmount): self
     {
         $this->discountAmount = $discountAmount;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getDiscountPercentage(): ?float
     {
         return $this->discountPercentage;
     }
 
-    /**
-     * @param float|null $discountPercentage
-     * @return Quote
-     */
-    public function setDiscountPercentage(?float $discountPercentage): Quote
+    public function setDiscountPercentage(?float $discountPercentage): self
     {
         $this->discountPercentage = $discountPercentage;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDiscountShipment(): ?string
     {
         return $this->discountShipment;
     }
 
-    /**
-     * @param string|null $discountShipment
-     * @return Quote
-     */
-    public function setDiscountShipment(?string $discountShipment): Quote
+    public function setDiscountShipment(?string $discountShipment): self
     {
         $this->discountShipment = $discountShipment;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getDiscountMinimumAmount(): ?float
     {
         return $this->discountMinimumAmount;
     }
 
-    /**
-     * @param float|null $discountMinimumAmount
-     * @return Quote
-     */
-    public function setDiscountMinimumAmount(?float $discountMinimumAmount): Quote
+    public function setDiscountMinimumAmount(?float $discountMinimumAmount): self
     {
         $this->discountMinimumAmount = $discountMinimumAmount;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDiscountCouponCode(): ?string
     {
         return $this->discountCouponCode;
     }
 
-    /**
-     * @param string|null $discountCouponCode
-     * @return Quote
-     */
-    public function setDiscountCouponCode(?string $discountCouponCode): Quote
+    public function setDiscountCouponCode(?string $discountCouponCode): self
     {
         $this->discountCouponCode = $discountCouponCode;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getCustomerRef(): ?string
     {
         return $this->customerRef;
     }
 
-    /**
-     * @param string|null $customerRef
-     * @return Quote
-     */
-    public function setCustomerRef(?string $customerRef): Quote
+    public function setCustomerRef(?string $customerRef): self
     {
         $this->customerRef = $customerRef;
         return $this;
     }
 
-    /**
-     * @return Customer
-     */
     public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
-    /**
-     * @param Customer|null $customer
-     * @return Quote
-     */
-    public function setCustomer(?Customer $customer): Quote
+    public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
         return $this;
     }
 
-    /**
-     * @return QuoteProductCollection
-     */
     public function getQuoteProducts(): QuoteProductCollection
     {
         return $this->quoteProducts;
     }
 
-    /**
-     * @param iterable|QuoteProductCollection|null $quoteProducts
-     * @return Quote
-     */
-    public function setQuoteProducts(?iterable $quoteProducts): Quote
+    public function setQuoteProducts(?iterable $quoteProducts): self
     {
-        $this->quoteProducts = new QuoteProductCollection;
+        $this->quoteProducts = new QuoteProductCollection();
 
         if ($quoteProducts) {
             foreach ($quoteProducts as $data) {
@@ -590,7 +288,7 @@ class Quote implements EntityInterface
 
                 if (is_array($data)) {
                     if (isset($data['@id']) && is_string($data['@id'])) {
-                        $quoteProduct = new QuoteProduct;
+                        $quoteProduct = new QuoteProduct();
 
                         if (false !== preg_match('/\/quote_products\/(\d+)/', $data['@id'], $matches)) {
                             if (isset($matches[1])) {
@@ -629,8 +327,10 @@ class Quote implements EntityInterface
                             );
                         }
                     }
-                } else if ($data instanceof QuoteProduct) {
-                    $quoteProduct = $data;
+                } else {
+                    if ($data instanceof QuoteProduct) {
+                        $quoteProduct = $data;
+                    }
                 }
 
                 $this->addQuoteProduct($quoteProduct);
@@ -640,21 +340,6 @@ class Quote implements EntityInterface
         return $this;
     }
 
-    protected function productIriToEntity(string $iri): ?Product
-    {
-        if (false !== preg_match('/\/products\/(\d+)/', $iri, $matches)) {
-            if (isset($matches[1])) {
-                return (new Product)->setProductId((int)$matches[1]);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param QuoteProduct $quoteProduct
-     * @return $this
-     */
     public function addQuoteProduct(QuoteProduct $quoteProduct): self
     {
         if (!$this->quoteProducts->contains($quoteProduct)) {
@@ -668,21 +353,14 @@ class Quote implements EntityInterface
         return $this;
     }
 
-    /**
-     * @return OrderCollection
-     */
     public function getOrders(): OrderCollection
     {
         return $this->orders;
     }
 
-    /**
-     * @param iterable|OrderCollection|null $orders
-     * @return Quote
-     */
-    public function setOrders(?iterable $orders): Quote
+    public function setOrders(?iterable $orders): self
     {
-        $this->orders = new OrderCollection;
+        $this->orders = new OrderCollection();
 
         if ($orders) {
             foreach ($orders as $data) {
@@ -690,11 +368,13 @@ class Quote implements EntityInterface
 
                 if ($data instanceof Order) {
                     $order = $data;
-                } else if (is_string($data)) {
-                    // Convert order IRI (string) to an Order entity.
-                    $order = $this->iriToOrderEntity($data);
                 } else {
-                    throw new LogicException('Order is neither an array nor an IRI!');
+                    if (is_string($data)) {
+                        // Convert order IRI (string) to an Order entity.
+                        $order = $this->iriToOrderEntity($data);
+                    } else {
+                        throw new LogicException('Order is neither an array nor an IRI!');
+                    }
                 }
 
                 $this->addOrder($order);
@@ -736,17 +416,10 @@ class Quote implements EntityInterface
         return $this->getCustomer()->toIri();
     }
 
-    protected function iriToOrderEntity(string $iri): Order
-    {
-        $id = (int)str_replace('/orders/', '', $iri);
-        return (new Order)->setOrderId($id);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function toArray(?string $operation = null, ?bool $isRoot = false): array
-    {
+    public function toArray(
+        ?string $operation = null,
+        ?bool $isRoot = false
+    ): array {
         return [
             'quote_id' => $this->getQuoteId(),
             'created_at' => $this->dtToString($this->getCreatedAt()),
@@ -776,10 +449,7 @@ class Quote implements EntityInterface
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
-    function toIri(): ?string
+    public function toIri(): ?string
     {
         if (null === $this->getQuoteId()) {
             return null;
@@ -818,5 +488,22 @@ class Quote implements EntityInterface
         unset($this->customer);
         unset($this->quoteProducts);
         unset($this->orders);
+    }
+
+    private function productIriToEntity(string $iri): ?Product
+    {
+        if (false !== preg_match('/\/products\/(\d+)/', $iri, $matches)) {
+            if (isset($matches[1])) {
+                return (new Product())->setProductId((int)$matches[1]);
+            }
+        }
+
+        return null;
+    }
+
+    private function iriToOrderEntity(string $iri): Order
+    {
+        $id = (int)str_replace('/orders/', '', $iri);
+        return (new Order())->setOrderId($id);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Entity;
 
 /**
@@ -8,36 +10,15 @@ namespace MailCampaigns\ApiClient\Entity;
  */
 interface CustomFieldInterface extends EntityInterface
 {
-    /**
-     * @return int|null
-     */
-    function getCustomFieldId(): ?int;
+    public function getCustomFieldId(): ?int;
 
-    /**
-     * @param int $customFieldId
-     * @return $this
-     */
-    function setCustomFieldId(int $customFieldId);
+    public function setCustomFieldId(int $customFieldId): self;
 
-    /**
-     * @return string
-     */
-    function getName(): string;
+    public function getName(): ?string;
 
-    /**
-     * @param string $name
-     * @return $this
-     */
-    function setName(string $name);
+    public function setName(?string $name): self;
 
-    /**
-     * @return string|null
-     */
-    function getValue(): ?string;
+    public function getValue(): ?string;
 
-    /**
-     * @param string|null $value
-     * @return $this
-     */
-    function setValue(?string $value);
+    public function setValue(?string $value): self;
 }

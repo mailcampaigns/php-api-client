@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  php-api-client:
+    build:
+      context: .
+    volumes:
+      - ./:/var/www/php-api-client

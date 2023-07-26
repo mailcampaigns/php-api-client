@@ -1,95 +1,64 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MailCampaigns\ApiClient\Api;
 
-use InvalidArgumentException;
-use MailCampaigns\ApiClient\Collection\CollectionInterface;
 use MailCampaigns\ApiClient\Collection\ProductCustomFieldCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\ProductCustomField;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 class ProductCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
 {
-    /**
-     * @param EntityInterface|ProductCustomField $entity
-     * @return ProductCustomField
-     * @throws HttpClientExceptionInterface
-     */
-    public function create(EntityInterface $entity): EntityInterface
+    public function create(ProductCustomField|EntityInterface $entity): ProductCustomField
     {
-        if (!$entity instanceof ProductCustomField) {
-            throw new InvalidArgumentException('Expected custom product field entity!');
-        }
-
-        // Send request.
-        $res = $this->post('product_custom_fields', $entity);
-
-        return $this->toEntity($res);
+        assert($entity instanceof ProductCustomField);
+        return $this->toEntity($this->post('product_custom_fields', $entity));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return ProductCustomField
-     */
-    public function getById($id): EntityInterface
+    public function getById($id): ProductCustomField
     {
-        return $this->toEntity($this->get("product_custom_fields/{$id}"));
+        return $this->toEntity($this->get("product_custom_fields/$id"));
     }
 
-    /**
-     * {@inheritDoc}
-     * @return ProductCustomFieldCollection
-     */
-    public function getCollection(?int $page = null, ?int $perPage = null): CollectionInterface
-    {
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null
+    ): ProductCustomFieldCollection {
         $data = $this->get('product_custom_fields', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
         ]);
 
-        return $this->toCollection($data, ProductCustomFieldCollection::class);
+        $collection = $this->toCollection($data, ProductCustomFieldCollection::class);
+        assert($collection instanceof ProductCustomFieldCollection);
+
+        return $collection;
     }
 
-    /**
-     * Updates a custom product field.
-     *
-     * @param EntityInterface $entity
-     * @return ProductCustomField
-     * @throws HttpClientExceptionInterface
-     */
-    public function update(EntityInterface $entity): EntityInterface
-    {
-        if (!$entity instanceof ProductCustomField) {
-            throw new InvalidArgumentException(sprintf('Expected an instance of %s!',
-                ProductCustomField::class));
-        }
+    public function update(
+        ProductCustomField|EntityInterface $entity
+    ): ProductCustomField {
+        assert($entity instanceof ProductCustomField);
 
-        $res = $this->put("product_custom_fields/{$entity->getCustomFieldId()}", $entity);
-
-        return $this->toEntity($res);
+        return $this->toEntity(
+            $this->put(
+                "product_custom_fields/{$entity->getCustomFieldId()}",
+                $entity
+            )
+        );
     }
 
-    /**
-     * Deletes a custom product field by id.
-     *
-     * @param int $id
-     * @return $this
-     * @throws HttpClientExceptionInterface
-     */
-    public function deleteById($id): ApiInterface
+    public function deleteById(int|string $id): self
     {
-        $this->delete("product_custom_fields/{$id}");
+        $this->delete("product_custom_fields/$id");
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function toEntity(array $data): EntityInterface
+    public function toEntity(array $data): ProductCustomField
     {
-        $customField = (new ProductCustomField)
+        $customField = (new ProductCustomField())
             ->setCustomFieldId($data['custom_field_id'] ?? null)
             ->setCreatedAt($this->toDtObject($data['created_at']))
             ->setUpdatedAt($this->toDtObject($data['updated_at']))
@@ -100,7 +69,7 @@ class ProductCustomFieldApi extends AbstractApi implements CustomFieldApiInterfa
         if (isset($data['product']) && is_string($data['product'])) {
             if (false !== preg_match('/\/products\/(\d+)/', $data['product'], $matches)) {
                 if (isset($matches[1])) {
-                    $product = (new Product)->setProductId((int)$matches[1]);
+                    $product = (new Product())->setProductId((int)$matches[1]);
                     $customField->setProduct($product);
                 }
             }
