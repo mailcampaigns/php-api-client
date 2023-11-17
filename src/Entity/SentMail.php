@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTimeInterface;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 class SentMail implements EntityInterface
 {
     use DateTimeHelperTrait;
+    use ToJsonTrait;
 
     public function __construct(
         private readonly int $sentMailId,

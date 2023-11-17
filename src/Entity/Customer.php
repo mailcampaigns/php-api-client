@@ -12,11 +12,13 @@ use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Collection\QuoteCollection;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
+    use ToJsonTrait;
 
     public function __construct(
         private ?int $customerId = null,

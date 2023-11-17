@@ -8,11 +8,13 @@ use DateTime;
 use LogicException;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Collection\QuoteProductCollection;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 class Quote implements EntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
+    use ToJsonTrait;
 
     public function __construct(
         private ?int $quoteId = null,

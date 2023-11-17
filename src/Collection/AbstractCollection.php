@@ -8,10 +8,13 @@ use ArrayIterator;
 use LogicException;
 use MailCampaigns\ApiClient\Api\ApiInterface;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
+use MailCampaigns\ApiClient\ToJsonTrait;
 use Traversable;
 
 abstract class AbstractCollection implements CollectionInterface
 {
+    use ToJsonTrait;
+
     public function __construct(
         /**
          * An array containing the entries of this collection.
