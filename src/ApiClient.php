@@ -260,6 +260,7 @@ final class ApiClient
 
             return $this->bearerToken;
         }
+        $errMsg = 'Failed to retrieve access token.';
 
         $errMsg = 'Failed to retrieve access token.';
 
