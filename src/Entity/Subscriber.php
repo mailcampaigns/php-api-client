@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 class Subscriber implements EntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
+    use ToJsonTrait;
 
     public function __construct(
         private ?int $subscriberId = null,

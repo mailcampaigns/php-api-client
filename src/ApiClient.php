@@ -6,6 +6,7 @@ namespace MailCampaigns\ApiClient;
 
 use DateInterval;
 use DateTime;
+use DateTimeInterface;
 use Exception;
 use MailCampaigns\ApiClient\Api\CustomerApi;
 use MailCampaigns\ApiClient\Api\CustomerCustomFieldApi;
@@ -28,13 +29,14 @@ use MailCampaigns\ApiClient\Api\SentMailApi;
 use MailCampaigns\ApiClient\Api\SubscriberApi;
 use MailCampaigns\ApiClient\Exception\ApiAuthenticationException;
 use MailCampaigns\ApiClient\Exception\ApiException;
-use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ApiClient
 {
     private static ?ApiClient $instance = null;
-    private ?HttpClientInterface $httpClient;
+    private ?string $bearerToken = null;
+    private ?DateTimeInterface $tokenExpirationDt = null;
     private CustomerApi $customerApi;
     private QuoteApi $quoteApi;
     private QuoteProductApi $quoteProductApi;
@@ -54,24 +56,12 @@ final class ApiClient
     private OrderCustomFieldApi $orderCustomFieldApi;
     private SentMailApi $sentMailApi;
     private SubscriberApi $subscriberApi;
-    private string $baseUri;
-    private string $key;
-    private string $secret;
-    private DateTime $tokenExpirationDt;
 
-    private function __construct(string $baseUri, string $key, string $secret)
-    {
-        $this->baseUri = $baseUri;
-        $this->key = $key;
-        $this->secret = $secret;
-
-        // Request an access token.
-        $bearerToken = $this->getBearerToken();
-
-        // Create an instance of the HTTP client.
-        $this->createHttpClient($bearerToken);
-
-        // Create API objects.
+    private function __construct(
+        private readonly HttpClientInterface $httpClient,
+        private readonly string $key,
+        private readonly string $secret,
+    ) {
         $this->customerApi = new CustomerApi($this);
         $this->orderApi = new OrderApi($this);
         $this->orderProductApi = new OrderProductApi($this);
@@ -188,10 +178,10 @@ final class ApiClient
         return $this->subscriberApi;
     }
 
-    public static function create(string $baseUri, string $key, string $secret): self
+    public static function create(HttpClientInterface $httpClient, string $key, string $secret): self
     {
         if (!self::$instance instanceof self) {
-            self::$instance = new self($baseUri, $key, $secret);
+            self::$instance = new self($httpClient, $key, $secret);
         }
 
         return self::$instance;
@@ -202,85 +192,51 @@ final class ApiClient
         return $this->httpClient;
     }
 
-    public function setHttpClient(HttpClientInterface $httpClient): self
-    {
-        $this->httpClient = $httpClient;
-        return $this;
-    }
-
-    /**
-     * Checks if bearer token has expired.
-     */
-    public function hasTokenExpired(): bool
-    {
-        $secondsLeft = $this->tokenExpirationDt->getTimestamp() - (new DateTime())->getTimestamp();
-        return $secondsLeft <= 0;
-    }
-
-    public function refreshToken(): self
-    {
-        $this->createHttpClient($this->getBearerToken());
-        return $this;
-    }
-
     /**
      * Retrieves access (bearer) token.
      */
-    private function getBearerToken(): string
+    public function getBearerToken(): string
     {
-        $curl = curl_init();
+        if ($this->bearerToken && !$this->hasTokenExpired()) {
+            return $this->bearerToken;
+        }
 
-        // Set Curl options.
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $this->baseUri . '/oauth/v2/token',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => [
+        $options = [
+            'headers' => [
+                'Authorization: Basic ' . base64_encode($this->key . ':' . $this->secret),
+                'Accept: application/json',
+            ],
+            'body' => [
                 'scope' => 'read write',
                 'grant_type' => 'client_credentials'
             ],
-            CURLOPT_HTTPHEADER => [
-                'Authorization: Basic ' . base64_encode($this->key . ':' . $this->secret)
-            ]
-        ]);
+        ];
 
-        $response = curl_exec($curl);
-
-        if (false === $response) {
-            throw new ApiAuthenticationException(
-                sprintf('Failed to retrieve access token: `%s`.', curl_error($curl)),
-                curl_errno($curl)
-            );
+        try {
+            $response = $this->httpClient->request('POST', 'oauth/v2/token', $options);
+            $res = ResponseMediator::getContent($response);
+        } catch (ExceptionInterface $e) {
+            throw new ApiAuthenticationException('Failed to retrieve access token.', 0, $e);
         }
 
-        curl_close($curl);
-
-        $decodedResponse = json_decode($response);
-
-        if ($decodedResponse) {
-            if (isset($decodedResponse->access_token)) {
-                // Remember the moment the token will expirate to check on requests later.
-                if (isset($decodedResponse->expires_in)) {
-                    $this->setTokenExpiration($decodedResponse->expires_in);
-                }
-
-                return $decodedResponse->access_token;
+        if (isset($res['access_token'])) {
+            // Remember the moment the token will expirate to check on requests later.
+            if (isset($res['expires_in'])) {
+                $this->setTokenExpiration($res['expires_in']);
             }
 
-            if (isset($decodedResponse->error)) {
-                $error = $decodedResponse->error;
-                $errorDescription = $decodedResponse->error_description ?? '(no error description)';
+            $this->bearerToken = $res['access_token'];
 
-                throw new ApiAuthenticationException(sprintf(
-                    'Failed to retrieve access token: [%s] %s.',
-                    $error,
-                    $errorDescription
-                ));
-            }
+            return $this->bearerToken;
         }
 
-        throw new ApiAuthenticationException('Could not retrieve access token! '
-            . 'Received an unexpected response from the authentication server.');
+        $errMsg = 'Failed to retrieve access token.';
+
+        if (isset($res['error'])) {
+            $errMsg .= sprintf(' [%s] %s.', $res['error'], $res['error_description'] ?? '');
+        }
+
+        throw new ApiAuthenticationException($errMsg);
     }
 
     /**
@@ -297,23 +253,16 @@ final class ApiClient
         $this->tokenExpirationDt = (new DateTime())->add($interval);
     }
 
-    private function createHttpClient(string $bearerToken): void
-    {
-        $this->httpClient = HttpClient::create([
-            'headers' => [
-                'User-Agent' => 'MailCampaigns PHP API client ' . $this->getComposerPackageVersion()
-            ],
-            'auth_bearer' => $bearerToken,
-            'base_uri' => $this->baseUri
-        ]);
-    }
-
     /**
-     * Get version of this package from Composer configuration.
+     * Checks if bearer token has expired.
      */
-    private function getComposerPackageVersion(): string
+    private function hasTokenExpired(): bool
     {
-        $composerConfig = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
-        return $composerConfig->version;
+        if (!$this->tokenExpirationDt) {
+            return true;
+        }
+
+        $secondsLeft = $this->tokenExpirationDt->getTimestamp() - (new DateTime())->getTimestamp();
+        return $secondsLeft <= 0;
     }
 }

@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace MailCampaigns\ApiClient\Entity;
 
 use MailCampaigns\ApiClient\Api\ApiInterface;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 /**
  * This trait should be used for all product to product relations.
  */
 trait LinkedProductTrait
 {
+    use ToJsonTrait;
+
     protected ?Product $product;
     protected ?Product $linkedProduct;
 

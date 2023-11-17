@@ -51,18 +51,18 @@ abstract class AbstractApi implements ApiInterface
     protected function get(
         string $path,
         array $parameters = [],
-        array $requestHeaders = []
+        array $requestHeaders = [],
     ): array|string {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-
         if (count($parameters) > 0) {
             $path .= '?' . http_build_query($parameters);
         }
 
         $response = $this->client->getHttpClient()->request('GET', $path, [
-            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders)
+            'headers' => array_merge(
+                ['content-type: application/ld+json'],
+                $requestHeaders,
+            ),
+            'auth_bearer' => $this->client->getBearerToken(),
         ]);
 
         return ResponseMediator::getContent($response);
@@ -76,21 +76,22 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request headers.
      * @throws HttpClientExceptionInterface
      */
-    protected function head(string $path, array $parameters = [], array $requestHeaders = []): array|string
-    {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-
+    protected function head(
+        string $path,
+        array $parameters = [],
+        array $requestHeaders = [],
+    ): array|string {
         if (count($parameters) > 0) {
             $path .= '?' . http_build_query($parameters);
         }
 
-        $response = $this->client->getHttpClient()->request(
-            'HEAD',
-            $path,
-            array_merge(['content-type: application/ld+json'], $requestHeaders)
-        );
+        $response = $this->client->getHttpClient()->request('HEAD', $path, [
+            'headers' => array_merge(
+                ['content-type: application/ld+json'],
+                $requestHeaders,
+            ),
+            'auth_bearer' => $this->client->getBearerToken(),
+        ]);
 
         return ResponseMediator::getContent($response);
     }
@@ -103,15 +104,18 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request headers.
      * @throws HttpClientExceptionInterface
      */
-    protected function post(string $path, EntityInterface $entity, array $requestHeaders = []): array|string
-    {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-
+    protected function post(
+        string $path,
+        EntityInterface $entity,
+        array $requestHeaders = [],
+    ): array|string {
         $response = $this->client->getHttpClient()->request('POST', $path, [
-            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
-            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_POST, true))
+            'headers' => array_merge(
+                ['content-type: application/ld+json'],
+                $requestHeaders,
+            ),
+            'auth_bearer' => $this->client->getBearerToken(),
+            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_POST, true)),
         ]);
 
         return ResponseMediator::getContent($response);
@@ -125,15 +129,18 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request headers.
      * @throws HttpClientExceptionInterface
      */
-    protected function patch(string $path, EntityInterface $entity, array $requestHeaders = []): array|string
-    {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-
+    protected function patch(
+        string $path,
+        EntityInterface $entity,
+        array $requestHeaders = [],
+    ): array|string {
         $response = $this->client->getHttpClient()->request('PATCH', $path, [
-            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
-            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PATCH, true))
+            'headers' => array_merge(
+                ['content-type: application/ld+json'],
+                $requestHeaders,
+            ),
+            'auth_bearer' => $this->client->getBearerToken(),
+            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PATCH, true)),
         ]);
 
         return ResponseMediator::getContent($response);
@@ -147,15 +154,18 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request headers.
      * @throws HttpClientExceptionInterface
      */
-    protected function put(string $path, EntityInterface $entity, array $requestHeaders = []): array|string
-    {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-
+    protected function put(
+        string $path,
+        EntityInterface $entity,
+        array $requestHeaders = [],
+    ): array|string {
         $response = $this->client->getHttpClient()->request('PUT', $path, [
-            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
-            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PUT, true))
+            'headers' => array_merge(
+                ['content-type: application/ld+json'],
+                $requestHeaders,
+            ),
+            'auth_bearer' => $this->client->getBearerToken(),
+            'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PUT, true)),
         ]);
 
         return ResponseMediator::getContent($response);
@@ -169,15 +179,18 @@ abstract class AbstractApi implements ApiInterface
      * @param array $requestHeaders Request headers.
      * @throws HttpClientExceptionInterface
      */
-    protected function delete(string $path, array $parameters = [], array $requestHeaders = []): array|string
-    {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-
+    protected function delete(
+        string $path,
+        array $parameters = [],
+        array $requestHeaders = [],
+    ): array|string {
         $response = $this->client->getHttpClient()->request('DELETE', $path, [
-            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
-            'body' => $this->createJsonBody($parameters)
+            'headers' => array_merge(
+                ['content-type: application/ld+json'],
+                $requestHeaders,
+            ),
+            'auth_bearer' => $this->client->getBearerToken(),
+            'body' => $this->createJsonBody($parameters),
         ]);
 
         return ResponseMediator::getContent($response);

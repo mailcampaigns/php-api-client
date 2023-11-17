@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Entity;
 
+use MailCampaigns\ApiClient\ToJsonTrait;
+
 class CustomerFavoriteProduct implements EntityInterface
 {
+    use ToJsonTrait;
+
     private ?Customer $customer;
     private ?Product $product;
 

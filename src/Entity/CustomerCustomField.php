@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Entity;
 
+use MailCampaigns\ApiClient\ToJsonTrait;
+
 class CustomerCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
+    use ToJsonTrait;
 
     private ?Customer $customer = null;
 
