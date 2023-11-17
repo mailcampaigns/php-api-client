@@ -14,11 +14,13 @@ use MailCampaigns\ApiClient\Collection\ProductRelatedProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Collection\ProductUpSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductVolumeSellProductCollection;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 class Product implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
+    use ToJsonTrait;
 
     public function __construct(
         private ?int $productId = null,
