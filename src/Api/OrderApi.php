@@ -72,6 +72,41 @@ class OrderApi extends AbstractApi
         return $collection;
     }
 
+    /**
+     * Tries to find an order by customer reference, returns null when not found.
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerRef(string $ref): ?Order
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('orders', ['customer_ref' => $ref])
+        );
+
+        return null !== $data ? $this->toEntity($data) : null;
+    }
+
+    /**
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerRefs(
+        array $refs,
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null
+    ): OrderCollection {
+        $data = $this->get('orders', [
+            'customer_ref' => $refs,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        $collection = $this->toCollection($data, OrderCollection::class);
+        assert($collection instanceof OrderCollection);
+
+        return $collection;
+    }
+
     public function getCollection(
         ?int $page = null,
         ?int $perPage = null,
