@@ -104,17 +104,56 @@ class QuoteApi extends AbstractApi
     }
 
     /**
+     * Tries to find a quote by email address as set on the linked customer
+     * resource, returns null when not found.
+     *
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerEmail(string $email): ?Quote
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('quotes', ['customer.email' => $email])
+        );
+
+        return null !== $data ? $this->toEntity($data) : null;
+    }
+
+    /**
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerEmails(
+        array $emails,
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null
+    ): QuoteCollection {
+        $data = $this->get('quotes', [
+            'customer.email' => $emails,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        $collection = $this->toCollection($data, QuoteCollection::class);
+        assert($collection instanceof QuoteCollection);
+
+        return $collection;
+    }
+
+    /**
      * {@inheritDoc}
      * @param array $filters Optional filters.
      */
     public function getCollection(
         ?int $page = null,
         ?int $perPage = null,
-        $filters = []
+        ?array $filters = [],
+        ?array $order = null
     ): QuoteCollection {
         $params = [
             'page' => $page ?? 1,
-            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
         ];
 
         if (count($filters) > 0) {
