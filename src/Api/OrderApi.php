@@ -72,16 +72,130 @@ class OrderApi extends AbstractApi
         return $collection;
     }
 
-    public function getCollection(
+    /**
+     * Tries to find an order by customer reference, returns null when not found.
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerRef(string $ref): ?Order
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('orders', ['customer_ref' => $ref])
+        );
+
+        return null !== $data ? $this->toEntity($data) : null;
+    }
+
+    /**
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerRefs(
+        array $refs,
         ?int $page = null,
         ?int $perPage = null,
         ?array $order = null
+    ): OrderCollection {
+        $data = $this->get('orders', [
+            'customer_ref' => $refs,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        $collection = $this->toCollection($data, OrderCollection::class);
+        assert($collection instanceof OrderCollection);
+
+        return $collection;
+    }
+
+    /**
+     * Tries to find an order by email address, returns null when not found.
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByEmail(string $email): ?Order
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('orders', ['email' => $email])
+        );
+
+        return null !== $data ? $this->toEntity($data) : null;
+    }
+
+    /**
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByEmails(
+        array $emails,
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null
+    ): OrderCollection {
+        $data = $this->get('orders', [
+            'email' => $emails,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        $collection = $this->toCollection($data, OrderCollection::class);
+        assert($collection instanceof OrderCollection);
+
+        return $collection;
+    }
+
+    /**
+     * Tries to find an order by email address as set on the linked customer
+     * resource, returns null when not found.
+     *
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerEmail(string $email): ?Order
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('orders', ['customer.email' => $email])
+        );
+
+        return null !== $data ? $this->toEntity($data) : null;
+    }
+
+    /**
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerEmails(
+        array $emails,
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null
+    ): OrderCollection {
+        $data = $this->get('orders', [
+            'customer.email' => $emails,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        $collection = $this->toCollection($data, OrderCollection::class);
+        assert($collection instanceof OrderCollection);
+
+        return $collection;
+    }
+
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null,
+        ?array $filters = []
     ): OrderCollection {
         $data = $this->get('orders', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
             'order' => $order ?? self::DEFAULT_ORDER
         ]);
+
+        if (count($filters) > 0) {
+            foreach ($filters as $key => $value) {
+                $data[$key] = $value;
+            }
+        }
 
         $collection = $this->toCollection($data, OrderCollection::class);
         assert($collection instanceof OrderCollection);

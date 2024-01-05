@@ -12,6 +12,16 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExcep
 
 class QuoteApi extends AbstractApi
 {
+    public const ORDERABLE_PARAMS = [
+        'quote_id',
+        'created_at',
+        'updated_at'
+    ];
+
+    public const DEFAULT_ORDER = [
+        'created_at' => 'desc'
+    ];
+
     public function create(Quote|EntityInterface $entity): Quote
     {
         assert($entity instanceof Quote);
@@ -59,17 +69,91 @@ class QuoteApi extends AbstractApi
     }
 
     /**
+     * Tries to find a quote by customer reference, returns null when not found.
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerRef(string $ref): ?Quote
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('quotes', ['customer_ref' => $ref])
+        );
+
+        return null !== $data ? $this->toEntity($data) : null;
+    }
+
+    /**
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerRefs(
+        array $refs,
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null
+    ): QuoteCollection {
+        $data = $this->get('quotes', [
+            'customer_ref' => $refs,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        $collection = $this->toCollection($data, QuoteCollection::class);
+        assert($collection instanceof QuoteCollection);
+
+        return $collection;
+    }
+
+    /**
+     * Tries to find a quote by email address as set on the linked customer
+     * resource, returns null when not found.
+     *
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerEmail(string $email): ?Quote
+    {
+        $data = $this->handleSingleItemResponse(
+            $this->get('quotes', ['customer.email' => $email])
+        );
+
+        return null !== $data ? $this->toEntity($data) : null;
+    }
+
+    /**
+     * @throws HttpClientExceptionInterface
+     */
+    public function getByCustomerEmails(
+        array $emails,
+        ?int $page = null,
+        ?int $perPage = null,
+        ?array $order = null
+    ): QuoteCollection {
+        $data = $this->get('quotes', [
+            'customer.email' => $emails,
+            'page' => $page ?? 1,
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
+        ]);
+
+        $collection = $this->toCollection($data, QuoteCollection::class);
+        assert($collection instanceof QuoteCollection);
+
+        return $collection;
+    }
+
+    /**
      * {@inheritDoc}
      * @param array $filters Optional filters.
      */
     public function getCollection(
         ?int $page = null,
         ?int $perPage = null,
-        $filters = []
+        ?array $filters = [],
+        ?array $order = null
     ): QuoteCollection {
         $params = [
             'page' => $page ?? 1,
-            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
+            'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE,
+            'order' => $order ?? self::DEFAULT_ORDER
         ];
 
         if (count($filters) > 0) {
