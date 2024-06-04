@@ -23,6 +23,7 @@ use MailCampaigns\ApiClient\Api\ProductReviewApi;
 use MailCampaigns\ApiClient\Api\ProductUpSellProductApi;
 use MailCampaigns\ApiClient\Api\ProductVolumeSellProductApi;
 use MailCampaigns\ApiClient\Api\QuoteApi;
+use MailCampaigns\ApiClient\Api\QuoteCustomFieldApi;
 use MailCampaigns\ApiClient\Api\QuoteProductApi;
 use MailCampaigns\ApiClient\Api\SentMailApi;
 use MailCampaigns\ApiClient\Api\SubscriberApi;
@@ -36,9 +37,12 @@ final class ApiClient
     private static ?ApiClient $instance = null;
     private ?HttpClientInterface $httpClient;
     private CustomerApi $customerApi;
+    private CustomerCustomFieldApi $customerCustomFieldApi;
     private QuoteApi $quoteApi;
+    private QuoteCustomFieldApi $quoteCustomFieldApi;
     private QuoteProductApi $quoteProductApi;
     private OrderApi $orderApi;
+    private OrderCustomFieldApi $orderCustomFieldApi;
     private OrderProductApi $orderProductApi;
     private ProductApi $productApi;
     private ProductCategoryApi $productCategoryApi;
@@ -50,8 +54,6 @@ final class ApiClient
     private ProductUpSellProductApi $productUpSellProductApi;
     private ProductVolumeSellProductApi $productVolumeSellProductApi;
     private ProductCustomFieldApi $productCustomFieldApi;
-    private CustomerCustomFieldApi $customerCustomFieldApi;
-    private OrderCustomFieldApi $orderCustomFieldApi;
     private SentMailApi $sentMailApi;
     private SubscriberApi $subscriberApi;
     private string $baseUri;
@@ -73,9 +75,12 @@ final class ApiClient
 
         // Create API objects.
         $this->customerApi = new CustomerApi($this);
+        $this->customerCustomFieldApi = new CustomerCustomFieldApi($this);
         $this->orderApi = new OrderApi($this);
+        $this->orderCustomFieldApi = new OrderCustomFieldApi($this);
         $this->orderProductApi = new OrderProductApi($this);
         $this->quoteApi = new QuoteApi($this);
+        $this->quoteCustomFieldApi = new QuoteCustomFieldApi($this);
         $this->quoteProductApi = new QuoteProductApi($this);
         $this->productApi = new ProductApi($this);
         $this->productCategoryApi = new ProductCategoryApi($this);
@@ -87,8 +92,6 @@ final class ApiClient
         $this->productUpSellProductApi = new ProductUpSellProductApi($this);
         $this->productVolumeSellProductApi = new ProductVolumeSellProductApi($this);
         $this->productCustomFieldApi = new ProductCustomFieldApi($this);
-        $this->customerCustomFieldApi = new CustomerCustomFieldApi($this);
-        $this->orderCustomFieldApi = new OrderCustomFieldApi($this);
         $this->sentMailApi = new SentMailApi($this);
         $this->subscriberApi = new SubscriberApi($this);
     }
@@ -176,6 +179,11 @@ final class ApiClient
     public function getOrderCustomFieldApi(): OrderCustomFieldApi
     {
         return $this->orderCustomFieldApi;
+    }
+
+    public function getQuoteCustomFieldApi(): QuoteCustomFieldApi
+    {
+        return $this->quoteCustomFieldApi;
     }
 
     public function getSentMailApi(): SentMailApi

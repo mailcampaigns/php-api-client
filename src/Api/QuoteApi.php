@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MailCampaigns\ApiClient\Api;
 
 use MailCampaigns\ApiClient\Collection\QuoteCollection;
+use MailCampaigns\ApiClient\Collection\QuoteCustomFieldCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Quote;
@@ -200,6 +201,8 @@ class QuoteApi extends AbstractApi
             }
         }
 
+        $customFields = new QuoteCustomFieldCollection($data['custom_fields'] ?? []);
+
         return (new Quote())
             ->setQuoteId($data['quote_id'])
             ->setCreatedAt($this->toDtObject($data['created_at']))
@@ -225,6 +228,7 @@ class QuoteApi extends AbstractApi
             ->setCustomerRef($data['customer_ref'])
             ->setCustomer($customer)
             ->setQuoteProducts($data['quote_products'])
-            ->setOrders($data['orders']);
+            ->setOrders($data['orders'])
+            ->setCustomFields($customFields);
     }
 }
