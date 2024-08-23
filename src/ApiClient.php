@@ -34,6 +34,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ApiClient
 {
+    /** @var int A buffer time in seconds to consider a bearer token to be expired. */
+    const EXPIRATION_BUFFER_SECS = 10;
     private static ?ApiClient $instance = null;
     private ?HttpClientInterface $httpClient;
     private CustomerApi $customerApi;
@@ -222,7 +224,7 @@ final class ApiClient
     public function hasTokenExpired(): bool
     {
         $secondsLeft = $this->tokenExpirationDt->getTimestamp() - (new DateTime())->getTimestamp();
-        return $secondsLeft <= 0;
+        return $secondsLeft <= self::EXPIRATION_BUFFER_SECS;
     }
 
     public function refreshToken(): self
@@ -267,7 +269,7 @@ final class ApiClient
 
         if ($decodedResponse) {
             if (isset($decodedResponse->access_token)) {
-                // Remember the moment the token will expirate to check on requests later.
+                // Remember the moment the token will expire to check before requests.
                 if (isset($decodedResponse->expires_in)) {
                     $this->setTokenExpiration($decodedResponse->expires_in);
                 }
