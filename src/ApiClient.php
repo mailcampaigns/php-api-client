@@ -202,27 +202,6 @@ final class ApiClient
         return $this->httpClient;
     }
 
-    public function setHttpClient(HttpClientInterface $httpClient): self
-    {
-        $this->httpClient = $httpClient;
-        return $this;
-    }
-
-    /**
-     * Checks if bearer token has expired.
-     */
-    public function hasTokenExpired(): bool
-    {
-        $secondsLeft = $this->tokenExpirationDt->getTimestamp() - (new DateTime())->getTimestamp();
-        return $secondsLeft <= self::EXPIRATION_BUFFER_SECS;
-    }
-
-    public function refreshToken(): self
-    {
-        $this->createHttpClient($this->getBearerToken());
-        return $this;
-    }
-
     /**
      * Retrieves access (bearer) token.
      */
@@ -251,7 +230,7 @@ final class ApiClient
         }
 
         if (isset($res['access_token'])) {
-            // Remember the moment the token will expire to check before requests.
+            // Remember the moment the token will expirate to check on requests later.
             if (isset($res['expires_in'])) {
                 $this->setTokenExpiration($res['expires_in']);
             }
@@ -260,7 +239,6 @@ final class ApiClient
 
             return $this->bearerToken;
         }
-        $errMsg = 'Failed to retrieve access token.';
 
         $errMsg = 'Failed to retrieve access token.';
 
@@ -295,6 +273,6 @@ final class ApiClient
         }
 
         $secondsLeft = $this->tokenExpirationDt->getTimestamp() - (new DateTime())->getTimestamp();
-        return $secondsLeft <= 0;
+        return $secondsLeft <= self::EXPIRATION_BUFFER_SECS;
     }
 }
