@@ -7,6 +7,7 @@ namespace MailCampaigns\ApiClient\Entity;
 use DateTime;
 use LogicException;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
+use MailCampaigns\ApiClient\Collection\QuoteCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\QuoteProductCollection;
 
 class Quote implements EntityInterface
@@ -38,6 +39,8 @@ class Quote implements EntityInterface
         private ?Customer $customer = null,
         private ?QuoteProductCollection $quoteProducts = new QuoteProductCollection(),
         private ?OrderCollection $orders = new OrderCollection(),
+        private ?QuoteCustomFieldCollection $customFields = new QuoteCustomFieldCollection(),
+
     ) {
         $this->createdAt = new DateTime();
     }
@@ -416,6 +419,74 @@ class Quote implements EntityInterface
         return $this->getCustomer()->toIri();
     }
 
+    public function getCustomFields(): QuoteCustomFieldCollection
+    {
+        return $this->customFields;
+    }
+
+    public function setCustomFields(?iterable $customFields): self
+    {
+        $this->customFields = new QuoteCustomFieldCollection();
+
+        if ($customFields) {
+            foreach ($customFields as $data) {
+                $customField = null;
+
+                if ($data instanceof QuoteCustomField) {
+                    $customField = $data;
+                } else {
+                    if (is_array($data)) {
+                        $customField = (new QuoteCustomField())
+                            ->setCustomFieldId($data['custom_field_id'])
+                            ->setQuote($this)
+                            ->setName($data['name'])
+                            ->setValue($data['value']);
+                    } else {
+                        if (is_string($data)) {
+                            // Convert customField IRI to a customField entity.
+                            $customField = $this->iriToQuoteCustomFieldEntity($data);
+                        } else {
+                            throw new LogicException(
+                                'Custom field is of an unexpected type!'
+                            );
+                        }
+                    }
+                }
+
+                $this->addCustomField($customField);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addCustomField(CustomFieldInterface $customField): self
+    {
+        assert($customField instanceof QuoteCustomField);
+
+        if (!$this->customFields->contains($customField)) {
+            if ($customField->getQuote() !== $this) {
+                $customField->setQuote($this);
+            }
+
+            $this->customFields->add($customField);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomField(CustomFieldInterface $customField): self
+    {
+        assert($customField instanceof QuoteCustomField);
+
+        if ($this->customFields->contains($customField)) {
+            $customField->setQuote(null);
+            $this->customFields->removeElement($customField);
+        }
+
+        return $this;
+    }
+
     public function toArray(
         ?string $operation = null,
         ?bool $isRoot = false
@@ -458,6 +529,17 @@ class Quote implements EntityInterface
         return '/quotes/' . $this->getQuoteId();
     }
 
+    private function iriToQuoteCustomFieldEntity(string $iri): QuoteCustomField
+    {
+        $id = (int)str_replace('/quote_custom_fields/', '', $iri);
+        return (new QuoteCustomField())->setCustomFieldId($id);
+    }
+
+    public function getNewCustomField(): CustomFieldInterface
+    {
+        return new QuoteCustomField();
+    }
+
     public function __clone()
     {
         if ($this->createdAt !== null) {
@@ -479,6 +561,10 @@ class Quote implements EntityInterface
         if ($this->quoteProducts !== null) {
             $this->quoteProducts = clone $this->quoteProducts;
         }
+
+        if ($this->customFields !== null) {
+            $this->customFields = clone $this->customFields;
+        }
     }
 
     public function __destruct()
@@ -488,6 +574,7 @@ class Quote implements EntityInterface
         unset($this->customer);
         unset($this->quoteProducts);
         unset($this->orders);
+        unset($this->customFields);
     }
 
     private function productIriToEntity(string $iri): ?Product
