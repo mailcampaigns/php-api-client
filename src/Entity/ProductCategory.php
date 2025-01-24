@@ -73,7 +73,7 @@ class ProductCategory implements EntityInterface
         return $this->productProductCategories;
     }
 
-    public function setProductProductCategories($productProductCategories): self
+    public function setProductProductCategories(ProductProductCategoryCollection $productProductCategories): self
     {
         $this->productProductCategories = new ProductProductCategoryCollection();
 
@@ -84,7 +84,7 @@ class ProductCategory implements EntityInterface
         return $this;
     }
 
-    public function addProductProductCategory($productProductCategory): self
+    public function addProductProductCategory(ProductProductCategory|array $productProductCategory): self
     {
         $entity = null;
 

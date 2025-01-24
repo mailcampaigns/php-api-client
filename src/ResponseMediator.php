@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient;
 
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
-use Symfony\Contracts\HttpClient\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class ResponseMediator
 {
     /**
-     * @throws ExceptionInterface
+     * @throws ApiClientException
      */
     public static function getContent(ResponseInterface $response): array|string
     {
-        $body = $response->getContent();
+        if ($response->getStatusCode() >= 400) {
+            throw new ApiClientException($response->getStatusCode() . ' ' . $response->getReasonPhrase() . PHP_EOL . $response->getBody()->getContents() . PHP_EOL . json_encode($response->getHeaders()), $response->getStatusCode());
+        }
+
+        $body = $response->getBody()->getContents();
+
         $content = json_decode($body, true);
 
         if (JSON_ERROR_NONE === json_last_error()) {
@@ -22,28 +26,5 @@ class ResponseMediator
         }
 
         return $body;
-    }
-
-    /**
-     * @throws ExceptionInterface
-     */
-    public static function getPagination(ResponseInterface $response): ?array
-    {
-        if (!in_array('Link', $response->getHeaders(), true)) {
-            return null;
-        }
-
-        $header = array_shift($response->getHeaders()['Link']);
-
-        $pagination = [];
-        foreach (explode(',', $header) as $link) {
-            preg_match('/<(.*)>; rel="(.*)"/i', trim($link, ','), $match);
-
-            if (3 === count($match)) {
-                $pagination[$match[2]] = $match[1];
-            }
-        }
-
-        return $pagination;
     }
 }

@@ -9,8 +9,10 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\CustomerCustomField;
 
-class CustomerCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
+class CustomerCustomFieldApi implements ApiInterface, CustomFieldApiInterface
 {
+    use ApiTrait;
+
     public function create(EntityInterface|CustomerCustomField $entity): CustomerCustomField
     {
         assert($entity instanceof CustomerCustomField);
@@ -22,8 +24,10 @@ class CustomerCustomFieldApi extends AbstractApi implements CustomFieldApiInterf
         return $this->toEntity($this->get("customer_custom_fields/$id"));
     }
 
-    public function getCollection(?int $page = null, ?int $perPage = null): CustomerCustomFieldCollection
-    {
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null
+    ): CustomerCustomFieldCollection {
         $data = $this->get('customer_custom_fields', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE

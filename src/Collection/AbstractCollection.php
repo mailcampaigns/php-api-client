@@ -63,18 +63,18 @@ abstract class AbstractCollection implements CollectionInterface
         return $arr;
     }
 
-    public function add($element): CollectionInterface
+    public function add(mixed $element): CollectionInterface
     {
         $this->elements[] = $element;
         return $this;
     }
 
-    public function contains($element): bool
+    public function contains(mixed $element): bool
     {
         return in_array($element, $this->elements, true);
     }
 
-    public function containsKey($key): bool
+    public function containsKey(mixed $key): bool
     {
         return isset($this->elements[$key]) || array_key_exists($key, $this->elements);
     }
@@ -91,7 +91,7 @@ abstract class AbstractCollection implements CollectionInterface
         return $removed;
     }
 
-    public function removeElement($element): bool
+    public function removeElement(mixed $element): bool
     {
         $key = array_search($element, $this->elements, true);
 
@@ -114,17 +114,17 @@ abstract class AbstractCollection implements CollectionInterface
         return $this->elements[$key] ?? null;
     }
 
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return $this->containsKey($offset);
     }
 
-    public function offsetGet($offset): mixed
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->get($offset);
     }
 
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if ($offset === null) {
             $this->add($value);
@@ -135,7 +135,7 @@ abstract class AbstractCollection implements CollectionInterface
         $this->set($offset, $value);
     }
 
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         $this->remove($offset);
     }
@@ -145,7 +145,7 @@ abstract class AbstractCollection implements CollectionInterface
         return count($this->elements);
     }
 
-    public function set($key, $value): void
+    public function set(mixed $key, mixed $value): void
     {
         $this->elements[$key] = $value;
     }

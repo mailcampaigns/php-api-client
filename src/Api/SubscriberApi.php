@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\SubscriberCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Subscriber;
-use MailCampaigns\ApiClient\Exception\ApiException;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class SubscriberApi extends AbstractApi
+class SubscriberApi implements ApiInterface
 {
+    use ApiTrait;
+
+    /**
+     * @api
+     */
     public const ORDERABLE_PARAMS = [
         'subscriber_id',
         'created_at',
@@ -24,7 +28,7 @@ class SubscriberApi extends AbstractApi
     ];
 
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
      */
     public function count(?array $filters = null): int
     {
@@ -44,10 +48,9 @@ class SubscriberApi extends AbstractApi
         return $data['hydra:totalItems'] ?? 0;
     }
 
-
     public function create(Subscriber|EntityInterface $entity): Subscriber
     {
-        throw new ApiException('Operation not supported!');
+        throw new ApiClientException('Operation not supported!');
     }
 
     public function getById(int|string $id): Subscriber
@@ -59,7 +62,8 @@ class SubscriberApi extends AbstractApi
      * Tries to find a subscriber by email address, returns null when no subscriber
      * was found.
      *
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByEmailAddress(string $emailAddress): ?Subscriber
     {
@@ -100,13 +104,12 @@ class SubscriberApi extends AbstractApi
 
     public function update(Subscriber|EntityInterface $entity): Subscriber
     {
-        throw new ApiException('Operation not supported!');
+        throw new ApiClientException('Operation not supported!');
     }
-
 
     public function deleteById(int|string $id): self
     {
-        throw new ApiException('Operation not supported!');
+        throw new ApiClientException('Operation not supported!');
     }
 
     public function toEntity(array $data): Subscriber

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Entity;
 
+use MailCampaigns\ApiClient\ToJsonTrait;
+
 class QuoteCustomField implements CustomFieldInterface
 {
     use CustomFieldTrait;
+    use ToJsonTrait;
 
     private ?Quote $quote = null;
 

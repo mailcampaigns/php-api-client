@@ -1,7 +1,7 @@
 {
     "name": "mailcampaigns/api-client",
-    "description": "MailCampaigns API client",
-    "homepage": "https://api-v3.mailcampaigns.nl/",
+    "description": "MailCampaigns API-v3 client",
+    "homepage": "https://www.mailcampaigns.nl/",
     "type": "library",
     "license": "proprietary",
     "autoload": {
@@ -11,13 +11,21 @@
     },
     "require": {
         "PHP": "^8.2",
-        "symfony/http-client-contracts": "^v2.5.2",
-        "ext-json": "*"
+        "ext-json": "*",
+        "http-interop/http-factory-discovery": "^1.6"
+    },
+    "suggest": {
+        "symfony/http-client": "Required to use Symfony HTTP Client."
     },
     "authors": [
         {
             "name": "Bert van der Genugten",
             "email": "bert@mailcampaigns.nl"
         }
-    ]
+    ],
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
 }

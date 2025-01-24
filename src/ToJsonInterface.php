@@ -11,6 +11,7 @@ interface ToJsonInterface
      *
      * Please note: On errors, this method will (by design) _not_ throw
      * exceptions or return false but rather return the JSON string "false".
+     * @api
      */
     public function toJson(
         bool $pretty = false,
