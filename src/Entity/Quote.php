@@ -9,11 +9,14 @@ use LogicException;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Collection\QuoteCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\QuoteProductCollection;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 class Quote implements EntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
+    use ToJsonTrait;
+    use SetOrdersTrait;
 
     public function __construct(
         private ?int $quoteId = null,
@@ -359,32 +362,6 @@ class Quote implements EntityInterface
     public function getOrders(): OrderCollection
     {
         return $this->orders;
-    }
-
-    public function setOrders(?iterable $orders): self
-    {
-        $this->orders = new OrderCollection();
-
-        if ($orders) {
-            foreach ($orders as $data) {
-                $order = null;
-
-                if ($data instanceof Order) {
-                    $order = $data;
-                } else {
-                    if (is_string($data)) {
-                        // Convert order IRI (string) to an Order entity.
-                        $order = $this->iriToOrderEntity($data);
-                    } else {
-                        throw new LogicException('Order is neither an array nor an IRI!');
-                    }
-                }
-
-                $this->addOrder($order);
-            }
-        }
-
-        return $this;
     }
 
     public function addOrder(Order $order): self

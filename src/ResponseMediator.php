@@ -4,26 +4,20 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient;
 
-use MailCampaigns\ApiClient\Exception\ApiException;
-use Symfony\Component\HttpClient\Exception\ClientException;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
-use Symfony\Contracts\HttpClient\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class ResponseMediator
 {
     /**
-     * @param ResponseInterface $response
-     *
-     * @return array|string
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
      */
-    public static function getContent(ResponseInterface $response)
+    public static function getContent(ResponseInterface $response): array|string
     {
-        try {
-            $body = $response->getContent();
-        } catch (ClientException $e) {
-            throw new ApiException('API request failed! ' . $e->getMessage(), 0, $e);
+        if ($response->getStatusCode() >= 400) {
+            throw new ApiClientException($response->getStatusCode() . ' ' . $response->getReasonPhrase() . PHP_EOL . $response->getBody()->getContents() . PHP_EOL . json_encode($response->getHeaders()), $response->getStatusCode());
         }
+
+        $body = $response->getBody()->getContents();
 
         $content = json_decode($body, true);
 
@@ -32,31 +26,5 @@ class ResponseMediator
         }
 
         return $body;
-    }
-
-    /**
-     * @param ResponseInterface $response
-     *
-     * @return array|void
-     * @throws HttpClientExceptionInterface
-     */
-    public static function getPagination(ResponseInterface $response)
-    {
-        if (!in_array('Link', $response->getHeaders(), true)) {
-            return;
-        }
-
-        $header = array_shift($response->getHeaders()['Link']);
-
-        $pagination = [];
-        foreach (explode(',', $header) as $link) {
-            preg_match('/<(.*)>; rel="(.*)"/i', trim($link, ','), $match);
-
-            if (3 === count($match)) {
-                $pagination[$match[2]] = $match[1];
-            }
-        }
-
-        return $pagination;
     }
 }

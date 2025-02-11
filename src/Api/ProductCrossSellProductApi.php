@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\ProductCrossSellProduct;
-use MailCampaigns\ApiClient\Exception\ApiException;
 
-class ProductCrossSellProductApi extends AbstractApi
+class ProductCrossSellProductApi implements ApiInterface
 {
+    use ApiTrait;
+
     public function create(
         ProductCrossSellProduct|EntityInterface $entity
     ): ProductCrossSellProduct {
@@ -48,10 +50,14 @@ class ProductCrossSellProductApi extends AbstractApi
         return $collection;
     }
 
+    /**
+     * @throws ApiClientException
+     * {@inheritDoc}
+     */
     public function update(
         ProductCrossSellProduct|EntityInterface $entity
     ): ProductCrossSellProduct {
-        throw new ApiException(
+        throw new ApiClientException(
             'Operation not supported! Either create or delete this item.'
         );
     }

@@ -18,15 +18,18 @@ composer require mailcampaigns/api-client
 
 Usage
 -----
-You'll need the Api url, client key and secret which can be obtained by logging in to your MailCampaigns account (on the Custom Connector page).
+You'll need the Api URL, client key and secret which can be obtained by logging in to your account in the MailCampaigns Manager and going to the integration/connector page.
 
-*Note: This section will be updated soon!*
+In the following examples we use the [Symfony HTTP Client](https://symfony.com/doc/current/http_client.html), but you may use any implementation of the Symfony HttpClientInterface as described [here](https://symfony.com/doc/current/http_client.html#symfony-contracts).
 
 ```PHP
 use MailCampaigns\ApiClient\ApiClient;
 use MailCampaigns\ApiClient\Entity\Customer;
+use Symfony\Component\HttpClient\HttpClient;
 
-$apiClient = ApiClient::create('<url>', '<client_key>', '<client_secret>');
+$httpClient = HttpClient::create(['base_uri' => 'https://api-v3.mailcampaigns.nl']);
+$apiClient = ApiClient::create($httpClient, '<client_key>', '<client_secret>');
+
 $customerApi = $apiClient->getCustomerApi();
 
 // Example 1 - Retrieve a customer by id:
@@ -36,8 +39,9 @@ $customer = $customerApi->getById(1234);
 for ($page = 1; $page <= 3; $page++) {
     $customers = $customerApi->getCollection($page);
 
-    /** @var Customer $customer */
     foreach ($customers as $customer) {
+        assert($customer instanceof Customer);
+
         // Use customer as an entity (object):
         print $customer->getEmail() . PHP_EOL;
 
@@ -75,8 +79,10 @@ Using custom fields:
 use MailCampaigns\ApiClient\ApiClient;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\CustomerCustomField;
+use Symfony\Component\HttpClient\HttpClient;
 
-$apiClient = ApiClient::create('<url>', '<client_key>', '<client_secret>');
+$httpClient = HttpClient::create(['base_uri' => 'https://api-v3.mailcampaigns.nl']);
+$apiClient = ApiClient::create($httpClient, '<client_key>', '<client_secret>');
 
 $customerCustomFieldApi = $apiClient->getCustomerCustomFieldApi();
 

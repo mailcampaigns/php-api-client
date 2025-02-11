@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\ProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductCrossSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductCustomFieldCollection;
@@ -14,10 +15,14 @@ use MailCampaigns\ApiClient\Collection\ProductUpSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductVolumeSellProductCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class ProductApi extends AbstractApi
+class ProductApi implements ApiInterface
 {
+    use ApiTrait;
+
+    /**
+     * @api
+     */
     public const ORDERABLE_PARAMS = [
         'product_id',
         'created_at',
@@ -35,13 +40,13 @@ class ProductApi extends AbstractApi
     }
 
     /**
-     * {@inheritDoc}
      * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
+     * {@inheritDoc}
      */
-    public function getById($id, ?array $propertyFilter = null): Product
+    public function getById(int|string $id, ?array $propertyFilter = null): Product
     {
-        $path = "products/{$id}";
+        $path = "products/$id";
 
         if (null !== $propertyFilter) {
             $path .= '?';
@@ -63,7 +68,8 @@ class ProductApi extends AbstractApi
      *
      * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByArticleCode(
         string $articleCode,
@@ -87,7 +93,8 @@ class ProductApi extends AbstractApi
      * @param string[] $articleCodes A list of article codes to retrieve products by.
      * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByArticleCodes(
         array $articleCodes,
@@ -122,7 +129,8 @@ class ProductApi extends AbstractApi
      *
      * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByEan(string $ean, ?array $propertyFilter = null): ?Product
     {
@@ -144,7 +152,8 @@ class ProductApi extends AbstractApi
      * @param string[] $eans A list of EANs to retrieve products by.
      * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByEans(
         array $eans,
@@ -179,7 +188,8 @@ class ProductApi extends AbstractApi
      *
      * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getBySku(string $sku, ?array $propertyFilter = null): ?Product
     {
@@ -205,7 +215,8 @@ class ProductApi extends AbstractApi
      * @param string[]|null $order Overrides default order to sort results on.
      * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getBySkus(
         array $skus,
@@ -237,10 +248,10 @@ class ProductApi extends AbstractApi
     }
 
     /**
-     * {@inheritDoc}
      * @param string[]|null $order Overrides default order to sort results on.
      * @param string[]|null $propertyFilter Optionally set properties to return in response,
      *  will return all if kept empty (null).
+     * {@inheritDoc}
      */
     public function getCollection(
         ?int $page = null,

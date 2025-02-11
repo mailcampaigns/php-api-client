@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\QuoteCollection;
 use MailCampaigns\ApiClient\Collection\QuoteCustomFieldCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Quote;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class QuoteApi extends AbstractApi
+class QuoteApi implements ApiInterface
 {
+    use ApiTrait;
+
+    /**
+     * @api
+     */
     public const ORDERABLE_PARAMS = [
         'quote_id',
         'created_at',
@@ -35,7 +40,8 @@ class QuoteApi extends AbstractApi
     }
 
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByQuoteRef(string $ref): ?Quote
     {
@@ -50,7 +56,8 @@ class QuoteApi extends AbstractApi
      * Finds and returns quotes by their `quote_ref` values.
      *
      * @param string[] $refs
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByQuoteRefs(
         array $refs,
@@ -71,7 +78,9 @@ class QuoteApi extends AbstractApi
 
     /**
      * Tries to find a quote by customer reference, returns null when not found.
-     * @throws HttpClientExceptionInterface
+     *
+     * @throws ApiClientException
+     * @api
      */
     public function getByCustomerRef(string $ref): ?Quote
     {
@@ -83,7 +92,8 @@ class QuoteApi extends AbstractApi
     }
 
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByCustomerRefs(
         array $refs,
@@ -108,7 +118,8 @@ class QuoteApi extends AbstractApi
      * Tries to find a quote by email address as set on the linked customer
      * resource, returns null when not found.
      *
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByCustomerEmail(string $email): ?Quote
     {
@@ -120,7 +131,8 @@ class QuoteApi extends AbstractApi
     }
 
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByCustomerEmails(
         array $emails,
@@ -142,8 +154,8 @@ class QuoteApi extends AbstractApi
     }
 
     /**
-     * {@inheritDoc}
      * @param array $filters Optional filters.
+     * {@inheritDoc}
      */
     public function getCollection(
         ?int $page = null,

@@ -6,11 +6,13 @@ namespace MailCampaigns\ApiClient\Entity;
 
 use DateTime;
 use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 class ProductCategory implements EntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
+    use ToJsonTrait;
 
     public function __construct(
         private ?int $productCategoryId = null,
@@ -71,7 +73,7 @@ class ProductCategory implements EntityInterface
         return $this->productProductCategories;
     }
 
-    public function setProductProductCategories($productProductCategories): self
+    public function setProductProductCategories(ProductProductCategoryCollection $productProductCategories): self
     {
         $this->productProductCategories = new ProductProductCategoryCollection();
 
@@ -82,7 +84,7 @@ class ProductCategory implements EntityInterface
         return $this;
     }
 
-    public function addProductProductCategory($productProductCategory): self
+    public function addProductProductCategory(ProductProductCategory|array $productProductCategory): self
     {
         $entity = null;
 

@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\ProductCategoryCollection;
 use MailCampaigns\ApiClient\Collection\ProductProductCategoryCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\ProductCategory;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class ProductCategoryApi extends AbstractApi
+class ProductCategoryApi implements ApiInterface
 {
+    use ApiTrait;
+
+    /**
+     * @api
+     */
     public const ORDERABLE_PARAMS = [
         'product_category_id',
         'created_at',
@@ -37,7 +42,8 @@ class ProductCategoryApi extends AbstractApi
      * Find a product category by reference. Returns null when product category
      * could not be found.
      *
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByCategoryRef(string $ref): ?ProductCategory
     {
@@ -73,7 +79,6 @@ class ProductCategoryApi extends AbstractApi
             $this->put("product_categories/{$entity->getProductCategoryId()}", $entity)
         );
     }
-
 
     public function deleteById(int|string $id): self
     {

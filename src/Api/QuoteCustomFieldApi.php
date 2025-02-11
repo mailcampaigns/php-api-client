@@ -9,8 +9,10 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Quote;
 use MailCampaigns\ApiClient\Entity\QuoteCustomField;
 
-class QuoteCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
+class QuoteCustomFieldApi implements ApiInterface, CustomFieldApiInterface
 {
+    use ApiTrait;
+
     public function create(QuoteCustomField|EntityInterface $entity): QuoteCustomField
     {
         assert($entity instanceof QuoteCustomField);

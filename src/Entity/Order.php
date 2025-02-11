@@ -9,11 +9,13 @@ use DateTimeInterface;
 use LogicException;
 use MailCampaigns\ApiClient\Collection\OrderCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\OrderProductCollection;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 class Order implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
+    use ToJsonTrait;
 
     public function __construct(
         private ?int $orderId = null,

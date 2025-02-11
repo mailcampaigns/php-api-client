@@ -4,28 +4,31 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\OrderProductCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
 use MailCampaigns\ApiClient\Entity\OrderProduct;
 use MailCampaigns\ApiClient\Entity\Product;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class OrderProductApi extends AbstractApi
+class OrderProductApi implements ApiInterface
 {
+    use ApiTrait;
+
     public function create(OrderProduct|EntityInterface $entity): OrderProduct
     {
         assert($entity instanceof OrderProduct);
         return $this->toEntity($this->post('order_products', $entity));
     }
 
-    public function getById($id): OrderProduct
+    public function getById(int|string $id): OrderProduct
     {
         return $this->toEntity($this->get("order_products/$id"));
     }
 
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByOrderId(int|string $id): OrderProductCollection
     {

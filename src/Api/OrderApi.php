@@ -4,16 +4,21 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Collection\OrderCustomFieldCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
 use MailCampaigns\ApiClient\Entity\Quote;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class OrderApi extends AbstractApi
+class OrderApi implements ApiInterface
 {
+    use ApiTrait;
+
+    /**
+     * @api
+     */
     public const ORDERABLE_PARAMS = [
         'order_id',
         'created_at',
@@ -39,7 +44,8 @@ class OrderApi extends AbstractApi
      * Tries to find an order by number, returns null when no order was found with
      * the given order number.
      *
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByNumber(string $number): ?Order
     {
@@ -51,7 +57,8 @@ class OrderApi extends AbstractApi
     }
 
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByNumbers(
         array $numbers,
@@ -74,7 +81,8 @@ class OrderApi extends AbstractApi
 
     /**
      * Tries to find an order by customer reference, returns null when not found.
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByCustomerRef(string $ref): ?Order
     {
@@ -86,7 +94,8 @@ class OrderApi extends AbstractApi
     }
 
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByCustomerRefs(
         array $refs,
@@ -109,7 +118,8 @@ class OrderApi extends AbstractApi
 
     /**
      * Tries to find an order by email address, returns null when not found.
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByEmail(string $email): ?Order
     {
@@ -121,7 +131,8 @@ class OrderApi extends AbstractApi
     }
 
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByEmails(
         array $emails,
@@ -146,7 +157,8 @@ class OrderApi extends AbstractApi
      * Tries to find an order by email address as set on the linked customer
      * resource, returns null when not found.
      *
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByCustomerEmail(string $email): ?Order
     {
@@ -158,7 +170,8 @@ class OrderApi extends AbstractApi
     }
 
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByCustomerEmails(
         array $emails,
@@ -230,7 +243,7 @@ class OrderApi extends AbstractApi
                 }
             } else {
                 if (is_array($data['customer'])) {
-                    $customer = $this->client->getCustomerApi()->toEntity($data['customer']);
+                    $customer = $this->apiClient->getCustomerApi()->toEntity($data['customer']);
                 }
             }
         }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\CustomerCollection;
 use MailCampaigns\ApiClient\Collection\CustomerCustomFieldCollection;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
@@ -14,10 +15,14 @@ use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\CustomerFavoriteProduct;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class CustomerApi extends AbstractApi
+class CustomerApi implements ApiInterface
 {
+    use ApiTrait;
+
+    /**
+     * @api
+     */
     public const ORDERABLE_PARAMS = [
         'customer_id',
         'created_at',
@@ -43,7 +48,8 @@ class CustomerApi extends AbstractApi
      * Tries to find a customer by reference, returns null when no customer was
      * found with the given customer reference.
      *
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByCustomerRef(string $ref): ?Customer
     {
@@ -56,7 +62,8 @@ class CustomerApi extends AbstractApi
 
     /**
      * @param string[] $refs
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByCustomerRefs(
         array $refs,
@@ -81,7 +88,8 @@ class CustomerApi extends AbstractApi
      * Tries to find a customer by email address, returns null if no customer was
      * found with the given email address.
      *
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByEmail(string $email): ?Customer
     {
@@ -96,7 +104,8 @@ class CustomerApi extends AbstractApi
      * @param string[] $emails
      * @param string[] $order One of more pairs where the key is the field name and
      *   the value is the direction (asc/desc).
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getByEmails(
         array $emails,
@@ -118,6 +127,7 @@ class CustomerApi extends AbstractApi
     }
 
     /**
+     * todo: make $order default, in interface?
      * @param string[] $order One of more pairs where the key is the field name
      *  and the value is the direction (asc/desc).
      * {@inheritDoc}
@@ -144,7 +154,6 @@ class CustomerApi extends AbstractApi
         assert($entity instanceof Customer);
         return $this->toEntity($this->put("customers/{$entity->getCustomerId()}", $entity));
     }
-
 
     public function deleteById(int|string $id): self
     {
