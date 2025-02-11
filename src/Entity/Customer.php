@@ -142,7 +142,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -153,7 +153,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function getFirstName(): string
+    public function getFirstName(): null|string
     {
         return $this->firstName;
     }
@@ -175,7 +175,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }

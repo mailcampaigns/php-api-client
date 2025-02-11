@@ -28,7 +28,7 @@ use MailCampaigns\ApiClient\Entity\Customer;
 use Symfony\Component\HttpClient\HttpClient;
 
 $httpClient = HttpClient::create(['base_uri' => 'https://api-v3.mailcampaigns.nl']);
-$apiClient = ApiClient::create($httpClient, '<client_key>', '<client_secret>');
+$apiClient = ApiClient::getInstance($httpClient, '<client_key>', '<client_secret>');
 
 $customerApi = $apiClient->getCustomerApi();
 
@@ -82,7 +82,7 @@ use MailCampaigns\ApiClient\Entity\CustomerCustomField;
 use Symfony\Component\HttpClient\HttpClient;
 
 $httpClient = HttpClient::create(['base_uri' => 'https://api-v3.mailcampaigns.nl']);
-$apiClient = ApiClient::create($httpClient, '<client_key>', '<client_secret>');
+$apiClient = ApiClient::getInstance($httpClient, '<client_key>', '<client_secret>');
 
 $customerCustomFieldApi = $apiClient->getCustomerCustomFieldApi();
 

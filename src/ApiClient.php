@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient;
 
-use DateInterval;
-use DateTime;
-use DateTimeInterface;
-use Exception;
 use Http\Factory\Discovery\ClientLocator;
 use Http\Factory\Discovery\HttpClient;
 use Http\Factory\Discovery\HttpFactory;
@@ -31,25 +27,23 @@ use MailCampaigns\ApiClient\Api\{CustomerApi,
     QuoteProductApi,
     SentMailApi,
     SubscriberApi};
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
 final class ApiClient
 {
-    /** @var string The default base Uri of our API. */
+    /**
+     * @var string The default base Uri of our API.
+     * @api
+     */
     public const DEFAULT_BASE_URI = 'https://api-v3.mailcampaigns.nl';
-
-    /** @var int A buffer time in seconds to consider a bearer token to be expired. */
-    private const EXPIRATION_BUFFER_SECS = 10;
 
     /** @var ApiClient|null Holds the only instance of this class (Singleton). */
     private static ?self $instance = null;
 
     private ?string $baseUri = null;
-    private ?string $bearerToken = null;
-    private ?DateTimeInterface $tokenExpirationDt = null;
+    private AuthHandler $authHandler;
     private ?ClientInterface $httpClient = null;
     private ?RequestFactoryInterface $requestFactory = null;
     private ?StreamFactoryInterface $streamFactory = null;
@@ -75,9 +69,12 @@ final class ApiClient
     private ?SubscriberApi $subscriberApi = null;
 
     private function __construct(
-        private readonly string $key,
-        private readonly string $secret,
+        string $key,
+        string $secret,
+        array $scopes = ['read', 'write'],
     ) {
+        $this->authHandler = new AuthHandler($this, $key, $secret, $scopes);
+
         if (class_exists('\Symfony\Component\HttpClient\Psr18Client')) {
             ClientLocator::register(ClientInterface::class, '\Symfony\Component\HttpClient\Psr18Client');
         }
@@ -166,6 +163,14 @@ final class ApiClient
         }
 
         return $this->streamFactory;
+    }
+
+    /**
+     * @throws ApiClientException
+     */
+    public function getAccessToken(): string
+    {
+        return $this->authHandler->getAccessToken();
     }
 
     /**
@@ -409,89 +414,11 @@ final class ApiClient
     }
 
     /**
-     * @throws ApiClientException
-     */
-    public function getBearerToken(): string
-    {
-        if ($this->bearerToken && !$this->hasTokenExpired()) {
-            return $this->bearerToken;
-        }
-
-        $request = ($this->getRequestFactory()->createRequest('POST', $this->getBaseUri() . '/oauth/v2/token'))
-            ->withHeader('Authorization', 'Basic ' . base64_encode($this->key . ':' . $this->secret))
-            ->withHeader('Content-Type', 'application/x-www-form-urlencoded')
-            ->withBody(
-                $this->getStreamFactory()->createStream(
-                    http_build_query([
-                        'scope' => 'read write',
-                        'grant_type' => 'client_credentials',
-                    ])
-                )
-            );
-
-        try {
-            $response = $this->getHttpClient()->sendRequest($request);
-        } catch (ClientExceptionInterface $e) {
-            throw new ApiClientException('Failed to retrieve access token: ' . $e->getMessage());
-        }
-
-        $res = ResponseMediator::getContent($response);
-
-        if (isset($res['access_token'])) {
-            // Remember the moment the token will expire to check on requests later.
-            if (isset($res['expires_in'])) {
-                $this->setTokenExpiration($res['expires_in']);
-            }
-
-            $this->bearerToken = $res['access_token'];
-
-            return $this->bearerToken;
-        }
-//todo: the following should not be necessary
-        $errMsg = 'Failed to retrieve access token.';
-
-        if (isset($res['error'])) {
-            $errMsg .= sprintf(' [%s] %s.', $res['error'], $res['error_description'] ?? '');
-        }
-
-        throw new ApiClientException($errMsg);
-    }
-
-    /**
-     * Sets the moment the bearer token will expire.
-     * @throws ApiClientException
-     */
-    private function setTokenExpiration(int $expInSeconds): void
-    {
-        try {
-            $interval = (new DateInterval(sprintf('PT%dS', $expInSeconds)));
-        } catch (Exception $e) {
-            throw new ApiClientException('Failed to set token expiration: ' . $e->getMessage(), 0, $e);
-        }
-
-        $this->tokenExpirationDt = (new DateTime())->add($interval);
-    }
-
-    /**
-     * Checks if bearer token has expired.
-     */
-    private function hasTokenExpired(): bool
-    {
-        if (!$this->tokenExpirationDt) {
-            return true;
-        }
-
-        $secondsLeft = $this->tokenExpirationDt->getTimestamp() - (new DateTime())->getTimestamp();
-        return $secondsLeft <= self::EXPIRATION_BUFFER_SECS;
-    }
-
-    /**
      * @api
      */
-    public static function create(string $key, string $secret): self {
-        // todo: check if existing instance differs by comparing arguments or destroy and create new instance?
+    public static function getInstance(string $key, string $secret, array $scopes = []): self {
         if (!self::$instance instanceof self) {
-            self::$instance = new self($key, $secret);
+            self::$instance = new self($key, $secret, $scopes);
         }
 
         return self::$instance;

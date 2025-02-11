@@ -15,7 +15,8 @@
         "http-interop/http-factory-discovery": "^1.6"
     },
     "suggest": {
-        "symfony/http-client": "Required to use Symfony HTTP Client."
+        "symfony/http-client": "Required to use Symfony HTTP Client.",
+        "guzzlehttp/guzzle": "Required to use Guzzle HTTP Client."
     },
     "authors": [
         {

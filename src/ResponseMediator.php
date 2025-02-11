@@ -11,20 +11,25 @@ class ResponseMediator
     /**
      * @throws ApiClientException
      */
-    public static function getContent(ResponseInterface $response): array|string
+    public static function getContent(ResponseInterface $response): array|null
     {
-        if ($response->getStatusCode() >= 400) {
-            throw new ApiClientException($response->getStatusCode() . ' ' . $response->getReasonPhrase() . PHP_EOL . $response->getBody()->getContents() . PHP_EOL . json_encode($response->getHeaders()), $response->getStatusCode());
+        $code = $response->getStatusCode();
+        $content = json_decode($response->getBody()->getContents(), true);
+
+        if ($code >= 400) {
+            $msg = $response->getReasonPhrase();
+
+            if (
+                json_last_error() === JSON_ERROR_NONE &&
+                array_key_exists('@type', $content) &&
+                $content['@type'] === 'hydra:Error'
+            ) {
+                $msg .= ': ' . $content['detail'];
+            }
+
+            throw new ApiClientException($code . ' ' . $msg, $code);
         }
 
-        $body = $response->getBody()->getContents();
-
-        $content = json_decode($body, true);
-
-        if (JSON_ERROR_NONE === json_last_error()) {
-            return $content;
-        }
-
-        return $body;
+        return $content;
     }
 }

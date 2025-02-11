@@ -47,7 +47,7 @@ trait ApiTrait
      * @param array $parameters GET parameters (will be sent in the query string).
      * @throws ApiClientException
      */
-    private function get(string $path, array $parameters = []): array|string
+    private function get(string $path, array $parameters = []): array
     {
         $this->prependBaseUri($path);
 
@@ -57,7 +57,7 @@ trait ApiTrait
 
         $request = ($this->apiClient->getRequestFactory()->createRequest('GET', $path))
             ->withHeader('Accept', 'application/ld+json')
-            ->withHeader('Authorization', 'Bearer ' . $this->apiClient->getBearerToken());
+            ->withHeader('Authorization', 'Bearer ' . $this->apiClient->getAccessToken());
 
         $response = $this->sendRequest($request);
 
@@ -71,7 +71,7 @@ trait ApiTrait
      * @param EntityInterface $entity The entity to be created.
      * @throws ApiClientException
      */
-    private function post(string $path, EntityInterface $entity): array|string
+    private function post(string $path, EntityInterface $entity): array
     {
         $this->prependBaseUri($path);
 
@@ -81,7 +81,7 @@ trait ApiTrait
 
         $request = ($this->apiClient->getRequestFactory()->createRequest('POST', $path))
             ->withHeader('Accept', 'application/ld+json')
-            ->withHeader('Authorization', 'Bearer ' . $this->apiClient->getBearerToken())
+            ->withHeader('Authorization', 'Bearer ' . $this->apiClient->getAccessToken())
             ->withHeader('Content-Type', 'application/ld+json')
             ->withBody($body);
 
@@ -97,7 +97,7 @@ trait ApiTrait
      * @param EntityInterface $entity The updated entity to be sent.
      * @throws ApiClientException
      */
-    private function put(string $path, EntityInterface $entity): array|string {
+    private function put(string $path, EntityInterface $entity): array {
         $this->prependBaseUri($path);
 
         $body = $this->apiClient->getStreamFactory()->createStream(
@@ -106,7 +106,7 @@ trait ApiTrait
 
         $request = ($this->apiClient->getRequestFactory()->createRequest('PUT', $path))
             ->withHeader('Accept', 'application/ld+json')
-            ->withHeader('Authorization', 'Bearer ' . $this->apiClient->getBearerToken())
+            ->withHeader('Authorization', 'Bearer ' . $this->apiClient->getAccessToken())
             ->withHeader('Content-Type', 'application/ld+json')
             ->withBody($body);
 
@@ -126,14 +126,9 @@ trait ApiTrait
 
         $request = ($this->apiClient->getRequestFactory()->createRequest('DELETE', $path))
             ->withHeader('Accept', 'application/ld+json')
-            ->withHeader('Authorization', 'Bearer ' . $this->apiClient->getBearerToken());
+            ->withHeader('Authorization', 'Bearer ' . $this->apiClient->getAccessToken());
 
-        $response = $this->sendRequest($request);
-
-//        print $response->getBody()->getContents() . PHP_EOL;
-        if ($response->getStatusCode() !== 204) {
-            throw new ApiClientException('Failed to delete! ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase());
-        }
+        ResponseMediator::getContent($this->sendRequest($request));
     }
 
     /**
