@@ -18,7 +18,8 @@
     "require": {
         "PHP": "^8.2",
         "ext-json": "*",
-        "http-interop/http-factory-discovery": "^1.6"
+        "http-interop/http-factory-discovery": "^1.6",
+        "nyholm/psr7": "^1.8"
     },
     "suggest": {
         "symfony/http-client": "Required to use Symfony HTTP Client.",
