@@ -2,6 +2,12 @@
     "name": "mailcampaigns/api-client",
     "description": "MailCampaigns API-v3 client",
     "homepage": "https://www.mailcampaigns.nl/",
+    "authors": [
+        {
+            "name": "Bert van der Genugten",
+            "email": "bert@mailcampaigns.nl"
+        }
+    ],
     "type": "library",
     "license": "proprietary",
     "autoload": {
@@ -17,16 +23,5 @@
     "suggest": {
         "symfony/http-client": "Required to use Symfony HTTP Client.",
         "guzzlehttp/guzzle": "Required to use Guzzle HTTP Client."
-    },
-    "authors": [
-        {
-            "name": "Bert van der Genugten",
-            "email": "bert@mailcampaigns.nl"
-        }
-    ],
-    "config": {
-        "allow-plugins": {
-            "php-http/discovery": true
-        }
     }
 }
