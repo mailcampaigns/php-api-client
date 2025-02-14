@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Entity;
 
-readonly class Token
+class Token
 {
     /** @var string[] Supported scopes by the API. */
     public const VALID_SCOPES = ['read', 'write'];

@@ -1,6 +1,6 @@
 services:
-  php-api-client:
+  app:
     build:
       context: .
     volumes:
-      - ./:/var/www/php-api-client
+      - ./:/var/www/html
