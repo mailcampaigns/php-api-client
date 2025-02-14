@@ -21,10 +21,9 @@ class ResponseMediator
 
             if (
                 json_last_error() === JSON_ERROR_NONE &&
-                array_key_exists('@type', $content) &&
-                $content['@type'] === 'hydra:Error'
+                array_key_exists('@type', $content)
             ) {
-                $msg .= ': ' . $content['detail'];
+                $msg .= ': ' . ($content['title'] ?? '') . ': ' . ($content['detail'] ?? '');
             }
 
             throw new ApiClientException($code . ' ' . $msg, $code);
