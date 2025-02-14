@@ -127,7 +127,6 @@ class CustomerApi implements ApiInterface
     }
 
     /**
-     * todo: make $order default, in interface?
      * @param string[] $order One of more pairs where the key is the field name
      *  and the value is the direction (asc/desc).
      * {@inheritDoc}
