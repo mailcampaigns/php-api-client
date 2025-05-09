@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Entity;
 
+use MailCampaigns\ApiClient\ToJsonTrait;
+
 class OrderProduct implements EntityInterface
 {
+    use ToJsonTrait;
+
     public function __construct(
         private ?int $orderProductId = null,
         private ?string $supplierTitle = null,

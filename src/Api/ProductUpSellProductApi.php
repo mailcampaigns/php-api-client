@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\ProductUpSellProductCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\ProductUpSellProduct;
-use MailCampaigns\ApiClient\Exception\ApiException;
 
-class ProductUpSellProductApi extends AbstractApi
+class ProductUpSellProductApi implements ApiInterface
 {
+    use ApiTrait;
+
     public function create(
         ProductUpSellProduct|EntityInterface $entity
     ): ProductUpSellProduct {
@@ -47,10 +49,14 @@ class ProductUpSellProductApi extends AbstractApi
         return $collection;
     }
 
+    /**
+     * @throws ApiClientException
+     * {@inheritDoc}
+     */
     public function update(
         ProductUpSellProduct|EntityInterface $entity
     ): ProductUpSellProduct {
-        throw new ApiException(
+        throw new ApiClientException(
             'Operation not supported! Either create or delete this item.'
         );
     }

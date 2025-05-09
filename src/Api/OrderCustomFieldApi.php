@@ -9,8 +9,10 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Order;
 use MailCampaigns\ApiClient\Entity\OrderCustomField;
 
-class OrderCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
+class OrderCustomFieldApi implements ApiInterface, CustomFieldApiInterface
 {
+    use ApiTrait;
+
     public function create(OrderCustomField|EntityInterface $entity): OrderCustomField
     {
         assert($entity instanceof OrderCustomField);
@@ -51,7 +53,6 @@ class OrderCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
         $this->delete("order_custom_fields/$id");
         return $this;
     }
-
 
     public function toEntity(array $data): OrderCustomField
     {

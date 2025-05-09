@@ -7,6 +7,7 @@ namespace MailCampaigns\ApiClient\Collection;
 use ArrayAccess;
 use Countable;
 use IteratorAggregate;
+use MailCampaigns\ApiClient\ToJsonInterface;
 
 /**
  * Copyright (c) 2006-2013 Doctrine Project
@@ -15,7 +16,7 @@ use IteratorAggregate;
  * Collection by MailCampaigns (Bert van der Genugten). For more information
  * on the original code refer to: https://www.doctrine-project.org/projects/collections.html
  */
-interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
+interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess, ToJsonInterface
 {
     /**
      * Gets a native PHP array representation of the collection.

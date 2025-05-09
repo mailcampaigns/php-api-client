@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Entity;
 
-interface EntityInterface
+use MailCampaigns\ApiClient\ToJsonInterface;
+
+interface EntityInterface extends ToJsonInterface
 {
     /**
      * Converts the entity to an array.

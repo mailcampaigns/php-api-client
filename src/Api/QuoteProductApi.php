@@ -10,8 +10,10 @@ use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\Quote;
 use MailCampaigns\ApiClient\Entity\QuoteProduct;
 
-class QuoteProductApi extends AbstractApi
+class QuoteProductApi implements ApiInterface
 {
+    use ApiTrait;
+
     public function create(QuoteProduct|EntityInterface $entity): QuoteProduct
     {
         assert($entity instanceof QuoteProduct);

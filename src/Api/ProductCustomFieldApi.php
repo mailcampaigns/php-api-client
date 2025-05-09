@@ -9,15 +9,17 @@ use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
 use MailCampaigns\ApiClient\Entity\ProductCustomField;
 
-class ProductCustomFieldApi extends AbstractApi implements CustomFieldApiInterface
+class ProductCustomFieldApi implements ApiInterface, CustomFieldApiInterface
 {
+    use ApiTrait;
+
     public function create(ProductCustomField|EntityInterface $entity): ProductCustomField
     {
         assert($entity instanceof ProductCustomField);
         return $this->toEntity($this->post('product_custom_fields', $entity));
     }
 
-    public function getById($id): ProductCustomField
+    public function getById(int|string $id): ProductCustomField
     {
         return $this->toEntity($this->get("product_custom_fields/$id"));
     }

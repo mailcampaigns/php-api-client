@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
 use MailCampaigns\ApiClient\Entity\Customer;
 use MailCampaigns\ApiClient\Entity\CustomerFavoriteProduct;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\Product;
-use MailCampaigns\ApiClient\Exception\ApiException;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class CustomerFavoriteProductApi extends AbstractApi
+class CustomerFavoriteProductApi implements ApiInterface
 {
+    use ApiTrait;
+
     public function create(CustomerFavoriteProduct|EntityInterface $entity): CustomerFavoriteProduct
     {
         assert($entity instanceof CustomerFavoriteProduct);
@@ -24,14 +25,16 @@ class CustomerFavoriteProductApi extends AbstractApi
      * {@inheritDoc}
      * @param string $id In this format: customer=1;favoriteProduct=2
      */
-    public function getById($id): CustomerFavoriteProduct
+    public function getById(int|string $id): CustomerFavoriteProduct
     {
         assert(is_string($id));
         return $this->toEntity($this->get("customer_favorite_products/$id"));
     }
 
-    public function getCollection(?int $page = null, ?int $perPage = null): CustomerFavoriteProductCollection
-    {
+    public function getCollection(
+        ?int $page = null,
+        ?int $perPage = null
+    ): CustomerFavoriteProductCollection {
         $data = $this->get('customer_favorite_products', [
             'page' => $page ?? 1,
             'itemsPerPage' => $perPage ?? self::DEFAULT_ITEMS_PER_PAGE
@@ -44,7 +47,8 @@ class CustomerFavoriteProductApi extends AbstractApi
     }
 
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
+     * @api
      */
     public function getCollectionByCustomerId(
         int $customerId,
@@ -65,14 +69,14 @@ class CustomerFavoriteProductApi extends AbstractApi
     public function update(CustomerFavoriteProductCollection|EntityInterface $entity): EntityInterface
     {
         assert($entity instanceof CustomerFavoriteProduct);
-        throw new ApiException('Operation not supported! Either create or delete this item.');
+        throw new ApiClientException('Operation not supported! Either create or delete this item.');
     }
 
     /**
      * {@inheritDoc}
      * @param string $id In this format: customer=1;favoriteProduct=2
      */
-    public function deleteById($id): self
+    public function deleteById(int|string $id): self
     {
         assert(is_string($id));
         $this->delete("customer_favorite_products/$id");

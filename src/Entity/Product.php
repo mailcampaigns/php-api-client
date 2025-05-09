@@ -14,11 +14,13 @@ use MailCampaigns\ApiClient\Collection\ProductRelatedProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Collection\ProductUpSellProductCollection;
 use MailCampaigns\ApiClient\Collection\ProductVolumeSellProductCollection;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 class Product implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
+    use ToJsonTrait;
 
     public function __construct(
         private ?int $productId = null,
@@ -774,11 +776,29 @@ class Product implements EntityInterface, CustomFieldAwareEntityInterface
             'volume_sell_products' => $this->getVolumeSellProducts()->toArray($operation),
             'reviews' => $this->getReviews()->toArray($operation),
             'custom_fields' => $this->getCustomFields()->toArray($operation),
-            'children' => $this->getChildren()->toArray($operation),
+            'children' => $this->childrenToArray(),
             'parent' => $this->getParent()?->toIri()
         ];
     }
 
+    public function childrenToArray(): array
+    {
+        $arr = [];
+
+        foreach ($this->getChildren() as $child) {
+            assert($child instanceof Product);
+
+            if (empty($child->getProductId())) {
+                // New child product.
+                $arr[] = $child->toArray();
+            } else {
+                // Existing child product.
+                $arr[] = $child->toIri();
+            }
+        }
+
+        return $arr;
+    }
 
     public function toIri(): ?string
     {

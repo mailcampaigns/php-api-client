@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace MailCampaigns\ApiClient\Api;
 
+use MailCampaigns\ApiClient\ApiClientException;
 use MailCampaigns\ApiClient\Collection\SentMailCollection;
 use MailCampaigns\ApiClient\Entity\EntityInterface;
 use MailCampaigns\ApiClient\Entity\SentMail;
-use MailCampaigns\ApiClient\Exception\ApiException;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
-class SentMailApi extends AbstractApi
+class SentMailApi implements ApiInterface
 {
+    use ApiTrait;
+
     /**
-     * @throws HttpClientExceptionInterface
+     * @throws ApiClientException
      */
     public function count(?array $filters = null): int
     {
@@ -34,9 +35,13 @@ class SentMailApi extends AbstractApi
     }
 
 
+    /**
+     * @throws ApiClientException
+     * {@inheritDoc}
+     */
     public function create(SentMail|EntityInterface $entity): SentMail
     {
-        throw new ApiException('Operation not supported!');
+        throw new ApiClientException('Operation not supported!');
     }
 
     public function getById(int|string $id): SentMail
@@ -71,16 +76,14 @@ class SentMailApi extends AbstractApi
         return $collection;
     }
 
-
     public function update(SentMail|EntityInterface $entity): SentMail
     {
-        throw new ApiException('Operation not supported!');
+        throw new ApiClientException('Operation not supported!');
     }
-
 
     public function deleteById(int|string $id): self
     {
-        throw new ApiException('Operation not supported!');
+        throw new ApiClientException('Operation not supported!');
     }
 
     public function toEntity(array $data): SentMail

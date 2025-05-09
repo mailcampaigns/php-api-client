@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace MailCampaigns\ApiClient\Entity;
 
 use MailCampaigns\ApiClient\Api\ApiInterface;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 /**
  * This entity connects a product with product categories.
  */
 class ProductProductCategory implements EntityInterface
 {
+    use ToJsonTrait;
+
     private ?Product $product;
     private ?ProductCategory $productCategory;
 

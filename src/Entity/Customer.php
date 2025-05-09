@@ -12,11 +12,14 @@ use MailCampaigns\ApiClient\Collection\CustomerFavoriteProductCollection;
 use MailCampaigns\ApiClient\Collection\OrderCollection;
 use MailCampaigns\ApiClient\Collection\ProductReviewCollection;
 use MailCampaigns\ApiClient\Collection\QuoteCollection;
+use MailCampaigns\ApiClient\ToJsonTrait;
 
 class Customer implements EntityInterface, CustomFieldAwareEntityInterface
 {
     use DateTrait;
     use DateTimeHelperTrait;
+    use ToJsonTrait;
+    use SetOrdersTrait;
 
     public function __construct(
         private ?int $customerId = null,
@@ -139,7 +142,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -150,7 +153,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function getFirstName(): string
+    public function getFirstName(): null|string
     {
         return $this->firstName;
     }
@@ -172,7 +175,7 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
         return $this;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
@@ -439,32 +442,6 @@ class Customer implements EntityInterface, CustomFieldAwareEntityInterface
     public function getOrders(): OrderCollection
     {
         return $this->orders;
-    }
-
-    public function setOrders(?iterable $orders): self
-    {
-        $this->orders = new OrderCollection();
-
-        if ($orders) {
-            foreach ($orders as $data) {
-                $order = null;
-
-                if ($data instanceof Order) {
-                    $order = $data;
-                } else {
-                    if (is_string($data)) {
-                        // Convert order IRI (string) to an Order entity.
-                        $order = $this->iriToOrderEntity($data);
-                    } else {
-                        throw new LogicException('Order is neither an array nor an IRI!');
-                    }
-                }
-
-                $this->addOrder($order);
-            }
-        }
-
-        return $this;
     }
 
     public function addOrder(Order $order): self
