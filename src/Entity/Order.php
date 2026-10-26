@@ -889,9 +889,7 @@ class Order implements EntityInterface, CustomFieldAwareEntityInterface
             $this->orderProducts = clone $this->orderProducts;
         }
 
-        if ($this->quote !== null) {
-            $this->quote = clone $this->quote;
-        }
+        // Keep the parent relation: cloning it would recurse through its orders.
 
         if ($this->customFields !== null) {
             $this->customFields = clone $this->customFields;
