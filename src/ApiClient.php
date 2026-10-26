@@ -35,7 +35,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final class ApiClient
 {
     /** @var int A buffer time in seconds to consider a bearer token to be expired. */
-    const EXPIRATION_BUFFER_SECS = 10;
+    const EXPIRATION_BUFFER_SECS = 60;
     private static ?ApiClient $instance = null;
     private ?HttpClientInterface $httpClient;
     private CustomerApi $customerApi;
