@@ -104,6 +104,17 @@ $updatedCustomField = $customerCustomFieldApi->update($customField);
 $customerCustomFieldApi->deleteById(123);
 ```
 
+### Token renewal
+
+The client renews access tokens 60 seconds before their expected expiry. If the
+API nevertheless responds with HTTP 401, it obtains a new token and repeats the
+same request once, preserving the method, query, headers and JSON body. A second
+401 or a token endpoint failure remains an exception. Other HTTP errors and
+transport failures are not retried.
+
+Run the regression suite with `vendor/bin/phpunit`. Authentication tests use a
+local PHP server and fake tokens; no real API credentials are required.
+
 Resources
 ---------
  * [API v3 Documentation](https://api-v3.docs.mailcampaigns.io)

@@ -2,7 +2,7 @@
 
 use MailCampaigns\ApiClient\ApiClient;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\MockHttpClient;
 
 class ApiClientTest extends TestCase
 {
@@ -10,11 +10,13 @@ class ApiClientTest extends TestCase
 
     public function setUp(): void
     {
-        $this->apiClient = ApiClient::create('https://mailcampaigns.io', 'testkey', 'testsecret');
+        $this->apiClient = (new ReflectionClass(ApiClient::class))->newInstanceWithoutConstructor();
     }
 
     public function testGetHttpClient()
     {
-        $this->assertInstanceOf(HttpClient::class, $this->apiClient->getHttpClient());
+        $httpClient = new MockHttpClient();
+        $this->apiClient->setHttpClient($httpClient);
+        $this->assertSame($httpClient, $this->apiClient->getHttpClient());
     }
 }
