@@ -31,6 +31,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ApiClient
 {
+    private const TOKEN_EXPIRATION_BUFFER_SECONDS = 60;
+
     /**
      * @var self
      */
@@ -314,7 +316,7 @@ final class ApiClient
     public function hasTokenExpired(): bool
     {
         $secondsLeft = $this->tokenExpirationDt->getTimestamp() - (new DateTime)->getTimestamp();
-        return $secondsLeft <= 0;
+        return $secondsLeft <= self::TOKEN_EXPIRATION_BUFFER_SECONDS;
     }
 
     public function refreshToken(): self

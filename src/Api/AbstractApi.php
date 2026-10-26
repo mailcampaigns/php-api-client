@@ -59,19 +59,13 @@ abstract class AbstractApi implements ApiInterface
      */
     protected function get(string $path, array $parameters = [], array $requestHeaders = [])
     {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-        
         if (count($parameters) > 0) {
             $path .= '?' . http_build_query($parameters);
         }
 
-        $response = $this->client->getHttpClient()->request('GET', $path, [
+        return $this->request('GET', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders)
         ]);
-
-        return ResponseMediator::getContent($response);
     }
 
     /**
@@ -85,18 +79,13 @@ abstract class AbstractApi implements ApiInterface
      */
     protected function head(string $path, array $parameters = [], array $requestHeaders = [])
     {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-
         if (count($parameters) > 0) {
             $path .= '?' . http_build_query($parameters);
         }
 
-        $response = $this->client->getHttpClient()->request('HEAD', $path,
-            array_merge(['content-type: application/ld+json'], $requestHeaders));
-
-        return ResponseMediator::getContent($response);
+        return $this->request('HEAD', $path, [
+            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders)
+        ]);
     }
 
     /**
@@ -110,16 +99,10 @@ abstract class AbstractApi implements ApiInterface
      */
     protected function post(string $path, EntityInterface $entity, array $requestHeaders = [])
     {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-
-        $response = $this->client->getHttpClient()->request('POST', $path, [
+        return $this->request('POST', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
             'body' => $this->createJsonBody($entity->toArray(self::OPERATION_POST, true))
         ]);
-
-        return ResponseMediator::getContent($response);
     }
 
     /**
@@ -133,16 +116,10 @@ abstract class AbstractApi implements ApiInterface
      */
     protected function patch(string $path, EntityInterface $entity, array $requestHeaders = [])
     {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-
-        $response = $this->client->getHttpClient()->request('PATCH', $path, [
+        return $this->request('PATCH', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
             'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PATCH, true))
         ]);
-
-        return ResponseMediator::getContent($response);
     }
 
     /**
@@ -156,16 +133,10 @@ abstract class AbstractApi implements ApiInterface
      */
     protected function put(string $path, EntityInterface $entity, array $requestHeaders = [])
     {
-        if ($this->client->hasTokenExpired()) {
-            $this->client->refreshToken();
-        }
-
-        $response = $this->client->getHttpClient()->request('PUT', $path, [
+        return $this->request('PUT', $path, [
             'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
             'body' => $this->createJsonBody($entity->toArray(self::OPERATION_PUT, true))
         ]);
-
-        return ResponseMediator::getContent($response);
     }
 
     /**
@@ -179,14 +150,32 @@ abstract class AbstractApi implements ApiInterface
      */
     protected function delete(string $path, array $parameters = [], array $requestHeaders = [])
     {
+        return $this->request('DELETE', $path, [
+            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
+            'body' => $this->createJsonBody($parameters)
+        ]);
+    }
+
+    /**
+     * Renew a rejected token once, before exposing the final API response.
+     * Only an explicit 401 is replayed: transport and server failures may occur
+     * after a write has already been applied.
+     *
+     * @return array|string
+     */
+    private function request(string $method, string $path, array $options)
+    {
         if ($this->client->hasTokenExpired()) {
             $this->client->refreshToken();
         }
 
-        $response = $this->client->getHttpClient()->request('DELETE', $path, [
-            'headers' => array_merge(['content-type: application/ld+json'], $requestHeaders),
-            'body' => $this->createJsonBody($parameters)
-        ]);
+        $response = $this->client->getHttpClient()->request($method, $path, $options);
+
+        if ($response->getStatusCode() === 401) {
+            $response->cancel();
+            $this->client->refreshToken();
+            $response = $this->client->getHttpClient()->request($method, $path, $options);
+        }
 
         return ResponseMediator::getContent($response);
     }
