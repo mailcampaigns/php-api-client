@@ -556,6 +556,9 @@ class Quote implements EntityInterface
 
         if ($this->orders !== null) {
             $this->orders = clone $this->orders;
+            foreach ($this->orders as $order) {
+                $order->setQuote($this);
+            }
         }
 
         if ($this->quoteProducts !== null) {
